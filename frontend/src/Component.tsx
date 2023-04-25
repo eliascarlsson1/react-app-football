@@ -1,5 +1,7 @@
 import React from "react";
 
 export default function Component() {
-  return <div>Hello world</div>;
+
+  const text = "Hello world"
+  return <div>{text}</div>;
 }
