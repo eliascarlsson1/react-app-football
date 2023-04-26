@@ -39,10 +39,7 @@ function App() {
 			/>
 			<Stack padding={3}>
 				{appState.tab === "Evaluate" ? (
-					<EvaluateView
-						state={appStateManager.getComponentState().getEvaluateViewState()}
-						dispatcher={appDispatcher}
-					/>
+					<EvaluateView />
 				) : (
 					<TrainModelView
 						state={appStateManager.getComponentState().getTrainModelViewState()}

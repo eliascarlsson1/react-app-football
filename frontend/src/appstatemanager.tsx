@@ -1,17 +1,15 @@
 import React from "react";
 import { TopMenuTabAction, TopMenuTabOption, TopMenuTabState } from "./App";
-import { AddROIAction, EvaluateViewState } from "./evaluate/evaluateview";
 import { TrainModelViewState } from "./train-model/trainmodelview";
 const _ = require("lodash");
 
 export type AppState = {
-	ROI: number;
 	tab: TopMenuTabOption;
 	historicalData: string[];
 	x_parameters: string[];
 	y_parameters: string[];
 };
-export type AppAction = TopMenuTabAction | AddROIAction;
+export type AppAction = TopMenuTabAction;
 export type AppActionDispatcher = (action: AppAction) => void;
 
 class AppStateManager {
@@ -27,7 +25,6 @@ class AppStateManager {
 
 	getInitialAppState(): AppState {
 		const initalAppState: AppState = {
-			ROI: 0,
 			tab: "Train model",
 			historicalData: ["test1", "test2", "test3", "test4", "test5"],
 			x_parameters: ["x_par1", "x_par2", "x_par3"],
@@ -53,10 +50,6 @@ class AppStateManager {
 					newAppState.tab = action.selectedTab;
 					this.#setState(newAppState);
 					break;
-				case "AddROIAction":
-					newAppState.ROI++;
-					this.#setState(newAppState);
-					break;
 			}
 		};
 		return appDispatcher;
@@ -76,10 +69,6 @@ class ComponentStateManager {
 
 	updateAppState(appState: AppState) {
 		this.#appState = appState;
-	}
-
-	getEvaluateViewState(): EvaluateViewState {
-		return { ROI: this.#appState.ROI };
 	}
 
 	getTopMenuTabState(): TopMenuTabState {
