@@ -1,6 +1,6 @@
 import React from "react";
 import { TabEvent, TabState, TabOption } from "./tabs";
-import { AddROIEvent, EvaluateViewState } from "./evaluateview";
+import { AddROIEvent, EvaluateViewState } from "./evaluate/evaluateview";
 const _ = require("lodash");
 
 export type AppState = { ROI: number; tab: TabOption };

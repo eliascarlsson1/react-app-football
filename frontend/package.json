@@ -27,6 +27,7 @@
     "build-app": "react-scripts build",
     "test-app": "react-scripts test",
     "eject-app": "react-scripts eject",
+    "tsc": "tsc",
     "prettier": "prettier --write src"
   },
   "eslintConfig": {
