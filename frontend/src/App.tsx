@@ -1,25 +1,41 @@
 import React, { useState } from "react";
-import Tabs, { TabOptions } from "./tabs";
+import Tabs, { TabEvent } from "./tabs";
 import PipelineView from "./pipelineview";
-import EvaluateView from "./evaluateview";
+import EvaluateView, { AddROIEvent } from "./evaluateview";
+const _ = require("lodash");
 
-type AppState = { ROI: string; tab: "evaluate" | "pipeline" };
+type AppState = { ROI: number; tab: "evaluate" | "pipeline" };
+type AppAction = TabEvent | AddROIEvent;
+type AppActionDispatcher = (action: AppAction) => void;
 
 function App() {
   const [appState, setAppState] = useState<AppState>({
-    ROI: "0",
+    ROI: 0,
     tab: "pipeline",
   });
-  const setTab: (tab: TabOptions) => void = (tab) => {
-    const newAppState: AppState = { ROI: appState.ROI, tab };
-    setAppState(newAppState);
+
+  const appDispatcher: AppActionDispatcher = (action) => {
+    const newAppState: AppState = _.cloneDeep(appState);
+    switch (action.type) {
+      case "tabEvent":
+        newAppState.tab = action.tab;
+        setAppState(newAppState);
+        break;
+      case "addROIEvent":
+        newAppState.ROI++;
+        setAppState(newAppState);
+        break;
+    }
   };
 
   return (
     <div className="App">
-      <Tabs state={{ tab: appState.tab }} dispatcher={setTab} />
+      <Tabs state={{ tab: appState.tab }} dispatcher={appDispatcher} />
       {appState.tab === "evaluate" ? (
-        <EvaluateView state={{ ROI: appState.ROI }} />
+        <EvaluateView
+          state={{ ROI: appState.ROI }}
+          dispatcher={appDispatcher}
+        />
       ) : (
         <PipelineView />
       )}
