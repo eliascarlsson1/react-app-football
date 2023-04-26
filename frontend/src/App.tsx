@@ -1,44 +1,37 @@
 import React, { useState } from "react";
-import Tabs, { TabEvent } from "./tabs";
+import {
+  AppStateManager,
+  AppState,
+} from "./appstatemanager";
+import Tabs from "./tabs";
 import PipelineView from "./pipelineview";
-import EvaluateView, { AddROIEvent } from "./evaluateview";
-const _ = require("lodash");
+import EvaluateView from "./evaluateview";
+import TrainModelView from "./train-model/trainmodelview";
 
-type AppState = { ROI: number; tab: "evaluate" | "pipeline" };
-type AppAction = TabEvent | AddROIEvent;
-type AppActionDispatcher = (action: AppAction) => void;
+const initialAppstate: AppState = {
+  ROI: 0,
+  tab: "pipeline",
+};
+const appStateManager = new AppStateManager(initialAppstate);
 
 function App() {
-  const [appState, setAppState] = useState<AppState>({
-    ROI: 0,
-    tab: "pipeline",
-  });
+  const [appState, setAppState] = useState<AppState>(initialAppstate);
+  appStateManager.updateAppState(appState)
+  appStateManager.updateSetState(setAppState)
 
-  const appDispatcher: AppActionDispatcher = (action) => {
-    const newAppState: AppState = _.cloneDeep(appState);
-    switch (action.type) {
-      case "tabEvent":
-        newAppState.tab = action.tab;
-        setAppState(newAppState);
-        break;
-      case "addROIEvent":
-        newAppState.ROI++;
-        setAppState(newAppState);
-        break;
-    }
-  };
+  const appDispatcher =appStateManager.getAppActionDispatcher()
 
   return (
     <div className="App">
-      <Tabs state={{ tab: appState.tab }} dispatcher={appDispatcher} />
+      <Tabs state={appStateManager.getComponentState().getTabState()} dispatcher={appDispatcher} />
       {appState.tab === "evaluate" ? (
         <EvaluateView
-          state={{ ROI: appState.ROI }}
+          state={appStateManager.getComponentState().getEvaluateViewState()}
           dispatcher={appDispatcher}
         />
-      ) : (
+      ) : appState.tab === "pipeline" ? (
         <PipelineView />
-      )}
+      ) : <TrainModelView/>}
     </div>
   );
 }
