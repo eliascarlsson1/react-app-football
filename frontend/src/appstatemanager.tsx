@@ -8,67 +8,64 @@ export type AppAction = TabEvent | AddROIEvent;
 export type AppActionDispatcher = (action: AppAction) => void;
 
 class AppStateManager {
-  #appState: AppState;
-  #setState: React.Dispatch<React.SetStateAction<AppState>> = () => {};
-  #componentStateManager: ComponentStateManager
+	#appState: AppState;
+	#setState: React.Dispatch<React.SetStateAction<AppState>> = () => {};
+	#componentStateManager: ComponentStateManager;
 
-  constructor(appState: AppState) {
-    this.#appState = appState;
-    this.#componentStateManager = new ComponentStateManager(appState)
-  }
+	constructor(appState: AppState) {
+		this.#appState = appState;
+		this.#componentStateManager = new ComponentStateManager(appState);
+	}
 
-  updateAppState(appState: AppState) {
-    this.#appState = appState;
-    this.#componentStateManager.setAppState(appState)
-  }
+	updateAppState(appState: AppState) {
+		this.#appState = appState;
+		this.#componentStateManager.setAppState(appState);
+	}
 
-  updateSetState(setState: React.Dispatch<React.SetStateAction<AppState>>) {
-    this.#setState = setState;
-  }
+	updateSetState(setState: React.Dispatch<React.SetStateAction<AppState>>) {
+		this.#setState = setState;
+	}
 
-  getAppActionDispatcher(): AppActionDispatcher{
-    const appDispatcher: AppActionDispatcher = (action) => {
-        const newAppState: AppState = _.cloneDeep(this.#appState);
-        switch (action.type) {
-          case "tabEvent":
-            newAppState.tab = action.tab;
-            this.#setState(newAppState);
-            break;
-          case "addROIEvent":
-            newAppState.ROI++;
-            this.#setState(newAppState);
-            break;
-        }
-      };
-      return appDispatcher
-  }
+	getAppActionDispatcher(): AppActionDispatcher {
+		const appDispatcher: AppActionDispatcher = (action) => {
+			const newAppState: AppState = _.cloneDeep(this.#appState);
+			switch (action.type) {
+				case "tabEvent":
+					newAppState.tab = action.tab;
+					this.#setState(newAppState);
+					break;
+				case "addROIEvent":
+					newAppState.ROI++;
+					this.#setState(newAppState);
+					break;
+			}
+		};
+		return appDispatcher;
+	}
 
-  getComponentState(): ComponentStateManager{
-    return this.#componentStateManager
-  }
-
-
+	getComponentState(): ComponentStateManager {
+		return this.#componentStateManager;
+	}
 }
 
 class ComponentStateManager {
-    #appState: AppState
+	#appState: AppState;
 
-    constructor(appState: AppState){
-        this.#appState = appState
-    }
+	constructor(appState: AppState) {
+		this.#appState = appState;
+	}
 
+	setAppState(appState: AppState) {
+		appState = this.#appState;
+	}
 
-    setAppState(appState: AppState){
-        appState = this.#appState
-    }
+	getEvaluateViewState(): EvaluateViewState {
+		return { ROI: this.#appState.ROI };
+	}
 
-    getEvaluateViewState(): EvaluateViewState{
-        return {ROI: this.#appState.ROI}
-      }
-    
-      getTabState(): TabState {
-        return {tab: this.#appState.tab}
-      }
+	getTabState(): TabState {
+		return { tab: this.#appState.tab };
+	}
 }
 
 export { AppStateManager };
