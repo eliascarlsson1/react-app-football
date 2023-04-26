@@ -27,7 +27,7 @@ class AppStateManager {
 		const initalAppState: AppState = {
 			ROI: 0,
 			tab: "trainModel",
-			historicalData: ["test1", "test2"],
+			historicalData: ["test1", "test2", "test3", "test4", "test5"],
 		};
 		return initalAppState;
 	}

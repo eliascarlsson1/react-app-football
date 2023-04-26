@@ -10,12 +10,11 @@ export default function TrainModelView({
 }) {
 	return (
 		<div>
-			Test train model view
 			<Multiselect
 				dataArray={state.historicalData}
 				label="Training data"
-				deliverSelected={(selectedLabels) => {
-					console.log(selectedLabels);
+				deliverSelected={(selectedData) => {
+					console.log(selectedData);
 				}}
 			/>
 		</div>

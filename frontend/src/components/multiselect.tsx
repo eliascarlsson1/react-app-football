@@ -39,7 +39,7 @@ export default function MultiSelect({
 }: {
 	dataArray: string[];
 	label?: string | null;
-	deliverSelected: (selectedLabels: string[]) => void;
+	deliverSelected: (selectedData: string[]) => void;
 }) {
 	const theme = useTheme();
 	const [selectedData, setSelectedData] = React.useState<string[]>([]);
@@ -48,26 +48,24 @@ export default function MultiSelect({
 		const {
 			target: { value },
 		} = event;
-		const selectedLabels = typeof value === "string" ? value.split(",") : value;
-		setSelectedData(selectedLabels);
-		deliverSelected(selectedLabels);
+		const selectedData = typeof value === "string" ? value.split(",") : value;
+		setSelectedData(selectedData);
+		deliverSelected(selectedData);
 	};
 
 	return (
 		<div>
 			<FormControl sx={{ m: 1, width: 300 }}>
 				{label ? (
-					<InputLabel id="demo-multiple-chip-label">{label}</InputLabel>
+					<InputLabel>{label}</InputLabel>
 				) : (
 					""
 				)}
 				<Select
-					labelId="demo-multiple-chip-label"
-					id="demo-multiple-chip"
 					multiple
 					value={selectedData}
 					onChange={handleChange}
-					input={<OutlinedInput id="select-multiple-chip" label="Chip" />}
+					input={<OutlinedInput label={label} />}
 					renderValue={(selected) => (
 						<Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
 							{selected.map((value) => (
