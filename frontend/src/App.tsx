@@ -4,14 +4,12 @@ import Tabs from "./tabs";
 import EvaluateView from "./evaluate/evaluateview";
 import TrainModelView from "./train-model/trainmodelview";
 
-const initialAppstate: AppState = {
-	ROI: 0,
-	tab: "trainModel",
-};
-const appStateManager = new AppStateManager(initialAppstate);
+const appStateManager = new AppStateManager();
 
 function App() {
-	const [appState, setAppState] = useState<AppState>(initialAppstate);
+	const [appState, setAppState] = useState<AppState>(
+		appStateManager.getInitialAppState(),
+	);
 	appStateManager.updateAppState(appState);
 	appStateManager.updateSetState(setAppState);
 
@@ -29,7 +27,9 @@ function App() {
 					dispatcher={appDispatcher}
 				/>
 			) : (
-				<TrainModelView />
+				<TrainModelView
+					state={appStateManager.getComponentState().getTrainModelViewState()}
+				/>
 			)}
 		</div>
 	);

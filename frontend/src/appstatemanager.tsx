@@ -1,9 +1,14 @@
 import React from "react";
 import { TabEvent, TabState, TabOption } from "./tabs";
 import { AddROIEvent, EvaluateViewState } from "./evaluate/evaluateview";
+import { TrainModelViewState } from "./train-model/trainmodelview";
 const _ = require("lodash");
 
-export type AppState = { ROI: number; tab: TabOption };
+export type AppState = {
+	ROI: number;
+	tab: TabOption;
+	historicalData: string[];
+};
 export type AppAction = TabEvent | AddROIEvent;
 export type AppActionDispatcher = (action: AppAction) => void;
 
@@ -12,14 +17,24 @@ class AppStateManager {
 	#setState: React.Dispatch<React.SetStateAction<AppState>> = () => {};
 	#componentStateManager: ComponentStateManager;
 
-	constructor(appState: AppState) {
-		this.#appState = appState;
-		this.#componentStateManager = new ComponentStateManager(appState);
+	constructor() {
+		const initialAppState = this.getInitialAppState();
+		this.#appState = initialAppState;
+		this.#componentStateManager = new ComponentStateManager(initialAppState);
+	}
+
+	getInitialAppState(): AppState {
+		const initalAppState: AppState = {
+			ROI: 0,
+			tab: "trainModel",
+			historicalData: ["test1", "test2"],
+		};
+		return initalAppState;
 	}
 
 	updateAppState(appState: AppState) {
 		this.#appState = appState;
-		this.#componentStateManager.setAppState(appState);
+		this.#componentStateManager.updateAppState(appState);
 	}
 
 	updateSetState(setState: React.Dispatch<React.SetStateAction<AppState>>) {
@@ -55,8 +70,8 @@ class ComponentStateManager {
 		this.#appState = appState;
 	}
 
-	setAppState(appState: AppState) {
-		appState = this.#appState;
+	updateAppState(appState: AppState) {
+		this.#appState = appState;
 	}
 
 	getEvaluateViewState(): EvaluateViewState {
@@ -65,6 +80,10 @@ class ComponentStateManager {
 
 	getTabState(): TabState {
 		return { tab: this.#appState.tab };
+	}
+
+	getTrainModelViewState(): TrainModelViewState {
+		return { historicalData: this.#appState.historicalData };
 	}
 }
 
