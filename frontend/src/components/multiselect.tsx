@@ -56,11 +56,7 @@ export default function MultiSelect({
 	return (
 		<div>
 			<FormControl sx={{ m: 1, width: 300 }}>
-				{label ? (
-					<InputLabel>{label}</InputLabel>
-				) : (
-					""
-				)}
+				{label ? <InputLabel>{label}</InputLabel> : ""}
 				<Select
 					multiple
 					value={selectedData}
