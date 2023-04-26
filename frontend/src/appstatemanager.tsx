@@ -1,15 +1,17 @@
 import React from "react";
-import { TabEvent, TabState, TabOption } from "./tabs";
-import { AddROIEvent, EvaluateViewState } from "./evaluate/evaluateview";
+import { TopMenuTabAction, TopMenuTabOption, TopMenuTabState } from "./App";
+import { AddROIAction, EvaluateViewState } from "./evaluate/evaluateview";
 import { TrainModelViewState } from "./train-model/trainmodelview";
 const _ = require("lodash");
 
 export type AppState = {
 	ROI: number;
-	tab: TabOption;
+	tab: TopMenuTabOption;
 	historicalData: string[];
+	x_parameters: string[];
+	y_parameters: string[];
 };
-export type AppAction = TabEvent | AddROIEvent;
+export type AppAction = TopMenuTabAction | AddROIAction;
 export type AppActionDispatcher = (action: AppAction) => void;
 
 class AppStateManager {
@@ -26,8 +28,10 @@ class AppStateManager {
 	getInitialAppState(): AppState {
 		const initalAppState: AppState = {
 			ROI: 0,
-			tab: "trainModel",
+			tab: "Train model",
 			historicalData: ["test1", "test2", "test3", "test4", "test5"],
+			x_parameters: ["x_par1", "x_par2", "x_par3"],
+			y_parameters: ["y_par1", "y_par2", "y_par3"],
 		};
 		return initalAppState;
 	}
@@ -45,11 +49,11 @@ class AppStateManager {
 		const appDispatcher: AppActionDispatcher = (action) => {
 			const newAppState: AppState = _.cloneDeep(this.#appState);
 			switch (action.type) {
-				case "tabEvent":
-					newAppState.tab = action.tab;
+				case "top menu tab":
+					newAppState.tab = action.selectedTab;
 					this.#setState(newAppState);
 					break;
-				case "addROIEvent":
+				case "AddROIAction":
 					newAppState.ROI++;
 					this.#setState(newAppState);
 					break;
@@ -78,12 +82,16 @@ class ComponentStateManager {
 		return { ROI: this.#appState.ROI };
 	}
 
-	getTabState(): TabState {
+	getTopMenuTabState(): TopMenuTabState {
 		return { tab: this.#appState.tab };
 	}
 
 	getTrainModelViewState(): TrainModelViewState {
-		return { historicalData: this.#appState.historicalData };
+		return {
+			historicalData: this.#appState.historicalData,
+			x_parameters: this.#appState.x_parameters,
+			y_parameters: this.#appState.y_parameters,
+		};
 	}
 }
 

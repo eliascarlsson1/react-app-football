@@ -34,15 +34,21 @@ function getStyles(
 
 export default function MultiSelect({
 	dataArray,
-	label = null,
 	deliverSelected,
+	selected = [],
+	label = null,
 }: {
 	dataArray: string[];
-	label?: string | null;
 	deliverSelected: (selectedData: string[]) => void;
+	selected?: string[];
+	label?: string | null;
 }) {
 	const theme = useTheme();
-	const [selectedData, setSelectedData] = React.useState<string[]>([]);
+	const filteredSelected = selected.filter((value) =>
+		dataArray.includes(value),
+	);
+	const [selectedData, setSelectedData] =
+		React.useState<string[]>(filteredSelected);
 
 	const handleChange = (event: SelectChangeEvent<typeof selectedData>) => {
 		const {
