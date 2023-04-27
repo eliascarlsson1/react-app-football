@@ -9,8 +9,8 @@ const _ = require("lodash");
 export type AppState = {
 	tab: TopMenuTabOption;
 	historicalData: string[];
-	x_parameters: string[];
-	y_parameters: string[];
+	xParameters: string[];
+	yParameters: string[];
 };
 export type AppAction = TopMenuTabAction | TrainModelAction;
 export type AppActionDispatcher = (action: AppAction) => void;
@@ -30,8 +30,8 @@ class AppStateManager {
 		const initalAppState: AppState = {
 			tab: "Train model",
 			historicalData: ["test1", "test2", "test3", "test4", "test5"],
-			x_parameters: ["x_par1", "x_par2", "x_par3"],
-			y_parameters: ["y_par1", "y_par2", "y_par3"],
+			xParameters: ["x_par1", "x_par2", "x_par3"],
+			yParameters: ["y_par1", "y_par2", "y_par3"],
 		};
 		return initalAppState;
 	}
@@ -83,8 +83,8 @@ class ComponentStateManager {
 	getTrainModelViewState(): TrainModelViewState {
 		return {
 			historicalData: this.#appState.historicalData,
-			x_parameters: this.#appState.x_parameters,
-			y_parameters: this.#appState.y_parameters,
+			xParameters: this.#appState.xParameters,
+			yParameters: this.#appState.yParameters,
 		};
 	}
 }

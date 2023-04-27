@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef, useState } from "react";
 import Multiselect from "../components/multiselect";
 import SingleTextSlider from "../components/singletextslider";
 import Stack from "@mui/material/Stack";
@@ -11,8 +11,8 @@ import { AppActionDispatcher } from "../appstatemanager";
 
 export type TrainModelViewState = {
 	historicalData: string[];
-	x_parameters: string[];
-	y_parameters: string[];
+	xParameters: string[];
+	yParameters: string[];
 };
 
 export type TrainModelAction = {
@@ -27,15 +27,6 @@ export type TrainModelAction = {
 	numberEstimators: number;
 };
 
-let trainingData: string[] = [];
-let testData: string[] = [];
-let evaluateSplit = true;
-let xParameters: string[] = [];
-let yParameters: string[] = [];
-let learningRate = 0.3;
-let maxDepth = 4;
-let numberEstimators = 250;
-
 export default function TrainModelView({
 	state,
 	dispatcher,
@@ -43,7 +34,23 @@ export default function TrainModelView({
 	state: TrainModelViewState;
 	dispatcher: AppActionDispatcher;
 }) {
-	//FIXME: Find out if that checkbox is checked
+	//FIXME: Y parameters should be single select
+
+	const [trainingData, setTrainingData] = useState<string[]>([]);
+	const [testData, setTestData] = useState<string[]>([]);
+	const [evaluateSplit, setEvaluateSplit] = useState<boolean>(true);
+	const [xParameters, setXParameters] = useState<string[]>(state.xParameters);
+	const [yParameters, setYParameters] = useState<string[]>(state.yParameters);
+	const [learningRate, setLearningRate] = useState<number>(0.3);
+	const [maxDepth, setMaxDepth] = useState<number>(4);
+	const [numberEstimators, setNumberEstimators] = useState<number>(250);
+
+	const availableTrainingData = state.historicalData.filter(
+		(data) => !testData.includes(data),
+	);
+	const availableTestData = state.historicalData.filter(
+		(data) => !trainingData.includes(data),
+	);
 
 	return (
 		<Stack direction={"row"}>
@@ -54,17 +61,17 @@ export default function TrainModelView({
 					</Typography>
 				</Stack>
 				<Multiselect
-					dataArray={state.historicalData}
+					dataArray={availableTrainingData}
 					label="Training data"
 					deliverSelected={(selectedData) => {
-						trainingData = selectedData;
+						setTrainingData(selectedData);
 					}}
 				/>
 				<Stack direction={"row"}>
 					<Multiselect
-						dataArray={state.historicalData}
+						dataArray={availableTestData}
 						deliverSelected={(selectedData) => {
-							testData = selectedData;
+							setTestData(selectedData);
 						}}
 						label="Test data"
 						width={220}
@@ -75,7 +82,7 @@ export default function TrainModelView({
 								<Checkbox
 									defaultChecked
 									onChange={(e) => {
-										evaluateSplit = e.target.checked;
+										setEvaluateSplit(e.target.checked);
 									}}
 								/>
 							}
@@ -91,20 +98,20 @@ export default function TrainModelView({
 					</Typography>
 				</Stack>
 				<Multiselect
-					dataArray={state.x_parameters}
+					dataArray={state.xParameters}
 					deliverSelected={(selectedData) => {
-						xParameters = selectedData;
+						setXParameters(selectedData);
 					}}
 					label="x-parameters"
-					selected={state.x_parameters}
+					selected={xParameters}
 				/>
 				<Multiselect
-					dataArray={state.y_parameters}
+					dataArray={state.yParameters}
 					deliverSelected={(selectedData) => {
-						yParameters = selectedData;
+						setYParameters(selectedData);
 					}}
 					label="y-parameters"
-					selected={state.y_parameters}
+					selected={yParameters}
 				/>
 				<SingleTextSlider
 					min={0}
@@ -112,9 +119,9 @@ export default function TrainModelView({
 					step={1}
 					starting={numberEstimators}
 					deliverValue={(value) => {
-						numberEstimators = value;
+						setNumberEstimators(value);
 					}}
-					label="Number of estimatros"
+					label="Number of estimators"
 				/>
 				<SingleTextSlider
 					min={0}
@@ -122,7 +129,7 @@ export default function TrainModelView({
 					step={0.01}
 					starting={learningRate}
 					deliverValue={(value) => {
-						learningRate = value;
+						setLearningRate(value);
 					}}
 					label="Learning rate"
 				/>
@@ -132,31 +139,29 @@ export default function TrainModelView({
 					step={1}
 					starting={maxDepth}
 					deliverValue={(value) => {
-						maxDepth = value;
+						setMaxDepth(value);
 					}}
 					label="Max depth"
 				/>
 				<Button
 					variant="contained"
-					onClick={() => dispatcher(getTrainModelAction())}
+					onClick={() =>
+						dispatcher({
+							type: "train model",
+							trainingData,
+							testData,
+							evaluateSplit,
+							xParameters,
+							yParameters,
+							learningRate,
+							maxDepth,
+							numberEstimators,
+						})
+					}
 				>
 					Train model
 				</Button>
 			</Stack>
 		</Stack>
 	);
-}
-
-function getTrainModelAction(): TrainModelAction {
-	return {
-		type: "train model",
-		trainingData,
-		testData,
-		evaluateSplit,
-		xParameters,
-		yParameters,
-		learningRate,
-		maxDepth,
-		numberEstimators,
-	};
 }

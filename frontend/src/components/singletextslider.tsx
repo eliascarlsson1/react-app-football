@@ -29,12 +29,23 @@ export default function SinlgeTextSlider({
 }) {
 	const [value, setValue] = React.useState<number | "">(starting);
 
+	const deliverValueAsNumber = (value: number | "") => {
+		if (value === "") {
+			deliverValue(min);
+		} else {
+			deliverValue(value);
+		}
+	};
+
 	const handleSliderChange = (event: Event, newValue: number | "") => {
 		setValue(newValue);
+		deliverValueAsNumber(newValue);
 	};
 
 	const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-		setValue(event.target.value === "" ? "" : Number(event.target.value));
+		const value = event.target.value === "" ? "" : Number(event.target.value);
+		setValue(value);
+		deliverValueAsNumber(value);
 	};
 
 	const handleBlur = () => {
