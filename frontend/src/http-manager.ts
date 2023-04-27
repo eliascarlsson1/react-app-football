@@ -9,3 +9,19 @@ export async function getHistoricalData(
 		console.error("Error in fetching historical data:", error);
 	}
 }
+
+// FIXME: Rename and rewrite
+export async function trainModel(info: object) {
+	try {
+		const response = await fetch("http://localhost:5000/api/train-model", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(info),});
+		const data: string = await response.json();
+        console.log(data)
+	} catch (error) {
+		console.error("Error in fetching historical data:", error);
+	}
+}

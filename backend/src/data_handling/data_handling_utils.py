@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-from typing import List
+from typing import List, Dict
 
 
 # Returns a list of all the historical csv files
@@ -33,3 +33,20 @@ def get_prepared_data() -> dict[str, pd.DataFrame]:
             df_dict[league + year] = pd.read_csv(path)  # type: ignore
 
     return df_dict
+
+
+# Selects and concatenates dataframes from a df_dict
+def concatenate_df_dict(
+    dataframes_dict: Dict[str, pd.DataFrame], to_concatenate: List[str]
+) -> pd.DataFrame:
+    # Creating a list of all dataframes
+    dataframes_names = [key for key in dataframes_dict]
+    dataframes = [dataframes_dict[key] for key in to_concatenate]
+
+    # Preparing test and train data
+    for i, df in enumerate(dataframes):
+        df["n_df"] = dataframes_names[i]
+
+    data = pd.concat(dataframes).reset_index()  # type: ignore
+
+    return data

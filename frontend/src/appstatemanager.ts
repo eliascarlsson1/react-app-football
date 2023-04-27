@@ -4,7 +4,7 @@ import {
 	TrainModelViewState,
 	TrainModelAction,
 } from "./train-model/trainmodelview";
-import { getHistoricalData } from "./http-manager";
+import { getHistoricalData, trainModel } from "./http-manager";
 const _ = require("lodash");
 
 export type AppState = {
@@ -38,8 +38,8 @@ class AppStateManager {
 	}
 
 	atFirstRender() {
-		const newAppState: AppState = _.cloneDeep(this.#appState);
 		getHistoricalData((historicalData) => {
+			const newAppState: AppState = _.cloneDeep(this.#appState);
 			newAppState.historicalData = historicalData;
 			this.#setState(newAppState);
 		});
@@ -63,6 +63,8 @@ class AppStateManager {
 					this.#setState(newAppState);
 					break;
 				case "train model":
+					trainModel(action);
+					console.log(action)
 			}
 		};
 		return appDispatcher;

@@ -1,8 +1,7 @@
 from typing import Dict, Any
 import pandas as pd
-from ..data_handling.data_handling_utils import get_prepared_data
-from .train_model_utils import sample_ML_data, 
-#train_XGB, model_statistics
+from ..data_handling.data_handling_utils import get_prepared_data, concatenate_df_dict
+#from .train_model_utils import train_XGB, model_statistics
 
 
 
@@ -21,19 +20,20 @@ def train_model(parameters: Dict[str, Any]) -> None:
     """  
 
     df_dict: dict[str, pd.DataFrame] = get_prepared_data()
-    all_dataframes = [key for key in df_dict]
 
-
-    train, test, val = sample_ML_data(
+    train = concatenate_df_dict(
         dataframes_dict=df_dict,
-        sample_dataframes=all_dataframes,
-        fraction_test=0.2,
-        fraction_val=0.15,
-        train_dataframes=arguments["train_dataframes"],
-        test_dataframes=arguments["test_dataframes"],
-        val_dataframes=arguments["val_dataframes"],
-        seed=seed,
+        to_concatenate=parameters["testData"]
     )
+
+    ## FIXME: This should be done somehwer else, preparing for the data
+    # data = data.assign(OvUn=[">2.5" if TG > 2.5 else "<2.5" for TG in data["TG"]]) # type: ignore
+    # data = data.assign(OvUnB=[1 if TG > 2.5 else 0 for TG in data["TG"]]) # type: ignore
+    # data = data.assign( # type: ignore
+    #     FTRB=[0 if FTR == "H" else 1 if FTR == "D" else 2 for FTR in data["FTR"]] # type: ignore
+    # )
+    # data = data.dropna() # type: ignore
+
 
     x_par = parameters["x_par"]
     y_par = parameters["y_par"]

@@ -1,4 +1,5 @@
 import pandas as pd
+from typing import Dict, List
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.ensemble import RandomForestClassifier
@@ -9,39 +10,6 @@ from sklearn.pipeline import Pipeline
 import category_encoders as ce
 from sklearn.impute import SimpleImputer
 from xgboost import XGBClassifier
-
-
-def sample_ML_data(
-    dataframes_dict,
-    sample_dataframes=[],
-    fraction_test=0.3,
-    fraction_val=0.15,
-    train_dataframes=[],
-    test_dataframes=[],
-    val_dataframes=[],
-    seed=142,
-):
-    # Creating a list of all dataframes
-    dataframes_names = [key for key in dataframes_dict]
-    dataframes = [dataframes_dict[key] for key in dataframes_names]
-
-    # Preparing test and train data
-    for i, df in enumerate(dataframes):
-        df["n_df"] = dataframes_names[i]
-
-    data = pd.concat(dataframes).reset_index()
-    data = data.assign(OvUn=[">2.5" if TG > 2.5 else "<2.5" for TG in data["TG"]])
-    data = data.assign(OvUnB=[1 if TG > 2.5 else 0 for TG in data["TG"]])
-    data = data.assign(
-        FTRB=[0 if FTR == "H" else 1 if FTR == "D" else 2 for FTR in data["FTR"]]
-    )
-    data = data.dropna()
-
-        test = data[data.n_df.isin(test_dataframes)]
-        val = data[data.n_df.isin(val_dataframes)]
-        train = data[data.n_df.isin(train_dataframes)]
-
-    return train, test, val
 
 
 # def model_statistics(classifier, train, val, test, x_par, y_par):
