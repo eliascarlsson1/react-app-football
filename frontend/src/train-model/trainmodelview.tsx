@@ -6,6 +6,8 @@ import Typography from "@mui/material/Typography";
 import Checkbox from "@mui/material/Checkbox";
 import Tooltip from "@mui/material/Tooltip";
 import FormControlLabel from "@mui/material/FormControlLabel";
+import Button from "@mui/material/Button";
+import { AppActionDispatcher } from "../appstatemanager";
 
 export type TrainModelViewState = {
 	historicalData: string[];
@@ -13,17 +15,33 @@ export type TrainModelViewState = {
 	y_parameters: string[];
 };
 
-let trainingData = [];
-let testData = [];
+export type TrainModelAction = {
+	type: "train model";
+	trainingData: string[];
+	testData: string[];
+	evaluateSplit: boolean;
+	xParameters: string[];
+	yParameters: string[];
+	learningRate: number;
+	maxDepth: number;
+	numberEstimators: number;
+};
+
+let trainingData: string[] = [];
+let testData: string[] = [];
 let evaluateSplit = true;
-let x_parameters = [];
-let y_parameters = [];
-let learningRate = 0;
+let xParameters: string[] = [];
+let yParameters: string[] = [];
+let learningRate = 0.3;
+let maxDepth = 4;
+let numberEstimators = 250;
 
 export default function TrainModelView({
 	state,
+	dispatcher,
 }: {
 	state: TrainModelViewState;
+	dispatcher: AppActionDispatcher;
 }) {
 	//FIXME: Find out if that checkbox is checked
 
@@ -75,7 +93,7 @@ export default function TrainModelView({
 				<Multiselect
 					dataArray={state.x_parameters}
 					deliverSelected={(selectedData) => {
-						x_parameters = selectedData;
+						xParameters = selectedData;
 					}}
 					label="x-parameters"
 					selected={state.x_parameters}
@@ -83,21 +101,62 @@ export default function TrainModelView({
 				<Multiselect
 					dataArray={state.y_parameters}
 					deliverSelected={(selectedData) => {
-						y_parameters = selectedData;
+						yParameters = selectedData;
 					}}
 					label="y-parameters"
 					selected={state.y_parameters}
 				/>
 				<SingleTextSlider
 					min={0}
+					max={500}
+					step={1}
+					starting={numberEstimators}
+					deliverValue={(value) => {
+						numberEstimators = value;
+					}}
+					label="Number of estimatros"
+				/>
+				<SingleTextSlider
+					min={0}
 					max={1}
 					step={0.01}
+					starting={learningRate}
 					deliverValue={(value) => {
 						learningRate = value;
 					}}
 					label="Learning rate"
 				/>
+				<SingleTextSlider
+					min={0}
+					max={10}
+					step={1}
+					starting={maxDepth}
+					deliverValue={(value) => {
+						maxDepth = value;
+					}}
+					label="Max depth"
+				/>
+				<Button
+					variant="contained"
+					onClick={() => dispatcher(getTrainModelAction())}
+				>
+					Train model
+				</Button>
 			</Stack>
 		</Stack>
 	);
+}
+
+function getTrainModelAction(): TrainModelAction {
+	return {
+		type: "train model",
+		trainingData,
+		testData,
+		evaluateSplit,
+		xParameters,
+		yParameters,
+		learningRate,
+		maxDepth,
+		numberEstimators,
+	};
 }

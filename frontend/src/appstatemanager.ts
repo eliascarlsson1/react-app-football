@@ -1,6 +1,9 @@
 import React from "react";
 import { TopMenuTabAction, TopMenuTabOption, TopMenuTabState } from "./App";
-import { TrainModelViewState } from "./train-model/trainmodelview";
+import {
+	TrainModelViewState,
+	TrainModelAction,
+} from "./train-model/trainmodelview";
 const _ = require("lodash");
 
 export type AppState = {
@@ -9,7 +12,7 @@ export type AppState = {
 	x_parameters: string[];
 	y_parameters: string[];
 };
-export type AppAction = TopMenuTabAction;
+export type AppAction = TopMenuTabAction | TrainModelAction;
 export type AppActionDispatcher = (action: AppAction) => void;
 
 class AppStateManager {
@@ -50,6 +53,8 @@ class AppStateManager {
 					newAppState.tab = action.selectedTab;
 					this.#setState(newAppState);
 					break;
+				case "train model":
+					console.log(action);
 			}
 		};
 		return appDispatcher;

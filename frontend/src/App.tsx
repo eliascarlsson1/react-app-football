@@ -43,6 +43,7 @@ function App() {
 				) : (
 					<TrainModelView
 						state={appStateManager.getComponentState().getTrainModelViewState()}
+						dispatcher={appDispatcher}
 					/>
 				)}
 			</Stack>
