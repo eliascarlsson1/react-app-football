@@ -1,9 +1,11 @@
 import React from "react";
 import Multiselect from "../components/multiselect";
+import SingleTextSlider from "../components/singletextslider";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Checkbox from "@mui/material/Checkbox";
 import Tooltip from "@mui/material/Tooltip";
+import FormControlLabel from "@mui/material/FormControlLabel";
 
 export type TrainModelViewState = {
 	historicalData: string[];
@@ -13,9 +15,10 @@ export type TrainModelViewState = {
 
 let trainingData = [];
 let testData = [];
-let evaluateAsOne = true;
+let evaluateSplit = true;
 let x_parameters = [];
 let y_parameters = [];
+let learningRate = 0;
 
 export default function TrainModelView({
 	state,
@@ -46,10 +49,20 @@ export default function TrainModelView({
 							testData = selectedData;
 						}}
 						label="Test data"
-						width={250}
+						width={220}
 					/>
-					<Tooltip title="Evaluate all test data as one">
-						<Checkbox defaultChecked/>
+					<Tooltip title="Evaluate test data one by one">
+						<FormControlLabel
+							control={
+								<Checkbox
+									defaultChecked
+									onChange={(e) => {
+										evaluateSplit = e.target.checked;
+									}}
+								/>
+							}
+							label="Split"
+						/>
 					</Tooltip>
 				</Stack>
 			</Stack>
@@ -74,6 +87,15 @@ export default function TrainModelView({
 					}}
 					label="y-parameters"
 					selected={state.y_parameters}
+				/>
+				<SingleTextSlider
+					min={0}
+					max={1}
+					step={0.01}
+					deliverValue={(value) => {
+						learningRate = value;
+					}}
+					label="Learning rate"
 				/>
 			</Stack>
 		</Stack>
