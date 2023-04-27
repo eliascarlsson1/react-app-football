@@ -2,6 +2,8 @@ import React from "react";
 import Multiselect from "../components/multiselect";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
+import Checkbox from "@mui/material/Checkbox";
+import Tooltip from "@mui/material/Tooltip";
 
 export type TrainModelViewState = {
 	historicalData: string[];
@@ -11,6 +13,7 @@ export type TrainModelViewState = {
 
 let trainingData = [];
 let testData = [];
+let evaluateAsOne = true;
 let x_parameters = [];
 let y_parameters = [];
 
@@ -19,6 +22,8 @@ export default function TrainModelView({
 }: {
 	state: TrainModelViewState;
 }) {
+	//FIXME: Find out if that checkbox is checked
+
 	return (
 		<Stack direction={"row"}>
 			<Stack>
@@ -34,13 +39,19 @@ export default function TrainModelView({
 						trainingData = selectedData;
 					}}
 				/>
-				<Multiselect
-					dataArray={state.historicalData}
-					deliverSelected={(selectedData) => {
-						testData = selectedData;
-					}}
-					label="Test data"
-				/>
+				<Stack direction={"row"}>
+					<Multiselect
+						dataArray={state.historicalData}
+						deliverSelected={(selectedData) => {
+							testData = selectedData;
+						}}
+						label="Test data"
+						width={250}
+					/>
+					<Tooltip title="Evaluate all test data as one">
+						<Checkbox defaultChecked/>
+					</Tooltip>
+				</Stack>
 			</Stack>
 			<Stack>
 				<Stack paddingLeft={1}>

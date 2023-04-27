@@ -37,11 +37,13 @@ export default function MultiSelect({
 	deliverSelected,
 	selected = [],
 	label = null,
+	width = 300,
 }: {
 	dataArray: string[];
 	deliverSelected: (selectedData: string[]) => void;
 	selected?: string[];
 	label?: string | null;
+	width?: number;
 }) {
 	const theme = useTheme();
 	const filteredSelected = selected.filter((value) =>
@@ -61,7 +63,7 @@ export default function MultiSelect({
 
 	return (
 		<div>
-			<FormControl sx={{ m: 1, width: 300 }}>
+			<FormControl sx={{ m: 1, width }}>
 				{label ? <InputLabel>{label}</InputLabel> : ""}
 				<Select
 					multiple
