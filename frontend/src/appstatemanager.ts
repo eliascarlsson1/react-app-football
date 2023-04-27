@@ -4,6 +4,7 @@ import {
 	TrainModelViewState,
 	TrainModelAction,
 } from "./train-model/trainmodelview";
+import { getHistoricalData } from "./http-manager";
 const _ = require("lodash");
 
 export type AppState = {
@@ -29,11 +30,19 @@ class AppStateManager {
 	getInitialAppState(): AppState {
 		const initalAppState: AppState = {
 			tab: "Train model",
-			historicalData: ["test1", "test2", "test3", "test4", "test5"],
-			xParameters: ["x_par1", "x_par2", "x_par3"],
-			yParameters: ["y_par1", "y_par2", "y_par3"],
+			historicalData: [],
+			xParameters: [],
+			yParameters: [],
 		};
 		return initalAppState;
+	}
+
+	atFirstRender() {
+		const newAppState: AppState = _.cloneDeep(this.#appState);
+		getHistoricalData((historicalData) => {
+			newAppState.historicalData = historicalData;
+			this.#setState(newAppState);
+		});
 	}
 
 	updateAppState(appState: AppState) {
@@ -54,7 +63,6 @@ class AppStateManager {
 					this.#setState(newAppState);
 					break;
 				case "train model":
-					console.log(action);
 			}
 		};
 		return appDispatcher;

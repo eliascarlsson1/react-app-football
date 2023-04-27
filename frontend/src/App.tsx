@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { AppStateManager, AppState } from "./appstatemanager";
 import Stack from "@mui/material/Stack";
 import BasicTabs from "./components/basictabs";
@@ -14,12 +14,24 @@ export type TopMenuTabAction = {
 };
 export type TopMenuTabState = { tab: TopMenuTabOption };
 
+function useFirstRender() {
+	const ref = useRef(true);
+	const firstRender = ref.current;
+	ref.current = false;
+	return firstRender;
+}
+
 function App() {
 	const [appState, setAppState] = useState<AppState>(
 		appStateManager.getInitialAppState(),
 	);
+
 	appStateManager.updateAppState(appState);
 	appStateManager.updateSetState(setAppState);
+
+	if (useFirstRender()) {
+		appStateManager.atFirstRender();
+	}
 
 	const appDispatcher = appStateManager.getAppActionDispatcher();
 
