@@ -1,6 +1,12 @@
 import os
+import sqlite3
 import pandas as pd
 from typing import List, Dict
+
+script_dir = os.path.dirname(__file__)
+path_to_db = "../../data/db.sqlite"
+database_abs_path = os.path.join(script_dir, "../../data/db.sqlite")
+con = sqlite3.connect(database_abs_path)
 
 
 # Returns a list of all the historical csv files
@@ -57,3 +63,6 @@ def concatenate_df_dict(
     data = pd.concat(dataframes).reset_index()  # type: ignore
 
     return data
+
+def get_all_X_parameters():
+    print(con.execute("SELECT * FROM parameters"))

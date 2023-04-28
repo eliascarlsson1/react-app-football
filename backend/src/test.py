@@ -1,8 +1,6 @@
 from data_handling.data_handling_utils import (
-    get_is_all_relevant_data_prepared,
-    get_prepared_data,
+    get_all_X_parameters
 )
 
-print(get_is_all_relevant_data_prepared())
 
-print(get_prepared_data().keys())
+print(get_all_X_parameters())
