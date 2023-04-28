@@ -1,15 +1,43 @@
 import pandas as pd
-from typing import Dict, List
-import numpy as np
-import matplotlib.pyplot as plt
-from sklearn.ensemble import RandomForestClassifier
-import eli5
-from eli5.sklearn import PermutationImportance
-from sklearn.pipeline import make_pipeline
-from sklearn.pipeline import Pipeline
-import category_encoders as ce
-from sklearn.impute import SimpleImputer
+from typing import List, Any
 from xgboost import XGBClassifier
+# import numpy as np
+# import matplotlib.pyplot as plt
+# from sklearn.ensemble import RandomForestClassifier
+# import eli5
+# from eli5.sklearn import PermutationImportance
+# from sklearn.pipeline import make_pipeline
+# from sklearn.pipeline import Pipeline
+# import category_encoders as ce
+# from sklearn.impute import SimpleImputer
+
+def train_XGB(
+    train: pd.DataFrame,
+    x_par: List[str],
+    y_par: str,
+    n_estimators: int,
+    learning_rate: float,
+    max_depth: int,
+    n_jobs: int =-1,
+    subsample:int =1,
+    seed: int=142,
+) -> Any:
+    import warnings
+    warnings.filterwarnings("ignore")
+
+    model1: Any  = XGBClassifier(
+        n_estimators=n_estimators,
+        random_state=seed,
+        n_jobs=n_jobs,
+        learning_rate=learning_rate,
+        subsample=subsample,
+        max_depth=max_depth,
+    )
+
+    model1.fit(train[x_par], train[y_par])
+
+    return model1
+
 
 
 # def model_statistics(classifier, train, val, test, x_par, y_par):
@@ -52,30 +80,3 @@ from xgboost import XGBClassifier
 #     return permuter
 
 
-# def train_XGB(
-#     train,
-#     x_par,
-#     y_par,
-#     n_estimators,
-#     learning_rate,
-#     max_depth,
-#     n_jobs=-1,
-#     subsample=1,
-#     seed=142,
-# ):
-#     import warnings
-
-#     warnings.filterwarnings("ignore")
-
-#     model1 = XGBClassifier(
-#         n_estimators=n_estimators,
-#         random_state=seed,
-#         n_jobs=n_jobs,
-#         learning_rate=learning_rate,
-#         subsample=subsample,
-#         max_depth=max_depth,
-#     )
-
-#     model1.fit(train[x_par], train[y_par])
-
-#     return model1
