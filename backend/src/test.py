@@ -1,5 +1,6 @@
-from data_handling.data_handling_utils import get_all_X_parameters, get_all_Y_parameters
+from create_tables.create_table import create_tables_for_every_date  # type: ignore
+import pandas as pd
 
+raw_data: pd.DataFrame = pd.read_csv("./backend/data/historical_data/relevant_data/PL2021.csv")  # type: ignore
 
-print(get_all_X_parameters())
-print(get_all_Y_parameters())
+print(create_tables_for_every_date(raw_data))

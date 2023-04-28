@@ -6,6 +6,7 @@ import {
 	TrainModelStatus,
 } from "./train-model/trainmodelview";
 import { getHistoricalData, get_parameters, trainModel } from "./http-manager";
+import { SettingsViewAction } from "./settingsview/settingsview";
 const _ = require("lodash");
 
 export type AppState = {
@@ -15,7 +16,10 @@ export type AppState = {
 	yParameters: string[];
 	statuses: { trainModelStatus: TrainModelStatus };
 };
-export type AppAction = TopMenuTabAction | TrainModelAction;
+export type AppAction =
+	| TopMenuTabAction
+	| TrainModelAction
+	| SettingsViewAction;
 export type AppActionDispatcher = (action: AppAction) => void;
 
 class AppStateManager {
@@ -112,6 +116,9 @@ class AppStateManager {
 
 					trainModel(action, getResponse);
 					break;
+
+				case "prepare data":
+					console.log("prepare data call");
 			}
 		};
 		return appDispatcher;

@@ -4,10 +4,11 @@ import Stack from "@mui/material/Stack";
 import BasicTabs from "./components/basictabs";
 import EvaluateView from "./evaluate/evaluateview";
 import TrainModelView from "./train-model/trainmodelview";
+import Settingsview from "./settingsview/settingsview";
 
 const appStateManager = new AppStateManager();
 
-export type TopMenuTabOption = "Evaluate" | "Train model" | "Prepare data";
+export type TopMenuTabOption = "Evaluate" | "Train model" | "Settings";
 export type TopMenuTabAction = {
 	type: "top menu tab";
 	selectedTab: TopMenuTabOption;
@@ -41,11 +42,7 @@ function App() {
 	const appDispatcher = appStateManager.getAppActionDispatcher();
 
 	// App handles the top menu tab
-	const tabValues: TopMenuTabOption[] = [
-		"Evaluate",
-		"Train model",
-		"Prepare data",
-	];
+	const tabValues: TopMenuTabOption[] = ["Evaluate", "Train model", "Settings"];
 	const deliverSelectedIndex = (selectedIndex: number) => {
 		const selectedTab = tabValues[selectedIndex];
 		appDispatcher({ type: "top menu tab", selectedTab });
@@ -67,7 +64,7 @@ function App() {
 						dispatcher={appDispatcher}
 					/>
 				) : (
-					"Prepare data"
+					<Settingsview dipsatcher={appDispatcher} />
 				)}
 			</Stack>
 		</Stack>
