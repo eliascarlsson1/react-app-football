@@ -10,7 +10,21 @@ export async function getHistoricalData(
 	}
 }
 
-// FIXME: Rename and rewrite
+export async function get_parameters(
+	updateParameters: (historicalData: string[]) => void,
+	x_or_y: "x" | "y",
+) {
+	try {
+		const url = `http://localhost:5000/api/parameters/${x_or_y}`;
+		const response = await fetch(url);
+		const parameters = await response.json();
+		const parametersArray: string[] = Object.values(parameters);
+		updateParameters(parametersArray);
+	} catch (error) {
+		console.error("Error in fetching historical data:", error);
+	}
+}
+
 export async function trainModel(
 	info: object,
 	getResponse: (response: string) => void,
@@ -23,8 +37,8 @@ export async function trainModel(
 			},
 			body: JSON.stringify(info),
 		});
-		const data: string = await response.text();
-		getResponse(data);
+		const responseText: string = await response.text();
+		getResponse(responseText);
 	} catch (error) {
 		console.error("Error in fetching historical data:", error);
 	}

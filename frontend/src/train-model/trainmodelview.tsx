@@ -44,97 +44,98 @@ export default function TrainModelView({
 	const [numberEstimators, setNumberEstimators] = useState<number>(250);
 
 	return (
-		<Stack direction={"row"}>
-			<Stack>
-				<Stack paddingLeft={1}>
-					<Typography variant="h5" gutterBottom>
-						Data
-					</Typography>
-				</Stack>
-				<Multiselect
-					dataArray={state.historicalData}
-					label="Training data"
-					deliverSelected={(selectedData) => {
-						setTrainingData(selectedData);
-					}}
-				/>
-			</Stack>
-			<Stack>
-				<Stack paddingLeft={1}>
-					<Typography variant="h5" gutterBottom>
-						Parameters
-					</Typography>
-				</Stack>
-				<Multiselect
-					dataArray={state.xParameters}
-					deliverSelected={(selectedData) => {
-						setXParameters(selectedData);
-					}}
-					label="x-parameters"
-					selected={xParameters}
-				/>
-				<SingleSelect
-					dataArray={state.yParameters}
-					deliverSelected={(selectedData) => {
-						setYParameters(selectedData);
-					}}
-					label="y-parameter"
-				/>
-				<SingleTextSlider
-					min={0}
-					max={500}
-					step={1}
-					starting={numberEstimators}
-					deliverValue={(value) => {
-						setNumberEstimators(value);
-					}}
-					label="Number of estimators"
-				/>
-				<SingleTextSlider
-					min={0}
-					max={1}
-					step={0.01}
-					starting={learningRate}
-					deliverValue={(value) => {
-						setLearningRate(value);
-					}}
-					label="Learning rate"
-				/>
-				<SingleTextSlider
-					min={0}
-					max={10}
-					step={1}
-					starting={maxDepth}
-					deliverValue={(value) => {
-						setMaxDepth(value);
-					}}
-					label="Max depth"
-				/>
-				<Button
-					variant="contained"
-					onClick={() =>
-						dispatcher({
-							type: "train model",
-							trainingData,
-							xParameters,
-							yParameter,
-							learningRate,
-							maxDepth,
-							numberEstimators,
-						})
-					}
-					disabled={state.trainModelStatus === "training"}
-				>
-					Train model
-				</Button>
-				<Typography
-					align="center"
-					padding={1}
-					fontSize={15}
-					color={getColorFromTrainModelViewState(state.trainModelStatus)}
-				>
-					{state.trainModelStatus === "idle" ? "" : state.trainModelStatus}
+		<Stack>
+			<Stack direction={"row"} paddingLeft={1} alignItems={"start"}>
+				<Typography variant="h5" gutterBottom>
+					Parameters
 				</Typography>
+			</Stack>
+			<Stack direction={"row"} gap={3}>
+				<Stack>
+					<Stack>
+						<Multiselect
+							dataArray={state.historicalData}
+							label="Training data"
+							deliverSelected={(selectedData) => {
+								setTrainingData(selectedData);
+							}}
+						/>
+						<SingleSelect
+							dataArray={state.yParameters}
+							deliverSelected={(selectedData) => {
+								setYParameters(selectedData);
+							}}
+							label="y-parameter"
+						/>
+						<SingleTextSlider
+							min={0}
+							max={500}
+							step={1}
+							starting={numberEstimators}
+							deliverValue={(value) => {
+								setNumberEstimators(value);
+							}}
+							label="Number of estimators"
+						/>
+						<SingleTextSlider
+							min={0}
+							max={1}
+							step={0.01}
+							starting={learningRate}
+							deliverValue={(value) => {
+								setLearningRate(value);
+							}}
+							label="Learning rate"
+						/>
+						<SingleTextSlider
+							min={0}
+							max={10}
+							step={1}
+							starting={maxDepth}
+							deliverValue={(value) => {
+								setMaxDepth(value);
+							}}
+							label="Max depth"
+						/>
+					</Stack>
+				</Stack>
+				<Stack>
+					<Multiselect
+						dataArray={state.xParameters}
+						deliverSelected={(selectedData) => {
+							setXParameters(selectedData);
+						}}
+						label="x-parameters"
+						selected={xParameters}
+					/>
+
+					<Button
+						variant="contained"
+						style={{ width: "200px" }}
+						onClick={() =>
+							dispatcher({
+								type: "train model",
+								trainingData,
+								xParameters,
+								yParameter,
+								learningRate,
+								maxDepth,
+								numberEstimators,
+							})
+						}
+						disabled={state.trainModelStatus === "training"}
+					>
+						Train model
+					</Button>
+					<Typography
+						align="center"
+						padding={1}
+						fontSize={15}
+						color={getColorFromTrainModelViewState(state.trainModelStatus)}
+					>
+						{state.trainModelStatus === "idle" ? "" : state.trainModelStatus}
+					</Typography>
+				</Stack>
 			</Stack>
 		</Stack>
 	);

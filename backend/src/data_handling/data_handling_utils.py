@@ -1,12 +1,11 @@
 import os
-import sqlite3
 import pandas as pd
+import sqlite3
 from typing import List, Dict
 
 script_dir = os.path.dirname(__file__)
 path_to_db = "../../data/db.sqlite"
-database_abs_path = os.path.join(script_dir, "../../data/db.sqlite")
-con = sqlite3.connect(database_abs_path)
+database_abs_path = os.path.join(script_dir, path_to_db)
 
 
 # Returns a list of all the historical csv files
@@ -64,5 +63,20 @@ def concatenate_df_dict(
 
     return data
 
-def get_all_X_parameters():
-    print(con.execute("SELECT * FROM parameters"))
+
+def get_all_X_parameters() -> List[str]:
+    con = sqlite3.connect(database_abs_path)
+    cursor = con.cursor()
+    cursor.execute("SELECT name FROM parameters WHERE xnoty = 1")
+    results = cursor.fetchall()
+    names: List[str] = [result[0] for result in results]
+    return names
+
+
+def get_all_Y_parameters() -> List[str]:
+    con = sqlite3.connect(database_abs_path)
+    cursor = con.cursor()
+    cursor.execute("SELECT name FROM parameters WHERE xnoty = 0")
+    results = cursor.fetchall()
+    names: List[str] = [result[0] for result in results]
+    return names

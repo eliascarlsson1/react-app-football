@@ -35,7 +35,7 @@ function getStyles(
 export default function SingleSelect({
 	dataArray,
 	deliverSelected,
-	selected = dataArray[0],
+	selected = dataArray[0] ?? "",
 	label = null,
 	width = 300,
 }: {
@@ -48,7 +48,7 @@ export default function SingleSelect({
 	const theme = useTheme();
 	const filteredSelected = dataArray.includes(selected)
 		? selected
-		: dataArray[0];
+		: dataArray[0] ?? "";
 
 	const [selectedData, setSelectedData] =
 		React.useState<string>(filteredSelected);

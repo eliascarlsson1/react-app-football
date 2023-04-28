@@ -1,7 +1,11 @@
 from flask import Flask, request
 from flask_cors import CORS
 from typing import Dict, Any
-from src.data_handling.data_handling_utils import get_historical_data_list
+from src.data_handling.data_handling_utils import (
+    get_historical_data_list,
+    get_all_X_parameters,
+    get_all_Y_parameters,
+)
 from src.train_model.train_model import train_model
 
 app = Flask(__name__)
@@ -10,8 +14,20 @@ CORS(app)  # Add this line to enable CORS for all routes
 
 # Historical data API Route
 @app.route("/api/historical")
-def historical():
+def historical_data():
     return get_historical_data_list()
+
+
+# X parameters API Route
+@app.route("/api/parameters/x")
+def x_parameters():
+    return get_all_X_parameters()
+
+
+# Y parameters API Route
+@app.route("/api/parameters/y")
+def y_parameters():
+    return get_all_Y_parameters()
 
 
 # Train model API Route

@@ -5,7 +5,7 @@ import {
 	TrainModelAction,
 	TrainModelStatus,
 } from "./train-model/trainmodelview";
-import { getHistoricalData, trainModel } from "./http-manager";
+import { getHistoricalData, get_parameters, trainModel } from "./http-manager";
 const _ = require("lodash");
 
 export type AppState = {
@@ -23,6 +23,12 @@ class AppStateManager {
 	#setState: React.Dispatch<React.SetStateAction<AppState>> = () => {};
 	#componentStateManager: ComponentStateManager;
 
+	#recievedState = {
+		historicalData: false,
+		xParameters: false,
+		yParameters: false,
+	};
+
 	constructor() {
 		const initialAppState = this.getInitialAppState();
 		this.#appState = initialAppState;
@@ -33,8 +39,8 @@ class AppStateManager {
 		const initalAppState: AppState = {
 			tab: "Train model",
 			historicalData: [],
-			xParameters: ["AvgO25", "AvgU25", "AvgA"],
-			yParameters: ["AvgH", "AvgX"],
+			xParameters: [],
+			yParameters: [],
 			statuses: { trainModelStatus: "idle" },
 		};
 		return initalAppState;
@@ -45,8 +51,31 @@ class AppStateManager {
 			const newAppState: AppState = _.cloneDeep(this.#appState);
 			newAppState.historicalData = historicalData;
 			this.#setState(newAppState);
+			this.#recievedState.historicalData = true;
 		});
+
+		get_parameters((parameters) => {
+			const newAppState: AppState = _.cloneDeep(this.#appState);
+			newAppState.xParameters = parameters;
+			this.#setState(newAppState);
+			this.#recievedState.xParameters = true;
+		}, "x");
+
+		get_parameters((parameters) => {
+			const newAppState: AppState = _.cloneDeep(this.#appState);
+			newAppState.yParameters = parameters;
+			this.#setState(newAppState);
+			this.#recievedState.yParameters = true;
+		}, "y");
 	}
+
+	loadingFirstRender = () => {
+		return !(
+			this.#recievedState.historicalData &&
+			this.#recievedState.xParameters &&
+			this.#recievedState.yParameters
+		);
+	};
 
 	updateAppState(appState: AppState) {
 		this.#appState = appState;

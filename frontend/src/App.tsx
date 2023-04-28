@@ -33,6 +33,11 @@ function App() {
 		appStateManager.atFirstRender();
 	}
 
+	//FIXME: This solution is not great
+	if (appStateManager.loadingFirstRender()) {
+		return <div>Loading...</div>;
+	}
+
 	const appDispatcher = appStateManager.getAppActionDispatcher();
 
 	// App handles the top menu tab
