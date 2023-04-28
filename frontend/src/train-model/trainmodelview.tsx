@@ -3,25 +3,25 @@ import Multiselect from "../components/multiselect";
 import SingleTextSlider from "../components/singletextslider";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import Checkbox from "@mui/material/Checkbox";
-import Tooltip from "@mui/material/Tooltip";
-import FormControlLabel from "@mui/material/FormControlLabel";
+import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { AppActionDispatcher } from "../appstatemanager";
+import SingleSelect from "../components/singleselect";
+
+export type TrainModelStatus = "idle" | "training" | "success" | "error";
 
 export type TrainModelViewState = {
 	historicalData: string[];
 	xParameters: string[];
 	yParameters: string[];
+	trainModelStatus: "idle" | "training" | "success" | "error";
 };
 
 export type TrainModelAction = {
 	type: "train model";
 	trainingData: string[];
-	testData: string[];
-	evaluateSplit: boolean;
 	xParameters: string[];
-	yParameters: string[];
+	yParameter: string;
 	learningRate: number;
 	maxDepth: number;
 	numberEstimators: number;
@@ -37,20 +37,11 @@ export default function TrainModelView({
 	//FIXME: Y parameters should be single select
 
 	const [trainingData, setTrainingData] = useState<string[]>([]);
-	const [testData, setTestData] = useState<string[]>([]);
-	const [evaluateSplit, setEvaluateSplit] = useState<boolean>(true);
 	const [xParameters, setXParameters] = useState<string[]>(state.xParameters);
-	const [yParameters, setYParameters] = useState<string[]>(state.yParameters);
+	const [yParameter, setYParameters] = useState<string>(state.yParameters[0]);
 	const [learningRate, setLearningRate] = useState<number>(0.3);
 	const [maxDepth, setMaxDepth] = useState<number>(4);
 	const [numberEstimators, setNumberEstimators] = useState<number>(250);
-
-	const availableTrainingData = state.historicalData.filter(
-		(data) => !testData.includes(data),
-	);
-	const availableTestData = state.historicalData.filter(
-		(data) => !trainingData.includes(data),
-	);
 
 	return (
 		<Stack direction={"row"}>
@@ -61,35 +52,12 @@ export default function TrainModelView({
 					</Typography>
 				</Stack>
 				<Multiselect
-					dataArray={availableTrainingData}
+					dataArray={state.historicalData}
 					label="Training data"
 					deliverSelected={(selectedData) => {
 						setTrainingData(selectedData);
 					}}
 				/>
-				<Stack direction={"row"}>
-					<Multiselect
-						dataArray={availableTestData}
-						deliverSelected={(selectedData) => {
-							setTestData(selectedData);
-						}}
-						label="Test data"
-						width={220}
-					/>
-					<Tooltip title="Evaluate test data one by one">
-						<FormControlLabel
-							control={
-								<Checkbox
-									defaultChecked
-									onChange={(e) => {
-										setEvaluateSplit(e.target.checked);
-									}}
-								/>
-							}
-							label="Split"
-						/>
-					</Tooltip>
-				</Stack>
 			</Stack>
 			<Stack>
 				<Stack paddingLeft={1}>
@@ -105,13 +73,12 @@ export default function TrainModelView({
 					label="x-parameters"
 					selected={xParameters}
 				/>
-				<Multiselect
+				<SingleSelect
 					dataArray={state.yParameters}
 					deliverSelected={(selectedData) => {
 						setYParameters(selectedData);
 					}}
-					label="y-parameters"
-					selected={yParameters}
+					label="y-parameter"
 				/>
 				<SingleTextSlider
 					min={0}
@@ -149,19 +116,41 @@ export default function TrainModelView({
 						dispatcher({
 							type: "train model",
 							trainingData,
-							testData,
-							evaluateSplit,
 							xParameters,
-							yParameters,
+							yParameter,
 							learningRate,
 							maxDepth,
 							numberEstimators,
 						})
 					}
+					disabled={state.trainModelStatus === "training"}
 				>
 					Train model
 				</Button>
+				<Typography
+					align="center"
+					padding={1}
+					fontSize={15}
+					color={getColorFromTrainModelViewState(state.trainModelStatus)}
+				>
+					{state.trainModelStatus === "idle" ? "" : state.trainModelStatus}
+				</Typography>
 			</Stack>
 		</Stack>
 	);
+}
+
+function getColorFromTrainModelViewState(
+	trainModelStatus: TrainModelStatus,
+): string {
+	switch (trainModelStatus) {
+		case "idle":
+			return "black";
+		case "training":
+			return "blue";
+		case "success":
+			return "green";
+		case "error":
+			return "red";
+	}
 }

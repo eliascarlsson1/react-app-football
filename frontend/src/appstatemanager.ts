@@ -3,6 +3,7 @@ import { TopMenuTabAction, TopMenuTabOption, TopMenuTabState } from "./App";
 import {
 	TrainModelViewState,
 	TrainModelAction,
+	TrainModelStatus,
 } from "./train-model/trainmodelview";
 import { getHistoricalData, trainModel } from "./http-manager";
 const _ = require("lodash");
@@ -12,6 +13,7 @@ export type AppState = {
 	historicalData: string[];
 	xParameters: string[];
 	yParameters: string[];
+	statuses: { trainModelStatus: TrainModelStatus };
 };
 export type AppAction = TopMenuTabAction | TrainModelAction;
 export type AppActionDispatcher = (action: AppAction) => void;
@@ -31,8 +33,9 @@ class AppStateManager {
 		const initalAppState: AppState = {
 			tab: "Train model",
 			historicalData: [],
-			xParameters: [],
-			yParameters: [],
+			xParameters: ["AvgO25", "AvgU25", "AvgA"],
+			yParameters: ["AvgH", "AvgX"],
+			statuses: { trainModelStatus: "idle" },
 		};
 		return initalAppState;
 	}
@@ -57,14 +60,29 @@ class AppStateManager {
 	getAppActionDispatcher(): AppActionDispatcher {
 		const appDispatcher: AppActionDispatcher = (action) => {
 			const newAppState: AppState = _.cloneDeep(this.#appState);
+
 			switch (action.type) {
 				case "top menu tab":
 					newAppState.tab = action.selectedTab;
 					this.#setState(newAppState);
 					break;
+
 				case "train model":
-					trainModel(action);
-					console.log(action)
+					newAppState.statuses.trainModelStatus = "training";
+					this.#setState(newAppState);
+					const getResponse = (response: string) => {
+						const newAppState: AppState = _.cloneDeep(this.#appState);
+						if (response === "success") {
+							newAppState.statuses.trainModelStatus = "success";
+						} else {
+							newAppState.statuses.trainModelStatus = "error";
+							console.log(response);
+						}
+						this.#setState(newAppState);
+					};
+
+					trainModel(action, getResponse);
+					break;
 			}
 		};
 		return appDispatcher;
@@ -95,6 +113,7 @@ class ComponentStateManager {
 			historicalData: this.#appState.historicalData,
 			xParameters: this.#appState.xParameters,
 			yParameters: this.#appState.yParameters,
+			trainModelStatus: this.#appState.statuses.trainModelStatus,
 		};
 	}
 }

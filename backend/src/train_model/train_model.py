@@ -1,8 +1,12 @@
-from typing import Dict, Any
+from typing import Dict, Any, List
 import pandas as pd
-from ..data_handling.data_handling_utils import get_prepared_data, concatenate_df_dict
+from ..data_handling.data_handling_utils import (
+    get_prepared_data,
+    concatenate_df_dict,
+    get_is_all_relevant_data_prepared,
+)
 from .train_model_utils import train_XGB
-
+from ..error_handling.error_utils import is_non_empty_string_list
 
 
 def train_model(parameters: Dict[str, Any]) -> str:
@@ -10,28 +14,52 @@ def train_model(parameters: Dict[str, Any]) -> str:
     parameters (Dict[str, Any]): A dictionary containing the following keys:
         - type (str): 'train model'
         - trainingData (List[any]):
-        - testData (List[any]):
-        - evaluateSplit (bool):
         - xParameters (List[str]):
-        - yParameters (List[str]):
+        - yParameter (List[str]):
         - learningRate (float):
         - maxDepth (int):
         - numberEstimators (int):
-    """  
+    """
+    ## Check that all variables are as expected
+    training_data: List[str] = parameters["trainingData"]
+    if not is_non_empty_string_list(training_data):
+        return "Error: trainingData is not a list of strings"
+
+    x_par: List[str] = parameters["xParameters"]
+    if not is_non_empty_string_list(x_par):
+        return "Error: xParameters is not a list of strings"
+
+    y_par = parameters["yParameter"]
+    if not isinstance(y_par, str):
+        return "Error: yParameter is not a string"
+
+    learning_rate = parameters["learningRate"]
+    if not isinstance(learning_rate, float):
+        return "Error: learningRate is not a float"
+
+    max_depth = parameters["maxDepth"]
+    if not isinstance(max_depth, int):
+        return "Error: maxDepth is not an int"
+
+    n_estimators = parameters["numberEstimators"]
+    if not isinstance(n_estimators, int):
+        return "Error: numberEstimators is not an int"
+
+    ## Function
 
     df_dict: dict[str, pd.DataFrame] = get_prepared_data()
 
-    train = concatenate_df_dict(
-        dataframes_dict=df_dict,
-        to_concatenate=parameters["testData"]
-    )
+    if not get_is_all_relevant_data_prepared():
+        return "Error: not all relevant data is prepared"
+    train = concatenate_df_dict(dataframes_dict=df_dict, to_concatenate=training_data)
 
-    x_par = parameters["x_par"]
-    y_par = parameters["y_par"]
-    n_estimators = parameters["n_estimators"]
-    learning_rate = parameters["learning_rate"]
-    max_depth = parameters["max_depth"]
+    # Check that x and y parameters are in the dataframe
+    for par in x_par:
+        if par not in train.columns:
+            return "Error: xParameter not in dataframe"
 
+    if y_par not in train.columns:
+        return "Error: yParameter not in dataframe"
 
     xgb = train_XGB(
         train=train,
@@ -43,5 +71,4 @@ def train_model(parameters: Dict[str, Any]) -> str:
     )
 
     xgb.save_model("./current_model.json")
-
-    return "Success"
+    return "success"

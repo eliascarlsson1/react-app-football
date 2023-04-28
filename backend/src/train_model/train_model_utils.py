@@ -1,6 +1,7 @@
 import pandas as pd
 from typing import List, Any
 from xgboost import XGBClassifier
+
 # import numpy as np
 # import matplotlib.pyplot as plt
 # from sklearn.ensemble import RandomForestClassifier
@@ -11,6 +12,7 @@ from xgboost import XGBClassifier
 # import category_encoders as ce
 # from sklearn.impute import SimpleImputer
 
+
 def train_XGB(
     train: pd.DataFrame,
     x_par: List[str],
@@ -18,14 +20,15 @@ def train_XGB(
     n_estimators: int,
     learning_rate: float,
     max_depth: int,
-    n_jobs: int =-1,
-    subsample:int =1,
-    seed: int=142,
+    n_jobs: int = -1,
+    subsample: int = 1,
+    seed: int = 142,
 ) -> Any:
     import warnings
+
     warnings.filterwarnings("ignore")
 
-    model1: Any  = XGBClassifier(
+    model1 = XGBClassifier(
         n_estimators=n_estimators,
         random_state=seed,
         n_jobs=n_jobs,
@@ -33,11 +36,14 @@ def train_XGB(
         subsample=subsample,
         max_depth=max_depth,
     )
+    from sklearn.preprocessing import LabelEncoder
 
-    model1.fit(train[x_par], train[y_par])
+    le = LabelEncoder()
+    y_train = le.fit_transform(train[y_par])  # type: ignore
+
+    model1.fit(train[x_par], y_train)
 
     return model1
-
 
 
 # def model_statistics(classifier, train, val, test, x_par, y_par):
@@ -78,5 +84,3 @@ def train_XGB(
 #     permuter.fit(val[x_par], val[y_par])
 
 #     return permuter
-
-

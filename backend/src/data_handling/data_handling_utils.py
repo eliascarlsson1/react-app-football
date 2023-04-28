@@ -6,7 +6,14 @@ from typing import List, Dict
 # Returns a list of all the historical csv files
 def get_historical_data_list() -> List[str]:
     path = "./data/historical_data/relevant_data"
-    return os.listdir(path)
+    historical_data_list: List[str] = []
+    for filename in os.listdir(path):
+        if len(filename) == 10:
+            league = filename[:2]
+            year = filename[2:6]
+            historical_data_list.append(league + year)
+
+    return historical_data_list
 
 
 #

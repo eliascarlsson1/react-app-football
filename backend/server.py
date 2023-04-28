@@ -17,15 +17,9 @@ def historical():
 # Train model API Route
 @app.route("/api/train-model-call", methods=["POST"])
 def train_model_call() -> str:
-    object:Dict[str, Any] = request.get_json()
-    ret:str = train_model(object)
+    object: Dict[str, Any] = request.get_json()
+    ret: str = train_model(object)
     return ret
-
-
-# {'type': 'train model', 'trainingData': [],
-# 'testData': [], 'evaluateSplit': True, 'xParameters': [],
-# 'yParameters': [], 'learningRate': 0.3, 'maxDepth': 4,
-# 'numberEstimators': 250}
 
 
 if __name__ == "__main__":
