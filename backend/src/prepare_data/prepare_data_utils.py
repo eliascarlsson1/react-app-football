@@ -40,7 +40,7 @@ all_x_par = [
 ]
 
 
-def position(row, team, tables, option=False):
+def position(row, team: str, tables: Any, option=False) -> int:
     # Position of HT or AT
     # team = "HomeTeam" or "AwayTeam"
     if option:
@@ -236,6 +236,18 @@ def add_simple_features(raw_data: pd.DataFrame):
         raw_data["AvgH"] = raw_data["BbAvH"]
         raw_data["AvgD"] = raw_data["BbAvD"]
 
+
+def load_one_season_test(raw_data: pd.DataFrame, league: str, year: str) -> pd.DataFrame:
+    # Prepare the data
+    add_simple_features(raw_data)
+
+    # Create a table
+    tables: Any = create_tables_for_every_date(raw_data)
+
+    # Calculating features
+    raw_data["Played"] = raw_data.apply(played_avg, tables=tables, axis=1)  # type: ignore
+
+    return raw_data
 
 def load_one_season(raw_data: pd.DataFrame, league: str, year: str) -> pd.DataFrame:
     # Prepare the data

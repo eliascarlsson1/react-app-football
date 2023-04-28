@@ -64,7 +64,7 @@ export default function SingleSelect({
 
 	return (
 		<div>
-			<FormControl sx={{ m: 1, width }}>
+			<FormControl sx={{ width }}>
 				{label ? <InputLabel>{label}</InputLabel> : ""}
 				<Select
 					value={selectedData}

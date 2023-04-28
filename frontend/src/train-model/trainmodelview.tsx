@@ -78,7 +78,8 @@ export default function TrainModelView({
 					<Typography
 						align="center"
 						fontSize={15}
-						paddingTop={1}
+						paddingTop={0.5}
+						paddingBottom={1}
 						color={getColorFromTrainModelViewState(state.trainModelStatus)}
 						width={200}
 					>
@@ -88,7 +89,7 @@ export default function TrainModelView({
 			</Stack>
 			<Stack direction={"row"} gap={3}>
 				<Stack>
-					<Stack>
+					<Stack gap={2}>
 						<Multiselect
 							dataArray={state.historicalData}
 							label="Training data"
