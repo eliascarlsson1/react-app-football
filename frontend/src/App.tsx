@@ -7,7 +7,7 @@ import TrainModelView from "./train-model/trainmodelview";
 
 const appStateManager = new AppStateManager();
 
-export type TopMenuTabOption = "Evaluate" | "Train model";
+export type TopMenuTabOption = "Evaluate" | "Train model" | "Prepare data";
 export type TopMenuTabAction = {
 	type: "top menu tab";
 	selectedTab: TopMenuTabOption;
@@ -41,7 +41,11 @@ function App() {
 	const appDispatcher = appStateManager.getAppActionDispatcher();
 
 	// App handles the top menu tab
-	const tabValues: TopMenuTabOption[] = ["Evaluate", "Train model"];
+	const tabValues: TopMenuTabOption[] = [
+		"Evaluate",
+		"Train model",
+		"Prepare data",
+	];
 	const deliverSelectedIndex = (selectedIndex: number) => {
 		const selectedTab = tabValues[selectedIndex];
 		appDispatcher({ type: "top menu tab", selectedTab });
@@ -57,11 +61,13 @@ function App() {
 			<Stack padding={3}>
 				{appState.tab === "Evaluate" ? (
 					<EvaluateView />
-				) : (
+				) : appState.tab === "Train model" ? (
 					<TrainModelView
 						state={appStateManager.getComponentState().getTrainModelViewState()}
 						dispatcher={appDispatcher}
 					/>
+				) : (
+					"Prepare data"
 				)}
 			</Stack>
 		</Stack>

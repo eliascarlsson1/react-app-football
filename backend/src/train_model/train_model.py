@@ -70,5 +70,5 @@ def train_model(parameters: Dict[str, Any]) -> str:
         max_depth=max_depth,
     )
 
-    xgb.save_model("./current_model.json")
+    xgb.save_model("./data/temporary_storage/current_model.json")
     return "success"

@@ -38,17 +38,53 @@ export default function TrainModelView({
 
 	const [trainingData, setTrainingData] = useState<string[]>([]);
 	const [xParameters, setXParameters] = useState<string[]>(state.xParameters);
-	const [yParameter, setYParameters] = useState<string>(state.yParameters[0]);
+	const [yParameter, setYParameters] = useState<string>("TG");
 	const [learningRate, setLearningRate] = useState<number>(0.3);
 	const [maxDepth, setMaxDepth] = useState<number>(4);
 	const [numberEstimators, setNumberEstimators] = useState<number>(250);
 
 	return (
-		<Stack>
-			<Stack direction={"row"} paddingLeft={1} alignItems={"start"}>
+		<Stack
+			sx={{
+				border: "1px solid gray",
+				borderColor: "gray.300",
+				width: "650px",
+			}}
+			padding={3}
+		>
+			<Stack direction={"row"} gap={20} paddingLeft={1} alignItems={"start"}>
 				<Typography variant="h5" gutterBottom>
-					Parameters
+					Train model with XGBoost
 				</Typography>
+				<Stack>
+					<Button
+						variant="contained"
+						style={{ width: "200px" }}
+						onClick={() =>
+							dispatcher({
+								type: "train model",
+								trainingData,
+								xParameters,
+								yParameter,
+								learningRate,
+								maxDepth,
+								numberEstimators,
+							})
+						}
+						disabled={state.trainModelStatus === "training"}
+					>
+						Train model
+					</Button>
+					<Typography
+						align="center"
+						fontSize={15}
+						paddingTop={1}
+						color={getColorFromTrainModelViewState(state.trainModelStatus)}
+						width={200}
+					>
+						{state.trainModelStatus}
+					</Typography>
+				</Stack>
 			</Stack>
 			<Stack direction={"row"} gap={3}>
 				<Stack>
@@ -61,7 +97,7 @@ export default function TrainModelView({
 							}}
 						/>
 						<SingleSelect
-							dataArray={state.yParameters}
+							dataArray={["TG"]}
 							deliverSelected={(selectedData) => {
 								setYParameters(selectedData);
 							}}
@@ -108,33 +144,6 @@ export default function TrainModelView({
 						label="x-parameters"
 						selected={xParameters}
 					/>
-
-					<Button
-						variant="contained"
-						style={{ width: "200px" }}
-						onClick={() =>
-							dispatcher({
-								type: "train model",
-								trainingData,
-								xParameters,
-								yParameter,
-								learningRate,
-								maxDepth,
-								numberEstimators,
-							})
-						}
-						disabled={state.trainModelStatus === "training"}
-					>
-						Train model
-					</Button>
-					<Typography
-						align="center"
-						padding={1}
-						fontSize={15}
-						color={getColorFromTrainModelViewState(state.trainModelStatus)}
-					>
-						{state.trainModelStatus === "idle" ? "" : state.trainModelStatus}
-					</Typography>
 				</Stack>
 			</Stack>
 		</Stack>
@@ -146,7 +155,7 @@ function getColorFromTrainModelViewState(
 ): string {
 	switch (trainModelStatus) {
 		case "idle":
-			return "black";
+			return "white";
 		case "training":
 			return "blue";
 		case "success":
