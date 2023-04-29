@@ -8,8 +8,10 @@ from src.data_handling.data_handling_utils import (
 from src.data_handling.database_con import (
     get_all_X_parameters,
     get_all_Y_parameters,
+    get_model_names,
 )
 from src.model_handling.train_model import train_model
+from src.model_handling.manage import delete_model, save_model
 from src.prepare_data.prepare_data import prepare_relevant_data
 from src.scraping.update_csv import update_leagues
 
@@ -42,6 +44,12 @@ def y_parameters():
     return get_all_Y_parameters()
 
 
+# Get current models API Route
+@app.route("/api/current-models")
+def current_models():
+    return get_model_names()
+
+
 # Train model API Route
 @app.route("/api/train-model-call", methods=["POST"])
 def train_model_call() -> str:
@@ -65,6 +73,22 @@ def download_latest_data_call() -> str:
     ret: str = update_leagues()
     return ret
 
+
+# Delete model API Route
+@app.route("/api/delete-model-call", methods=["POST"])
+def delete_model_call() -> str:
+    object = request.get_json()
+    name:str = object.get("modelName")
+    ret: str = delete_model(name)
+    return ret
+
+# Save model API Route
+@app.route("/api/save-model-call", methods=["POST"])
+def save_model_call() -> str:
+    object = request.get_json()
+    name:str = object.get("modelName")
+    ret: str = save_model(name)
+    return ret
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -3,8 +3,10 @@ import { AppStateManager, AppState } from "./appstatemanager";
 import Stack from "@mui/material/Stack";
 import BasicTabs from "./components/basictabs";
 import EvaluateView from "./evaluate/evaluateview";
-import TrainModelView from "./train-model/trainmodelview";
+import TrainModelView from "./model/trainmodelview";
 import Settingsview from "./settingsview/settingsview";
+import DeleteModel from "./model/deletemodel";
+import TestModel from "./model/test_model";
 
 const appStateManager = new AppStateManager();
 
@@ -34,9 +36,16 @@ function App() {
 		appStateManager.atFirstRender();
 	}
 
-	//FIXME: This solution is not great
-	if (appStateManager.loadingFirstRender()) {
-		return <div>Loading...</div>;
+	// Loaded data successfully?
+	if (
+		!(
+			appState.historicalData &&
+			appState.xParameters &&
+			appState.yParameters &&
+			appState.currentModels
+		)
+	) {
+		return <div>Waiting for server..</div>;
 	}
 
 	const appDispatcher = appStateManager.getAppActionDispatcher();
@@ -59,10 +68,23 @@ function App() {
 				{appState.tab === "Evaluate" ? (
 					<EvaluateView />
 				) : appState.tab === "Train model" ? (
-					<TrainModelView
-						state={appStateManager.getComponentState().getTrainModelViewState()}
-						dispatcher={appDispatcher}
-					/>
+					<Stack direction={"row"}>
+						<TrainModelView
+							state={appStateManager
+								.getComponentState()
+								.getTrainModelViewState()}
+							dispatcher={appDispatcher}
+							appStateManager={appStateManager}
+						/>
+						<DeleteModel
+							state={appStateManager.getComponentState().getDeleteModelState()}
+							dispatcher={appDispatcher}
+						/>
+						<TestModel
+							state={appStateManager.getComponentState().getTestModelState()}
+							dispatcher={appDispatcher}
+						/>
+					</Stack>
 				) : (
 					<Settingsview dipsatcher={appDispatcher} />
 				)}

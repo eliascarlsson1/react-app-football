@@ -35,30 +35,23 @@ function getStyles(
 export default function SingleSelect({
 	dataArray,
 	deliverSelected,
-	selected = dataArray[0] ?? "",
+	selected,
 	label = null,
 	width = 300,
 }: {
 	dataArray: string[];
 	deliverSelected: (selectedData: string) => void;
-	selected?: string;
+	selected: string;
 	label?: string | null;
 	width?: number;
 }) {
 	const theme = useTheme();
-	const filteredSelected = dataArray.includes(selected)
-		? selected
-		: dataArray[0] ?? "";
 
-	const [selectedData, setSelectedData] =
-		React.useState<string>(filteredSelected);
-
-	const handleChange = (event: SelectChangeEvent<typeof selectedData>) => {
+	const handleChange = (event: SelectChangeEvent<typeof selected>) => {
 		const {
 			target: { value },
 		} = event;
 		const selectedData = value;
-		setSelectedData(selectedData);
 		deliverSelected(selectedData);
 	};
 
@@ -67,7 +60,7 @@ export default function SingleSelect({
 			<FormControl sx={{ width }}>
 				{label ? <InputLabel>{label}</InputLabel> : ""}
 				<Select
-					value={selectedData}
+					value={selected}
 					onChange={handleChange}
 					input={<OutlinedInput label={label} />}
 					renderValue={(selected) => (
@@ -81,7 +74,7 @@ export default function SingleSelect({
 						<MenuItem
 							key={data}
 							value={data}
-							style={getStyles(data, [selectedData], theme)}
+							style={getStyles(data, [selected], theme)}
 						>
 							{data}
 						</MenuItem>

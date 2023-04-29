@@ -4,28 +4,47 @@ import {
 	TrainModelViewState,
 	TrainModelAction,
 	TrainModelStatus,
-} from "./train-model/trainmodelview";
+} from "./model/trainmodelview";
 import {
 	getHistoricalData,
 	getParameters,
+	getCurrentModels,
 	trainModel,
 	prepareData,
 	downloadLatestData,
+	deleteModel,
+	saveModel,
 } from "./http-manager";
+import { DeleteModelAction, DeleteModelState } from "./model/deletemodel";
 import { SettingsViewAction } from "./settingsview/settingsview";
+import {
+	SaveModelAction,
+	SaveModelState,
+	SaveModelStatus,
+} from "./model/savemodel";
+import { TestData, TestModelAction, TestModelState } from "./model/test_model";
 const _ = require("lodash");
 
 export type AppState = {
 	tab: TopMenuTabOption;
-	historicalData: string[];
-	xParameters: string[];
-	yParameters: string[];
-	statuses: { trainModelStatus: TrainModelStatus };
+	historicalData: string[] | null;
+	xParameters: string[] | null;
+	yParameters: string[] | null;
+	statuses: {
+		trainModelStatus: TrainModelStatus;
+		deleteModelState: "idle" | "loading";
+		saveModelState: SaveModelStatus;
+	};
+	currentModels: string[] | null;
+	testResponse: TestData;
 };
 export type AppAction =
 	| TopMenuTabAction
 	| TrainModelAction
-	| SettingsViewAction;
+	| SettingsViewAction
+	| DeleteModelAction
+	| SaveModelAction
+	| TestModelAction;
 export type AppActionDispatcher = (action: AppAction) => void;
 
 class AppStateManager {
@@ -48,10 +67,16 @@ class AppStateManager {
 	getInitialAppState(): AppState {
 		const initalAppState: AppState = {
 			tab: "Train model",
-			historicalData: [],
-			xParameters: [],
-			yParameters: [],
-			statuses: { trainModelStatus: "idle" },
+			historicalData: null,
+			xParameters: null,
+			yParameters: null,
+			statuses: {
+				trainModelStatus: "idle",
+				deleteModelState: "idle",
+				saveModelState: "idle",
+			},
+			currentModels: null,
+			testResponse: null,
 		};
 		return initalAppState;
 	}
@@ -61,31 +86,26 @@ class AppStateManager {
 			const newAppState: AppState = _.cloneDeep(this.#appState);
 			newAppState.historicalData = historicalData;
 			this.#setState(newAppState);
-			this.#recievedState.historicalData = true;
 		});
 
 		getParameters((parameters) => {
 			const newAppState: AppState = _.cloneDeep(this.#appState);
 			newAppState.xParameters = parameters;
 			this.#setState(newAppState);
-			this.#recievedState.xParameters = true;
 		}, "x");
 
 		getParameters((parameters) => {
 			const newAppState: AppState = _.cloneDeep(this.#appState);
 			newAppState.yParameters = parameters;
 			this.#setState(newAppState);
-			this.#recievedState.yParameters = true;
 		}, "y");
-	}
 
-	loadingFirstRender = () => {
-		return !(
-			this.#recievedState.historicalData &&
-			this.#recievedState.xParameters &&
-			this.#recievedState.yParameters
-		);
-	};
+		getCurrentModels((models) => {
+			const newAppState: AppState = _.cloneDeep(this.#appState);
+			newAppState.currentModels = models;
+			this.#setState(newAppState);
+		});
+	}
 
 	updateAppState(appState: AppState) {
 		this.#appState = appState;
@@ -125,15 +145,51 @@ class AppStateManager {
 
 				case "prepare data":
 					prepareData((response) => {
-						console.log(response)
-					})
+						console.log(response);
+					});
 					break;
 
 				case "download data":
 					downloadLatestData((response) => {
-						console.log(response)
-					})
+						console.log(response);
+					});
 					break;
+
+				case "delete model":
+					newAppState.statuses.deleteModelState = "loading";
+					this.#setState(newAppState);
+					deleteModel(action.name, () => {
+						getCurrentModels((models) => {
+							const newAppState: AppState = _.cloneDeep(this.#appState);
+							newAppState.currentModels = models;
+							newAppState.statuses.deleteModelState = "idle";
+							this.#setState(newAppState);
+						});
+					});
+					break;
+
+				case "save model":
+					newAppState.statuses.saveModelState = "saving model";
+					this.#setState(newAppState);
+					saveModel(action.name, (response) => {
+						const newAppState: AppState = _.cloneDeep(this.#appState);
+						if (response === "success") {
+							newAppState.statuses.saveModelState = "success";
+						} else {
+							newAppState.statuses.saveModelState = "error";
+							console.log(response);
+						}
+						this.#setState(newAppState);
+						getCurrentModels((models) => {
+							const newAppState: AppState = _.cloneDeep(this.#appState);
+							newAppState.currentModels = models;
+							this.#setState(newAppState);
+						});
+					});
+					break;
+
+				case "test model":
+					console.log(action);
 			}
 		};
 		return appDispatcher;
@@ -159,11 +215,31 @@ class ComponentStateManager {
 		return { tab: this.#appState.tab };
 	}
 
+	getDeleteModelState(): DeleteModelState {
+		return {
+			currentModels: this.#appState.currentModels ?? [],
+			deleteModelServerState: this.#appState.statuses.deleteModelState,
+		};
+	}
+
+	getSaveModelState(): SaveModelState {
+		return {
+			saveModelServerState: this.#appState.statuses.saveModelState,
+		};
+	}
+
+	getTestModelState(): TestModelState {
+		return {
+			currentModelNames: this.#appState.currentModels ?? [],
+			testResponse: this.#appState.testResponse,
+		};
+	}
+
 	getTrainModelViewState(): TrainModelViewState {
 		return {
-			historicalData: this.#appState.historicalData,
-			xParameters: this.#appState.xParameters,
-			yParameters: this.#appState.yParameters,
+			historicalData: this.#appState.historicalData ?? [],
+			xParameters: this.#appState.xParameters ?? [],
+			yParameters: this.#appState.yParameters ?? [],
 			trainModelStatus: this.#appState.statuses.trainModelStatus,
 		};
 	}

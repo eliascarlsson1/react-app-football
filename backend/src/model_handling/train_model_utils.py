@@ -19,6 +19,7 @@ n_jobs = -1
 seed = 142
 subsample = 1
 
+
 def train_XGB(
     train: pd.DataFrame,
     x_par: List[str],
@@ -77,12 +78,9 @@ def save_model_parameters(
         "seed": seed,
         "date": str(datetime.datetime.now()),
     }
-    #todays date
+    # todays date
     with open(path + "/current_model_parameters.json", "w") as f:
         json.dump(parameters, f)
-
-
-
 
 
 # def model_statistics(classifier, train, val, test, x_par, y_par):

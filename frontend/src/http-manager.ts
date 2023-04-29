@@ -10,6 +10,18 @@ export async function getHistoricalData(
 	}
 }
 
+export async function getCurrentModels(
+	updateCurrentModels: (currentModels: string[]) => void,
+) {
+	try {
+		const response = await fetch("http://localhost:5000/api/current-models");
+		const data: string[] = await response.json();
+		updateCurrentModels(data);
+	} catch (error) {
+		console.error("Error in fetching current models:", error);
+	}
+}
+
 export async function getParameters(
 	updateParameters: (historicalData: string[]) => void,
 	x_or_y: "x" | "y",
@@ -41,6 +53,41 @@ export async function trainModel(
 		getResponse(responseText);
 	} catch (error) {
 		console.error("Error in training model:", error);
+	}
+}
+
+export async function deleteModel(modelName: string, whenDone: () => void) {
+	try {
+		await fetch("http://localhost:5000/api/delete-model-call", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ modelName }),
+		});
+		whenDone();
+	} catch (error) {
+		whenDone();
+		console.error("Error in deleting model:", error);
+	}
+}
+
+export async function saveModel(
+	modelName: string,
+	getResponse: (response: string) => void,
+) {
+	try {
+		const response = await fetch("http://localhost:5000/api/save-model-call", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ modelName }),
+		});
+		const responseText: string = await response.text();
+		getResponse(responseText);
+	} catch (error) {
+		console.error("Error in saving model:", error);
 	}
 }
 

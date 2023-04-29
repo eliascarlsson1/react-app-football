@@ -1,12 +1,13 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import Multiselect from "../components/multiselect";
 import SingleTextSlider from "../components/singletextslider";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
-import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
 import { AppActionDispatcher } from "../appstatemanager";
 import SingleSelect from "../components/singleselect";
+import SaveModel from "./savemodel";
+import { AppStateManager } from "../appstatemanager";
 
 export type TrainModelStatus = "idle" | "training" | "success" | "error";
 
@@ -30,12 +31,12 @@ export type TrainModelAction = {
 export default function TrainModelView({
 	state,
 	dispatcher,
+	appStateManager,
 }: {
 	state: TrainModelViewState;
 	dispatcher: AppActionDispatcher;
+	appStateManager: AppStateManager;
 }) {
-	//FIXME: Y parameters should be single select
-
 	const [trainingData, setTrainingData] = useState<string[]>([]);
 	const [xParameters, setXParameters] = useState<string[]>(state.xParameters);
 	const [yParameter, setYParameters] = useState<string>(state.yParameters[0]);
@@ -102,6 +103,7 @@ export default function TrainModelView({
 							deliverSelected={(selectedData) => {
 								setYParameters(selectedData);
 							}}
+							selected={yParameter}
 							label="y-parameter"
 						/>
 						<SingleTextSlider
@@ -146,6 +148,12 @@ export default function TrainModelView({
 						selected={xParameters}
 					/>
 				</Stack>
+			</Stack>
+			<Stack paddingTop={5} alignItems={"center"}>
+				<SaveModel
+					state={appStateManager.getComponentState().getSaveModelState()}
+					dispatcher={dispatcher}
+				/>
 			</Stack>
 		</Stack>
 	);

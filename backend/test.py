@@ -13,7 +13,11 @@
 
 # update_leagues()
 
-from src.model_handling.train_model import save_model
-# from src.data_handling.database_con import add_delete_model, get_model_names
+from src.model_handling.manage import save_model
+from src.data_handling.database_con import get_model_names
 
-print(save_model("test1"))
+print(save_model("test2"))
+print(save_model("test3"))
+print(save_model("test4"))
+print(save_model("test5"))
+print(get_model_names())

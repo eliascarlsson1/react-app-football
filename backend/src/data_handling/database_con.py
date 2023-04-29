@@ -42,6 +42,7 @@ def get_current_year() -> str:
     year = results[0][0]
     return year
 
+
 def get_model_names() -> List[str]:
     con = sqlite3.connect(database_abs_path)
     cursor = con.cursor()
@@ -50,7 +51,8 @@ def get_model_names() -> List[str]:
     names: List[str] = [result[0] for result in results]
     return names
 
-def add_delete_model(add: bool, name:str) -> None:
+
+def add_delete_model(add: bool, name: str) -> None:
     con = sqlite3.connect(database_abs_path)
     cursor = con.cursor()
     if add:
