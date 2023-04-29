@@ -3,13 +3,24 @@ from flask_cors import CORS
 from typing import Dict, Any
 from src.data_handling.data_handling_utils import (
     get_historical_data_list,
+    get_all_historical_data_dict,
+)
+from src.data_handling.database_con import (
     get_all_X_parameters,
     get_all_Y_parameters,
 )
 from src.train_model.train_model import train_model
+from src.prepare_data.prepare_data import prepare_relevant_data
 
 app = Flask(__name__)
 CORS(app)  # Add this line to enable CORS for all routes
+
+
+### Variables ###
+all_historical_data_dict = get_all_historical_data_dict()
+
+
+### API Routes ###
 
 
 # Historical data API Route
@@ -35,6 +46,14 @@ def y_parameters():
 def train_model_call() -> str:
     object: Dict[str, Any] = request.get_json()
     ret: str = train_model(object)
+    return ret
+
+
+# Prepare data API Route
+@app.route("/api/prepare-data-call", methods=["POST"])
+def prepare_data_call() -> str:
+    object: Dict[str, Any] = request.get_json()
+    ret: str = prepare_relevant_data(object)
     return ret
 
 

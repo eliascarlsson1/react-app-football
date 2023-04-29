@@ -1,7 +1,7 @@
 from typing import Dict, Any, List
 import pandas as pd
 from ..data_handling.data_handling_utils import (
-    get_prepared_data,
+    get_prepared_data_dict,
     concatenate_df_dict,
     get_is_all_relevant_data_prepared,
 )
@@ -47,7 +47,7 @@ def train_model(parameters: Dict[str, Any]) -> str:
 
     ## Function
 
-    df_dict: dict[str, pd.DataFrame] = get_prepared_data()
+    df_dict: dict[str, pd.DataFrame] = get_prepared_data_dict()
 
     if not get_is_all_relevant_data_prepared():
         return "Error: not all relevant data is prepared"

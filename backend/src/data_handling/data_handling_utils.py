@@ -1,18 +1,21 @@
 import os
 import pandas as pd
-import sqlite3
 from typing import List, Dict
 
-script_dir = os.path.dirname(__file__)
-path_to_db = "../../data/db.sqlite"
-database_abs_path = os.path.join(script_dir, path_to_db)
+
+### Paths ###
+relative_data_path = "../../data"
+file_path = os.path.dirname(os.path.abspath(__file__))
+data_path = os.path.join(file_path, relative_data_path)
+relevant_data_path = data_path + "/historical_data/relevant_data"
+prepared_data_path = data_path + "/prepared_data"
+all_data_path = data_path + "/historical_data/all_data"
 
 
 # Returns a list of all the historical csv files
 def get_historical_data_list() -> List[str]:
-    path = "./data/historical_data/relevant_data"
     historical_data_list: List[str] = []
-    for filename in os.listdir(path):
+    for filename in os.listdir(relevant_data_path):
         if len(filename) == 10:
             league = filename[:2]
             year = filename[2:6]
@@ -23,9 +26,7 @@ def get_historical_data_list() -> List[str]:
 
 #
 def get_is_all_relevant_data_prepared() -> bool:
-    relevant_data_path = "./data/historical_data/relevant_data"
     relavant_data_files = os.listdir(relevant_data_path)
-    prepared_data_path = "./data/prepared_data"
     prepared_data_files = os.listdir(prepared_data_path)
     for file in relavant_data_files:
         if file not in prepared_data_files:
@@ -34,14 +35,25 @@ def get_is_all_relevant_data_prepared() -> bool:
 
 
 # Loads all prepared data
-def get_prepared_data() -> dict[str, pd.DataFrame]:
-    directory = "./data/prepared_data"
+def get_prepared_data_dict() -> dict[str, pd.DataFrame]:
     df_dict: dict[str, pd.DataFrame] = {}
-    for filename in os.listdir(directory):
+    for filename in os.listdir(prepared_data_path):
         if len(filename) == 10:
             league = filename[:2]
             year = filename[2:6]
-            path = directory + "/" + filename
+            path = prepared_data_path + "/" + filename
+            df_dict[league + year] = pd.read_csv(path)  # type: ignore
+
+    return df_dict
+
+
+def get_all_historical_data_dict() -> dict[str, pd.DataFrame]:
+    df_dict: dict[str, pd.DataFrame] = {}
+    for filename in os.listdir(all_data_path):
+        if len(filename) == 10:
+            league = filename[:2]
+            year = filename[2:6]
+            path = all_data_path + "/" + filename
             df_dict[league + year] = pd.read_csv(path)  # type: ignore
 
     return df_dict
@@ -62,21 +74,3 @@ def concatenate_df_dict(
     data = pd.concat(dataframes).reset_index()  # type: ignore
 
     return data
-
-
-def get_all_X_parameters() -> List[str]:
-    con = sqlite3.connect(database_abs_path)
-    cursor = con.cursor()
-    cursor.execute("SELECT name FROM parameters WHERE xnoty = 1")
-    results = cursor.fetchall()
-    names: List[str] = [result[0] for result in results]
-    return names
-
-
-def get_all_Y_parameters() -> List[str]:
-    con = sqlite3.connect(database_abs_path)
-    cursor = con.cursor()
-    cursor.execute("SELECT name FROM parameters WHERE xnoty = 0")
-    results = cursor.fetchall()
-    names: List[str] = [result[0] for result in results]
-    return names

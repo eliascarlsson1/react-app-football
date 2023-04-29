@@ -102,7 +102,6 @@ class AppStateManager {
 
 				case "train model":
 					console.log(action)
-					return
 					newAppState.statuses.trainModelStatus = "training";
 					this.#setState(newAppState);
 					const getResponse = (response: string) => {
