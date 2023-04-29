@@ -50,16 +50,13 @@ def load_one_season(
     # Ensure all parameters are in the dataframe
     parameters_to_include = ["GameIndex", "HomeTeam", "AwayTeam", "Date"]
     all_parameters = parameters_to_include + all_x_par
-
     for par in all_parameters:
         if par not in raw_data.columns:
             raise Exception("{} not in raw_data.columns".format(par))
 
+
     prepared_data = raw_data[all_parameters]
-
-    ##FIXME: Is this good?
     prepared_data = prepared_data.iloc[10:, :]  # removes first games of each season
-
     return prepared_data
 
 

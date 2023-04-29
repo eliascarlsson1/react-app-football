@@ -23,3 +23,19 @@ def get_all_Y_parameters() -> List[str]:
     results = cursor.fetchall()
     names: List[str] = [result[0] for result in results]
     return names
+
+def get_all_league_ids() -> List[str]:
+    con = sqlite3.connect(database_abs_path)
+    cursor = con.cursor()
+    cursor.execute("SELECT id FROM leagues")
+    results = cursor.fetchall()
+    ids: List[str] = [result[0] for result in results]
+    return ids
+
+def get_current_year() -> str:
+    con = sqlite3.connect(database_abs_path)
+    cursor = con.cursor()
+    cursor.execute("SELECT * FROM current_year")
+    results = cursor.fetchall()
+    year = results[0][0]
+    return year
