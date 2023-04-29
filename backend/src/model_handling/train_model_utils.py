@@ -1,4 +1,6 @@
 import pandas as pd
+import json
+import datetime
 from typing import List, Any
 from xgboost import XGBClassifier
 
@@ -12,6 +14,10 @@ from xgboost import XGBClassifier
 # import category_encoders as ce
 # from sklearn.impute import SimpleImputer
 
+# Default parameters
+n_jobs = -1
+seed = 142
+subsample = 1
 
 def train_XGB(
     train: pd.DataFrame,
@@ -20,9 +26,9 @@ def train_XGB(
     n_estimators: int,
     learning_rate: float,
     max_depth: int,
-    n_jobs: int = -1,
-    subsample: int = 1,
-    seed: int = 142,
+    n_jobs: int = n_jobs,
+    subsample: int = subsample,
+    seed: int = seed,
 ) -> Any:
     import warnings
 
@@ -40,10 +46,43 @@ def train_XGB(
 
     le = LabelEncoder()
     y_train = le.fit_transform(train[y_par])  # type: ignore
-        
+
     model1.fit(train[x_par], y_train)
 
     return model1
+
+
+def save_model_parameters(
+    train: List[str],
+    x_par: List[str],
+    y_par: str,
+    n_estimators: int,
+    learning_rate: float,
+    max_depth: int,
+    path: str,
+    n_jobs: int = n_jobs,
+    subsample: int = subsample,
+    seed: int = seed,
+) -> Any:
+    ## save parameters to file
+    parameters = {
+        "trainingData": train,
+        "xParameters": x_par,
+        "yParameter": y_par,
+        "learningRate": learning_rate,
+        "maxDepth": max_depth,
+        "numberEstimators": n_estimators,
+        "n_jobs": n_jobs,
+        "subsample": subsample,
+        "seed": seed,
+        "date": str(datetime.datetime.now()),
+    }
+    #todays date
+    with open(path + "/current_model_parameters.json", "w") as f:
+        json.dump(parameters, f)
+
+
+
 
 
 # def model_statistics(classifier, train, val, test, x_par, y_par):

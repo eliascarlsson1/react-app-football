@@ -9,6 +9,11 @@
 # from src.data_handling.database_con import get_current_year
 # print(get_current_year())
 
-from src.scraping.update_csv import update_leagues
+# from src.scraping.update_csv import update_leagues
 
-update_leagues()
+# update_leagues()
+
+from src.model_handling.train_model import save_model
+# from src.data_handling.database_con import add_delete_model, get_model_names
+
+print(save_model("test1"))

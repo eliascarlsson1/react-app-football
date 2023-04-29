@@ -41,3 +41,25 @@ def get_current_year() -> str:
     results = cursor.fetchall()
     year = results[0][0]
     return year
+
+def get_model_names() -> List[str]:
+    con = sqlite3.connect(database_abs_path)
+    cursor = con.cursor()
+    cursor.execute("SELECT name FROM models")
+    results = cursor.fetchall()
+    names: List[str] = [result[0] for result in results]
+    return names
+
+def add_delete_model(add: bool, name:str) -> None:
+    con = sqlite3.connect(database_abs_path)
+    cursor = con.cursor()
+    if add:
+        if name in get_model_names():
+            raise ValueError("Model name already exists")
+        cursor.execute("INSERT INTO models (name) VALUES (?)", (name,))
+    else:
+        if name not in get_model_names():
+            raise ValueError("Model name does not exist")
+        cursor.execute("DELETE FROM models WHERE name = ?", (name,))
+    con.commit()
+    con.close()

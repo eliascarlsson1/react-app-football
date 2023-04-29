@@ -9,7 +9,7 @@ from src.data_handling.database_con import (
     get_all_X_parameters,
     get_all_Y_parameters,
 )
-from src.train_model.train_model import train_model
+from src.model_handling.train_model import train_model
 from src.prepare_data.prepare_data import prepare_relevant_data
 from src.scraping.update_csv import update_leagues
 

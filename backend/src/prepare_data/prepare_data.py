@@ -3,7 +3,11 @@ import pandas as pd
 from typing import Dict, Any
 from . import prepare_data_utils as pdu
 from . import elo_tilt as et
-from ..data_handling.database_con import get_all_X_parameters, get_all_Y_parameters, get_current_year
+from ..data_handling.database_con import (
+    get_all_X_parameters,
+    get_all_Y_parameters,
+    get_current_year,
+)
 
 all_x_par = get_all_X_parameters()
 all_y_par = get_all_Y_parameters()
