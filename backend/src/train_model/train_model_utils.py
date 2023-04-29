@@ -40,7 +40,7 @@ def train_XGB(
 
     le = LabelEncoder()
     y_train = le.fit_transform(train[y_par])  # type: ignore
-
+        
     model1.fit(train[x_par], y_train)
 
     return model1
