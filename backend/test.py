@@ -10,4 +10,5 @@
 # print(get_current_year())
 
 from src.scraping.update_csv import update_leagues
+
 update_leagues()

@@ -10,7 +10,7 @@ export async function getHistoricalData(
 	}
 }
 
-export async function get_parameters(
+export async function getParameters(
 	updateParameters: (historicalData: string[]) => void,
 	x_or_y: "x" | "y",
 ) {
@@ -21,7 +21,7 @@ export async function get_parameters(
 		const parametersArray: string[] = Object.values(parameters);
 		updateParameters(parametersArray);
 	} catch (error) {
-		console.error("Error in fetching historical data:", error);
+		console.error("Error in fetching parameters:", error);
 	}
 }
 
@@ -40,6 +40,34 @@ export async function trainModel(
 		const responseText: string = await response.text();
 		getResponse(responseText);
 	} catch (error) {
-		console.error("Error in fetching historical data:", error);
+		console.error("Error in training model:", error);
+	}
+}
+
+export async function prepareData(getResponse: (response: string) => void) {
+	try {
+		const response = await fetch(
+			"http://localhost:5000/api/prepare-data-call",
+			{ method: "POST" },
+		);
+		const responseText: string = await response.text();
+		getResponse(responseText);
+	} catch (error) {
+		console.error("Error in preparing data:", error);
+	}
+}
+
+export async function downloadLatestData(
+	getResponse: (response: string) => void,
+) {
+	try {
+		const response = await fetch(
+			"http://localhost:5000/api/download-latest-data-call",
+			{ method: "POST" },
+		);
+		const responseText: string = await response.text();
+		getResponse(responseText);
+	} catch (error) {
+		console.error("Error in preparing data:", error);
 	}
 }

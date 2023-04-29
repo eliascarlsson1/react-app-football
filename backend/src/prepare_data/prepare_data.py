@@ -3,7 +3,7 @@ import pandas as pd
 from typing import Dict, Any
 from . import prepare_data_utils as pdu
 from . import elo_tilt as et
-from ..data_handling.database_con import get_all_X_parameters
+from ..data_handling.database_con import get_all_X_parameters, get_current_year
 
 all_x_par = get_all_X_parameters()
 
@@ -14,20 +14,24 @@ relevant_data_path = data_path + "/historical_data/relevant_data"
 prepared_data_path = data_path + "/prepared_data"
 
 
-def prepare_relevant_data(all_df_dict: Dict[str, pd.DataFrame]) -> str:
-    print("Creating elo tilt class")
+def prepare_relevant_data(
+    all_df_dict: Dict[str, pd.DataFrame], only_current_year: bool
+) -> str:
     elo_tilt_handler = et.Elo_Tilt_Handler(all_df_dict)
+    current_year = get_current_year()
 
     for filename in os.listdir(relevant_data_path):
         if len(filename) == 10:
-            print("Preparing", filename)
             league = filename[:2]
             year = filename[2:6]
+            if only_current_year and year != current_year:
+                continue
             raw_data = pd.read_csv(relevant_data_path + "/" + filename)  # type: ignore
             dataframe = load_one_season(
                 raw_data, league, year, all_df_dict, elo_tilt_handler
             )
             dataframe.to_csv(prepared_data_path + "/" + filename, index=False)
+            print("Prepared", filename)
     return "success"
 
 
@@ -54,7 +58,6 @@ def load_one_season(
         if par not in raw_data.columns:
             raise Exception("{} not in raw_data.columns".format(par))
 
-
     prepared_data = raw_data[all_parameters]
     prepared_data = prepared_data.iloc[10:, :]  # removes first games of each season
     return prepared_data
@@ -72,18 +75,26 @@ def add_tilt_and_elo(
     raw_data["elo_ht"] = raw_data.apply(applyTiltElo, team="HomeTeam", league=league, elo_tilt="elo", elo_tilt_handler=elo_tilt_handler, axis=1) # type: ignore
     raw_data["elo_at"] = raw_data.apply(applyTiltElo, team="AwayTeam", league=league, elo_tilt="elo", elo_tilt_handler=elo_tilt_handler, axis=1) # type: ignore
     raw_data["win_e_ht"] = raw_data.apply(calculate_win_e, axis=1) # type: ignore
-    # fmt: on    
+    # fmt: on
 
-    return raw_data 
+    return raw_data
 
-def applyTiltElo(row: Any, team: str, league: str, elo_tilt:str, elo_tilt_handler: et.Elo_Tilt_Handler):
+
+def applyTiltElo(
+    row: Any,
+    team: str,
+    league: str,
+    elo_tilt: str,
+    elo_tilt_handler: et.Elo_Tilt_Handler,
+):
     if elo_tilt == "elo":
         return elo_tilt_handler.get_elo(league, row["Date"], row[team])
     if elo_tilt == "tilt":
         return elo_tilt_handler.get_tilt(league, row["Date"], row[team])
 
+
 def calculate_win_e(row: Any):
     elo_at = float(row["elo_at"])
     elo_ht = float(row["elo_ht"])
-    we_ht = 1 / (1 + 10**((elo_at - (elo_ht + 70)) / 400))
+    we_ht = 1 / (1 + 10 ** ((elo_at - (elo_ht + 70)) / 400))
     return we_ht

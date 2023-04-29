@@ -8,7 +8,8 @@ path_to_all = "../../data/historical_data/all_data"
 relevant_abs_path = os.path.join(script_dir, path_to_relevant)
 all_abs_path = os.path.join(script_dir, path_to_all)
 
-def update_leagues():
+
+def update_leagues() -> str:
     leagues = get_all_league_ids()
     year = get_current_year()
 
@@ -129,3 +130,5 @@ def update_leagues():
         with open(all_abs_path + "/PO2223.csv", "wb") as f:
             f.write(response.content)
         print("Liga-Portugal updated")
+
+    return "success"

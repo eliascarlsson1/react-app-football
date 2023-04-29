@@ -24,6 +24,7 @@ def get_all_Y_parameters() -> List[str]:
     names: List[str] = [result[0] for result in results]
     return names
 
+
 def get_all_league_ids() -> List[str]:
     con = sqlite3.connect(database_abs_path)
     cursor = con.cursor()
@@ -31,6 +32,7 @@ def get_all_league_ids() -> List[str]:
     results = cursor.fetchall()
     ids: List[str] = [result[0] for result in results]
     return ids
+
 
 def get_current_year() -> str:
     con = sqlite3.connect(database_abs_path)

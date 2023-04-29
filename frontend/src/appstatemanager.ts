@@ -5,7 +5,13 @@ import {
 	TrainModelAction,
 	TrainModelStatus,
 } from "./train-model/trainmodelview";
-import { getHistoricalData, get_parameters, trainModel } from "./http-manager";
+import {
+	getHistoricalData,
+	getParameters,
+	trainModel,
+	prepareData,
+	downloadLatestData,
+} from "./http-manager";
 import { SettingsViewAction } from "./settingsview/settingsview";
 const _ = require("lodash");
 
@@ -58,14 +64,14 @@ class AppStateManager {
 			this.#recievedState.historicalData = true;
 		});
 
-		get_parameters((parameters) => {
+		getParameters((parameters) => {
 			const newAppState: AppState = _.cloneDeep(this.#appState);
 			newAppState.xParameters = parameters;
 			this.#setState(newAppState);
 			this.#recievedState.xParameters = true;
 		}, "x");
 
-		get_parameters((parameters) => {
+		getParameters((parameters) => {
 			const newAppState: AppState = _.cloneDeep(this.#appState);
 			newAppState.yParameters = parameters;
 			this.#setState(newAppState);
@@ -101,8 +107,6 @@ class AppStateManager {
 					break;
 
 				case "train model":
-					console.log(action)
-					return
 					newAppState.statuses.trainModelStatus = "training";
 					this.#setState(newAppState);
 					const getResponse = (response: string) => {
@@ -120,7 +124,16 @@ class AppStateManager {
 					break;
 
 				case "prepare data":
-					console.log("prepare data call");
+					prepareData((response) => {
+						console.log(response)
+					})
+					break;
+
+				case "download data":
+					downloadLatestData((response) => {
+						console.log(response)
+					})
+					break;
 			}
 		};
 		return appDispatcher;
