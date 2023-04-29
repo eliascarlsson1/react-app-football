@@ -38,7 +38,7 @@ export default function TrainModelView({
 
 	const [trainingData, setTrainingData] = useState<string[]>([]);
 	const [xParameters, setXParameters] = useState<string[]>(state.xParameters);
-	const [yParameter, setYParameters] = useState<string>("TG");
+	const [yParameter, setYParameters] = useState<string>(state.yParameters[0]);
 	const [learningRate, setLearningRate] = useState<number>(0.3);
 	const [maxDepth, setMaxDepth] = useState<number>(4);
 	const [numberEstimators, setNumberEstimators] = useState<number>(250);
@@ -98,7 +98,7 @@ export default function TrainModelView({
 							}}
 						/>
 						<SingleSelect
-							dataArray={["TG"]}
+							dataArray={state.yParameters}
 							deliverSelected={(selectedData) => {
 								setYParameters(selectedData);
 							}}

@@ -3,9 +3,10 @@ import pandas as pd
 from typing import Dict, Any
 from . import prepare_data_utils as pdu
 from . import elo_tilt as et
-from ..data_handling.database_con import get_all_X_parameters, get_current_year
+from ..data_handling.database_con import get_all_X_parameters, get_all_Y_parameters, get_current_year
 
 all_x_par = get_all_X_parameters()
+all_y_par = get_all_Y_parameters()
 
 relative_data_path = "../../data"
 file_path = os.path.dirname(os.path.abspath(__file__))
@@ -53,7 +54,7 @@ def load_one_season(
 
     # Ensure all parameters are in the dataframe
     parameters_to_include = ["GameIndex", "HomeTeam", "AwayTeam", "Date"]
-    all_parameters = parameters_to_include + all_x_par
+    all_parameters = parameters_to_include + all_x_par + all_y_par
     for par in all_parameters:
         if par not in raw_data.columns:
             raise Exception("{} not in raw_data.columns".format(par))

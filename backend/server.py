@@ -54,7 +54,7 @@ def train_model_call() -> str:
 @app.route("/api/prepare-data-call", methods=["POST"])
 def prepare_data_call() -> str:
     ret: str = prepare_relevant_data(
-        all_df_dict=all_historical_data_dict, only_current_year=True
+        all_df_dict=all_historical_data_dict, only_current_year=False
     )
     return ret
 
