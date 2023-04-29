@@ -1,13 +1,19 @@
 import React, { useState } from "react";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
+import { Typography } from "@mui/material";
 import SingleSelect from "../components/singleselect";
 import { AppActionDispatcher } from "../appstatemanager";
 
-export type TestData = { ROI: number } | null;
-export type TestModelAction = { type: "test model" };
+export type TestData = { ROI: object[] } | null;
+export type TestModelAction = {
+	type: "test model";
+	modelName: string;
+	testData: string[];
+	testName: string;
+};
 export type TestModelState = {
-	currentModelNames: string[];
+	currentModels: string[];
 	testResponse: TestData;
 };
 
@@ -19,22 +25,47 @@ export default function Test_model({
 	state: TestModelState;
 }) {
 	const [selectedModel, setSelectedModel] = useState<string>(
-		state.currentModelNames[0],
+		state.currentModels[0],
 	);
+
+	if (
+		!state.currentModels.includes(selectedModel) &&
+		state.currentModels.length !== 0
+	) {
+		setSelectedModel(state.currentModels[0] ?? "");
+	}
 
 	return (
 		<Stack>
 			<SingleSelect
-				dataArray={state.currentModelNames}
+				dataArray={state.currentModels}
 				deliverSelected={(selected: string) => {
 					setSelectedModel(selected);
 				}}
 				selected={selectedModel}
 				label="Test model"
 			/>
-			<Button onClick={() => dispatcher({ type: "test model" })}>
+			<Button
+				onClick={() =>
+					dispatcher({
+						type: "test model",
+						modelName: selectedModel,
+						testName: "",
+						testData: [],
+					})
+				}
+			>
 				Test model
 			</Button>
+			<Stack direction={"column"}>
+				{state.testResponse
+					? state.testResponse.ROI.map((obj) => (
+							<Typography>
+								{obj.id}: {obj.roi}
+							</Typography>
+					  ))
+					: "No test response"}
+			</Stack>
 		</Stack>
 	);
 }

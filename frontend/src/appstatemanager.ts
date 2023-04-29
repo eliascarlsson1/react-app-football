@@ -14,6 +14,7 @@ import {
 	downloadLatestData,
 	deleteModel,
 	saveModel,
+	getRoiTestModel,
 } from "./http-manager";
 import { DeleteModelAction, DeleteModelState } from "./model/deletemodel";
 import { SettingsViewAction } from "./settingsview/settingsview";
@@ -32,7 +33,6 @@ export type AppState = {
 	yParameters: string[] | null;
 	statuses: {
 		trainModelStatus: TrainModelStatus;
-		deleteModelState: "idle" | "loading";
 		saveModelState: SaveModelStatus;
 	};
 	currentModels: string[] | null;
@@ -72,7 +72,6 @@ class AppStateManager {
 			yParameters: null,
 			statuses: {
 				trainModelStatus: "idle",
-				deleteModelState: "idle",
 				saveModelState: "idle",
 			},
 			currentModels: null,
@@ -156,13 +155,11 @@ class AppStateManager {
 					break;
 
 				case "delete model":
-					newAppState.statuses.deleteModelState = "loading";
 					this.#setState(newAppState);
 					deleteModel(action.name, () => {
 						getCurrentModels((models) => {
 							const newAppState: AppState = _.cloneDeep(this.#appState);
 							newAppState.currentModels = models;
-							newAppState.statuses.deleteModelState = "idle";
 							this.#setState(newAppState);
 						});
 					});
@@ -189,7 +186,16 @@ class AppStateManager {
 					break;
 
 				case "test model":
-					console.log(action);
+					action.testData = this.#appState.historicalData ?? [];
+					getRoiTestModel(action, (response) => {
+						const rois: { id: string; roi: string }[] = [];
+						Object.entries(response).forEach(([key, value]) => {
+							rois.push({ id: key, roi: value });
+						});
+						const newAppState: AppState = _.cloneDeep(this.#appState);
+						newAppState.testResponse = { ROI: rois };
+						this.#setState(newAppState);
+					});
 			}
 		};
 		return appDispatcher;
@@ -218,7 +224,6 @@ class ComponentStateManager {
 	getDeleteModelState(): DeleteModelState {
 		return {
 			currentModels: this.#appState.currentModels ?? [],
-			deleteModelServerState: this.#appState.statuses.deleteModelState,
 		};
 	}
 
@@ -230,7 +235,7 @@ class ComponentStateManager {
 
 	getTestModelState(): TestModelState {
 		return {
-			currentModelNames: this.#appState.currentModels ?? [],
+			currentModels: this.#appState.currentModels ?? [],
 			testResponse: this.#appState.testResponse,
 		};
 	}

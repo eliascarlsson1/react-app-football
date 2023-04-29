@@ -16,7 +16,8 @@ export async function getCurrentModels(
 	try {
 		const response = await fetch("http://localhost:5000/api/current-models");
 		const data: string[] = await response.json();
-		updateCurrentModels(data);
+		const dataToReturn = data.length === 0 ? ["NO MODELS"] : data;
+		updateCurrentModels(dataToReturn);
 	} catch (error) {
 		console.error("Error in fetching current models:", error);
 	}
@@ -116,5 +117,27 @@ export async function downloadLatestData(
 		getResponse(responseText);
 	} catch (error) {
 		console.error("Error in preparing data:", error);
+	}
+}
+
+export async function getRoiTestModel(
+	info: object,
+	getResponse: (response: object) => void,
+) {
+	try {
+		const response = await fetch(
+			"http://localhost:5000/api/get-roi-model-test",
+			{
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify(info),
+			},
+		);
+		const responseObject: object = await response.json();
+		getResponse(responseObject);
+	} catch (error) {
+		console.error("Error in testing model: ", error);
 	}
 }

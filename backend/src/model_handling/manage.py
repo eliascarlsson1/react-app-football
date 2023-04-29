@@ -21,7 +21,7 @@ def save_model(name: str) -> str:
     # Copy files from temporary storage to models folder
     shutil.copy(
         temporary_storage_path + "/current_model.json",
-        models_path + "/" + name + "/current_model.json",
+        models_path + "/" + name + "/model.json",
     )
     shutil.copy(
         temporary_storage_path + "/current_model_parameters.json",

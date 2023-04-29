@@ -14,7 +14,6 @@ export type DeleteModelAction = {
 };
 export type DeleteModelState = {
 	currentModels: string[];
-	deleteModelServerState: "idle" | "loading";
 };
 
 export default function DeleteModel({
@@ -28,15 +27,16 @@ export default function DeleteModel({
 		state.currentModels[0],
 	);
 	const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
-	if (state.currentModels.includes(selectedModel) === false) {
-		setSelectedModel(state.currentModels[0]);
+	if (
+		!state.currentModels.includes(selectedModel) &&
+		state.currentModels.length !== 0
+	) {
+		setSelectedModel(state.currentModels[0] ?? "");
 	}
 
 	return (
 		<Stack padding={3}>
-			{state.deleteModelServerState === "loading" ? (
-				"Deleting model..."
-			) : (
+			
 				<Stack direction={"row"} gap={2}>
 					<SingleSelect
 						dataArray={state.currentModels}
@@ -70,7 +70,7 @@ export default function DeleteModel({
 						<Button onClick={() => setConfirmDelete(true)}> Delete</Button>
 					)}
 				</Stack>
-			)}
+			
 		</Stack>
 	);
 }
