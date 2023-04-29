@@ -1,6 +1,6 @@
-from src.prepare_data.elo import EloHandler
+from src.prepare_data.prepare_data import prepare_relevant_data
 from src.data_handling.data_handling_utils import get_all_historical_data_dict
 
+
 all_df_dict = get_all_historical_data_dict()
-elo_handler = EloHandler(all_df_dict)
-print(elo_handler.get_all_dict_keys())
+prepare_relevant_data(all_df_dict)
