@@ -61,7 +61,7 @@ export default function Test_model({
 				{state.testResponse
 					? state.testResponse.ROI.map((obj) => (
 							<Typography>
-								{obj.id}: {obj.roi}
+								{/* {obj.id}: {obj.roi} */}
 							</Typography>
 					  ))
 					: "No test response"}
