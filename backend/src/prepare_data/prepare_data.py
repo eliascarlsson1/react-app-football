@@ -19,13 +19,17 @@ relevant_data_path = data_path + "/historical_data/relevant_data"
 prepared_data_path = data_path + "/prepared_data"
 
 
+
 def prepare_relevant_data(
-    all_df_dict: Dict[str, pd.DataFrame], only_current_year: bool
+    all_df_dict: Dict[str, pd.DataFrame], only_current_year: bool, setStatus: Any
 ) -> str:
     elo_tilt_handler = et.Elo_Tilt_Handler(all_df_dict)
     current_year = get_current_year()
 
-    for filename in os.listdir(relevant_data_path):
+    filenames = os.listdir(relevant_data_path)
+    status = 0
+
+    for filename in filenames:
         if len(filename) == 10:
             league = filename[:2]
             year = filename[2:6]
@@ -37,6 +41,9 @@ def prepare_relevant_data(
             )
             dataframe.to_csv(prepared_data_path + "/" + filename, index=False)
             print("Prepared", filename)
+            status += 1
+            setStatus(status)
+
     return "success"
 
 

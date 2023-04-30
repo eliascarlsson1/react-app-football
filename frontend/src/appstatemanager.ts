@@ -15,6 +15,7 @@ import {
 	deleteModel,
 	saveModel,
 	getRoiTestModel,
+	getPrepareDatProgess
 } from "./http-manager";
 import { DeleteModelAction, DeleteModelState } from "./model/deletemodel";
 import { SettingsViewAction } from "./settingsview/settingsview";
@@ -145,7 +146,7 @@ class AppStateManager {
 				case "prepare data":
 					prepareData((response) => {
 						console.log(response);
-					});
+					});					
 					break;
 
 				case "download data":

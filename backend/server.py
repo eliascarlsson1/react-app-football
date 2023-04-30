@@ -1,9 +1,11 @@
 from flask import Flask, request
 from flask_cors import CORS
+import json
+from threading import Thread
 from typing import Dict, Any, List
 from src.data_handling.data_handling_utils import (
     get_historical_data_list,
-    get_all_historical_data_dict,
+    get_all_historical_data_dict,   
 )
 from src.data_handling.database_con import (
     get_all_X_parameters,
@@ -23,9 +25,20 @@ CORS(app)  # Add this line to enable CORS for all routes
 ### Variables ###
 all_historical_data_dict = get_all_historical_data_dict()
 
+### Live update ###
+total = 78
+global status
+status = 0
+def setStatus(newStatus: int):
+  global status
+  status = newStatus
+
+@app.route('/prepare-data-progress', methods=['GET'])
+def get_prepare_data_progress() -> str:
+  statusList: Any = {'status':status, 'total':total}
+  return json.dumps(statusList)
 
 ### API Routes ###
-
 
 # Historical data API Route
 @app.route("/api/historical")
@@ -62,10 +75,9 @@ def train_model_call() -> str:
 # Prepare data API Route
 @app.route("/api/prepare-data-call", methods=["POST"])
 def prepare_data_call() -> str:
-    ret: str = prepare_relevant_data(
-        all_df_dict=all_historical_data_dict, only_current_year=False
-    )
-    return ret
+    t1 = Thread(target=prepare_relevant_data, args=(all_historical_data_dict, False, setStatus))
+    t1.start()
+    return "Started"
 
 
 # Download latest data API Route
