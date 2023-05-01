@@ -142,14 +142,12 @@ export async function getRoiTestModel(
 	}
 }
 
-export async function getPrepareDatProgess(
-	getResponse: (response: object) => void,
+export async function getPrepareDataProgess(
+	getResponse: (response: { status: string; total: string }) => void,
 ) {
 	try {
-		const response = await fetch(
-			"http://localhost:5000/prepare-data-progress",
-		);
-		const responseObject: object = await response.json();
+		const response = await fetch("http://localhost:5000/prepare-data-progress");
+		const responseObject = await response.json();
 		getResponse(responseObject);
 	} catch (error) {
 		console.error("Error in getting prepare data progress: ", error);

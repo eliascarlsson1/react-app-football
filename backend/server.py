@@ -5,7 +5,7 @@ from threading import Thread
 from typing import Dict, Any, List
 from src.data_handling.data_handling_utils import (
     get_historical_data_list,
-    get_all_historical_data_dict,   
+    get_all_historical_data_dict,
 )
 from src.data_handling.database_con import (
     get_all_X_parameters,
@@ -26,19 +26,27 @@ CORS(app)  # Add this line to enable CORS for all routes
 all_historical_data_dict = get_all_historical_data_dict()
 
 ### Live update ###
-total = 78
+global total
+total = 13
 global status
 status = 0
-def setStatus(newStatus: int):
-  global status
-  status = newStatus
 
-@app.route('/prepare-data-progress', methods=['GET'])
+
+def setStatus(newStatus: int, newTotal: int):
+    global status
+    status = newStatus
+    global total
+    total = newTotal
+
+
+@app.route("/prepare-data-progress", methods=["GET"])
 def get_prepare_data_progress() -> str:
-  statusList: Any = {'status':status, 'total':total}
-  return json.dumps(statusList)
+    statusList: Any = {"status": status, "total": total}
+    return json.dumps(statusList)
+
 
 ### API Routes ###
+
 
 # Historical data API Route
 @app.route("/api/historical")
@@ -75,7 +83,9 @@ def train_model_call() -> str:
 # Prepare data API Route
 @app.route("/api/prepare-data-call", methods=["POST"])
 def prepare_data_call() -> str:
-    t1 = Thread(target=prepare_relevant_data, args=(all_historical_data_dict, False, setStatus))
+    t1 = Thread(
+        target=prepare_relevant_data, args=(all_historical_data_dict, True, setStatus)
+    )
     t1.start()
     return "Started"
 
@@ -104,15 +114,17 @@ def save_model_call() -> str:
     ret: str = save_model(name)
     return ret
 
+
 # Get roi from model and test API Route
 @app.route("/api/get-roi-model-test", methods=["POST"])
 def roi_test_model() -> Dict[str, str]:
     object = request.get_json()
     modelName: str = object.get("modelName")
     testData: List[str] = object.get("testData")
-    testName: str = object.get("testName") # type: ignore
+    testName: str = object.get("testName")  # type: ignore
     ret: Dict[str, str] = get_roi_for_model_and_test(testData, modelName)
     return ret
+
 
 if __name__ == "__main__":
     app.run(debug=True)

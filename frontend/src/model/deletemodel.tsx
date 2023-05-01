@@ -36,41 +36,39 @@ export default function DeleteModel({
 
 	return (
 		<Stack padding={3}>
-			
-				<Stack direction={"row"} gap={2}>
-					<SingleSelect
-						dataArray={state.currentModels}
-						deliverSelected={(selected: string) => {
-							setSelectedModel(selected);
-						}}
-						selected={selectedModel}
-						label="Delete model"
-						width={150}
-					/>
+			<Stack direction={"row"} gap={2}>
+				<SingleSelect
+					dataArray={state.currentModels}
+					deliverSelected={(selected: string) => {
+						setSelectedModel(selected);
+					}}
+					selected={selectedModel}
+					label="Delete model"
+					width={150}
+				/>
 
-					{confirmDelete ? (
-						<Stack direction={"row"}>
-							<IconButton
-								aria-label="delete"
-								onClick={() => {
-									dispatcher({ type: "delete model", name: selectedModel });
-									setConfirmDelete(false);
-								}}
-							>
-								<DeleteIcon />
-							</IconButton>
-							<IconButton
-								aria-label="delete"
-								onClick={() => setConfirmDelete(false)}
-							>
-								<CancelIcon />
-							</IconButton>
-						</Stack>
-					) : (
-						<Button onClick={() => setConfirmDelete(true)}> Delete</Button>
-					)}
-				</Stack>
-			
+				{confirmDelete ? (
+					<Stack direction={"row"}>
+						<IconButton
+							aria-label="delete"
+							onClick={() => {
+								dispatcher({ type: "delete model", name: selectedModel });
+								setConfirmDelete(false);
+							}}
+						>
+							<DeleteIcon />
+						</IconButton>
+						<IconButton
+							aria-label="delete"
+							onClick={() => setConfirmDelete(false)}
+						>
+							<CancelIcon />
+						</IconButton>
+					</Stack>
+				) : (
+					<Button onClick={() => setConfirmDelete(true)}> Delete</Button>
+				)}
+			</Stack>
 		</Stack>
 	);
 }

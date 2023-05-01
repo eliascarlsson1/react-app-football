@@ -53,7 +53,7 @@ def apply_model(model_name: str, data_list: List[str]) -> Dict[str, pd.DataFrame
     df_dict: Dict[str, pd.DataFrame] = {}
     for df_name in data_list:
         if df_name.endswith(".csv"):
-            df_name = df_name[:-4] 
+            df_name = df_name[:-4]
         if not os.path.exists(abs_path_prepared_data + "/" + df_name + ".csv"):
             raise ValueError("Dataframe does not exist")
         df = pd.read_csv(abs_path_prepared_data + "/" + df_name + ".csv")  # type: ignore

@@ -25,16 +25,17 @@ function useFirstRender() {
 }
 
 function App() {
+	console.log("App render")
+
 	const [appState, setAppState] = useState<AppState>(
 		appStateManager.getInitialAppState(),
 	);
 
-	appStateManager.updateAppState(appState);
-	appStateManager.updateSetState(setAppState);
-
 	if (useFirstRender()) {
 		appStateManager.atFirstRender();
 	}
+
+	appStateManager.onRender(appState, setAppState);
 
 	// Loaded data successfully?
 	if (
@@ -86,7 +87,10 @@ function App() {
 						/>
 					</Stack>
 				) : (
-					<Settingsview dipsatcher={appDispatcher} />
+					<Settingsview
+						state={appStateManager.getComponentState().getSettingsViewState()}
+						dipsatcher={appDispatcher}
+					/>
 				)}
 			</Stack>
 		</Stack>

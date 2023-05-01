@@ -19,7 +19,6 @@ relevant_data_path = data_path + "/historical_data/relevant_data"
 prepared_data_path = data_path + "/prepared_data"
 
 
-
 def prepare_relevant_data(
     all_df_dict: Dict[str, pd.DataFrame], only_current_year: bool, setStatus: Any
 ) -> str:
@@ -27,14 +26,17 @@ def prepare_relevant_data(
     current_year = get_current_year()
 
     filenames = os.listdir(relevant_data_path)
+    ## Filter filenames to include current year
+    if only_current_year:
+        filenames = [
+            filename for filename in filenames if filename[2:6] == current_year
+        ]
     status = 0
 
     for filename in filenames:
         if len(filename) == 10:
             league = filename[:2]
             year = filename[2:6]
-            if only_current_year and year != current_year:
-                continue
             raw_data = pd.read_csv(relevant_data_path + "/" + filename)  # type: ignore
             dataframe = load_one_season(
                 raw_data, league, year, all_df_dict, elo_tilt_handler
@@ -42,7 +44,7 @@ def prepare_relevant_data(
             dataframe.to_csv(prepared_data_path + "/" + filename, index=False)
             print("Prepared", filename)
             status += 1
-            setStatus(status)
+            setStatus(status, len(filenames))
 
     return "success"
 

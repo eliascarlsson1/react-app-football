@@ -6,9 +6,12 @@
 # from src.prepare_data.prepare_data import prepare_relevant_data
 # from src.data_handling.data_handling_utils import get_all_historical_data_dict
 
+# def function(status, total):
+#     print(status, total)
+
 # df_dict = get_all_historical_data_dict()
-# prepare_relevant_data(df_dict, False)
+# prepare_relevant_data(df_dict, True, function)
 
-from src.model_handling.manage import save_model
+# from src.model_handling.manage import save_model
 
-print(save_model("test_model"))
+# print(save_model("test_model"))

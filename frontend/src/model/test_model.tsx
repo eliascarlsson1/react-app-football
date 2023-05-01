@@ -60,9 +60,7 @@ export default function Test_model({
 			<Stack direction={"column"}>
 				{state.testResponse
 					? state.testResponse.ROI.map((obj) => (
-							<Typography>
-								{/* {obj.id}: {obj.roi} */}
-							</Typography>
+							<Typography>{/* {obj.id}: {obj.roi} */}</Typography>
 					  ))
 					: "No test response"}
 			</Stack>

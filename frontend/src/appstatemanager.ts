@@ -15,10 +15,14 @@ import {
 	deleteModel,
 	saveModel,
 	getRoiTestModel,
-	getPrepareDatProgess
+	getPrepareDataProgess,
 } from "./http-manager";
 import { DeleteModelAction, DeleteModelState } from "./model/deletemodel";
-import { SettingsViewAction } from "./settingsview/settingsview";
+import {
+	SettingsViewState,
+	SettingsViewAction,
+	PrepareDataStatus,
+} from "./settingsview/settingsview";
 import {
 	SaveModelAction,
 	SaveModelState,
@@ -35,9 +39,11 @@ export type AppState = {
 	statuses: {
 		trainModelStatus: TrainModelStatus;
 		saveModelState: SaveModelStatus;
+		prepareDataStatus: PrepareDataStatus;
 	};
 	currentModels: string[] | null;
 	testResponse: TestData;
+	intervals: { prepareDataIntervalId: NodeJS.Timeout | null };
 };
 export type AppAction =
 	| TopMenuTabAction
@@ -74,9 +80,11 @@ class AppStateManager {
 			statuses: {
 				trainModelStatus: "idle",
 				saveModelState: "idle",
+				prepareDataStatus: null,
 			},
 			currentModels: null,
 			testResponse: null,
+			intervals: { prepareDataIntervalId: null },
 		};
 		return initalAppState;
 	}
@@ -107,13 +115,28 @@ class AppStateManager {
 		});
 	}
 
-	updateAppState(appState: AppState) {
+	onRender(
+		appState: AppState,
+		setState: React.Dispatch<React.SetStateAction<AppState>>,
+	) {
+		this.#setState = setState;
 		this.#appState = appState;
 		this.#componentStateManager.updateAppState(appState);
-	}
 
-	updateSetState(setState: React.Dispatch<React.SetStateAction<AppState>>) {
-		this.#setState = setState;
+		// Prepare data status
+		const prepareDataStatus = this.#appState.statuses.prepareDataStatus;
+		const prepareDataIntervalId =
+			this.#appState.intervals.prepareDataIntervalId;
+		if (
+			prepareDataStatus !== null &&
+			prepareDataStatus.status === prepareDataStatus.total &&
+			prepareDataIntervalId !== null
+		) {
+			const newAppState: AppState = _.cloneDeep(this.#appState);
+			newAppState.statuses.prepareDataStatus = null;
+			this.#setState(newAppState);
+			clearInterval(prepareDataIntervalId);
+		}
 	}
 
 	getAppActionDispatcher(): AppActionDispatcher {
@@ -144,9 +167,27 @@ class AppStateManager {
 					break;
 
 				case "prepare data":
+					const getPreparedata = () => {
+						getPrepareDataProgess((response) => {
+							const newAppState: AppState = _.cloneDeep(this.#appState);
+							const status = response.status;
+							const total = response.total;
+							newAppState.statuses.prepareDataStatus = {
+								status: status,
+								total: total,
+							};
+							this.#setState(newAppState);
+						});
+					};
+
 					prepareData((response) => {
-						console.log(response);
-					});					
+						getPreparedata();
+					});
+
+					this.#appState.intervals.prepareDataIntervalId = setInterval(() => {
+						getPreparedata();
+					}, 5000);
+
 					break;
 
 				case "download data":
@@ -238,6 +279,12 @@ class ComponentStateManager {
 		return {
 			currentModels: this.#appState.currentModels ?? [],
 			testResponse: this.#appState.testResponse,
+		};
+	}
+
+	getSettingsViewState(): SettingsViewState {
+		return {
+			prepareDataStatus: this.#appState.statuses.prepareDataStatus,
 		};
 	}
 
