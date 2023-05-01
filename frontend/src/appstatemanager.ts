@@ -235,7 +235,6 @@ class AppStateManager {
 					break;
 
 				case "test model":
-					action.testData = this.#appState.historicalData ?? [];
 					getRoiTestModel(action, (response) => {
 						const rois: { id: string; roi: string }[] = [];
 						Object.entries(response).forEach(([key, value]) => {

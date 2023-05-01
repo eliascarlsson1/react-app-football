@@ -121,7 +121,6 @@ def roi_test_model() -> Dict[str, str]:
     object = request.get_json()
     modelName: str = object.get("modelName")
     testData: List[str] = object.get("testData")
-    testName: str = object.get("testName")  # type: ignore
     ret: Dict[str, str] = get_roi_for_model_and_test(testData, modelName)
     return ret
 

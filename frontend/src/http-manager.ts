@@ -134,7 +134,7 @@ export async function downloadLatestData(
 }
 
 export async function getRoiTestModel(
-	info: object,
+	testInfo: object,
 	getResponse: (response: object) => void,
 ) {
 	try {
@@ -145,7 +145,7 @@ export async function getRoiTestModel(
 				headers: {
 					"Content-Type": "application/json",
 				},
-				body: JSON.stringify(info),
+				body: JSON.stringify(testInfo),
 			},
 		);
 		const responseObject: object = await response.json();
