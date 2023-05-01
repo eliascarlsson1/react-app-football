@@ -25,7 +25,7 @@ function useFirstRender() {
 }
 
 function App() {
-	console.log("App render")
+	console.log("App render");
 
 	const [appState, setAppState] = useState<AppState>(
 		appStateManager.getInitialAppState(),
