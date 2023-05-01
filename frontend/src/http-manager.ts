@@ -1,3 +1,5 @@
+import { ModelInformation } from "./appstatemanager";
+
 export async function getHistoricalData(
 	updateHistoricalData: (historicalData: string[]) => void,
 ) {
@@ -11,12 +13,23 @@ export async function getHistoricalData(
 }
 
 export async function getCurrentModels(
-	updateCurrentModels: (currentModels: string[]) => void,
+	updateCurrentModels: (currentModels: ModelInformation[]) => void,
 ) {
 	try {
 		const response = await fetch("http://localhost:5000/api/current-models");
-		const data: string[] = await response.json();
-		const dataToReturn = data.length === 0 ? ["NO MODELS"] : data;
+		const data: ModelInformation[] = await response.json();
+		const dataToReturn =
+			data.length === 0
+				? [
+						{
+							name: "NO MODELS EXISTS",
+							trainingData: [],
+							xParameters: [],
+							yParameter: "",
+						},
+				  ]
+				: data;
+		console.log(dataToReturn);
 		updateCurrentModels(dataToReturn);
 	} catch (error) {
 		console.error("Error in fetching current models:", error);

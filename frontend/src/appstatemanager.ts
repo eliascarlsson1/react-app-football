@@ -31,6 +31,13 @@ import {
 import { TestData, TestModelAction, TestModelState } from "./model/test_model";
 const _ = require("lodash");
 
+export type ModelInformation = {
+	name: string;
+	xParameters: string[];
+	yParameter: string;
+	trainingData: string[];
+};
+
 export type AppState = {
 	tab: TopMenuTabOption;
 	historicalData: string[] | null;
@@ -41,7 +48,7 @@ export type AppState = {
 		saveModelState: SaveModelStatus;
 		prepareDataStatus: PrepareDataStatus;
 	};
-	currentModels: string[] | null;
+	currentModels: ModelInformation[] | null;
 	testResponse: TestData;
 	intervals: { prepareDataIntervalId: NodeJS.Timeout | null };
 };
@@ -264,8 +271,11 @@ class ComponentStateManager {
 	}
 
 	getDeleteModelState(): DeleteModelState {
+		const currentModelNames = this.#appState.currentModels?.map(
+			(model) => model.name,
+		);
 		return {
-			currentModels: this.#appState.currentModels ?? [],
+			currentModels: currentModelNames ?? [],
 		};
 	}
 
@@ -279,6 +289,7 @@ class ComponentStateManager {
 		return {
 			currentModels: this.#appState.currentModels ?? [],
 			testResponse: this.#appState.testResponse,
+			historicalData: this.#appState.historicalData ?? [],
 		};
 	}
 

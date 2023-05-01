@@ -10,10 +10,9 @@ from src.data_handling.data_handling_utils import (
 from src.data_handling.database_con import (
     get_all_X_parameters,
     get_all_Y_parameters,
-    get_model_names,
 )
 from src.model_handling.train_model import train_model
-from src.model_handling.manage import delete_model, save_model
+from src.model_handling.manage import delete_model, save_model, get_model_information
 from src.prepare_data.prepare_data import prepare_relevant_data
 from src.scraping.update_csv import update_leagues
 from src.model_handling.test_model import get_roi_for_model_and_test
@@ -26,22 +25,22 @@ CORS(app)  # Add this line to enable CORS for all routes
 all_historical_data_dict = get_all_historical_data_dict()
 
 ### Live update ###
-global total
-total = 13
-global status
-status = 0
+global prepareDataTotal
+prepareDataTotal = 13
+global prepareDataStatus
+prepareDataStatus = 0
 
 
-def setStatus(newStatus: int, newTotal: int):
-    global status
-    status = newStatus
-    global total
-    total = newTotal
+def setPrepareDataStatus(newStatus: int, newTotal: int):
+    global prepareDataStatus
+    prepareDataStatus = newStatus
+    global prepareDataTotal
+    prepareDataTotal = newTotal
 
 
 @app.route("/prepare-data-progress", methods=["GET"])
 def get_prepare_data_progress() -> str:
-    statusList: Any = {"status": status, "total": total}
+    statusList: Any = {"status": prepareDataStatus, "total": prepareDataTotal}
     return json.dumps(statusList)
 
 
@@ -69,7 +68,7 @@ def y_parameters():
 # Get current models API Route
 @app.route("/api/current-models")
 def current_models():
-    return get_model_names()
+    return get_model_information()
 
 
 # Train model API Route
@@ -84,7 +83,8 @@ def train_model_call() -> str:
 @app.route("/api/prepare-data-call", methods=["POST"])
 def prepare_data_call() -> str:
     t1 = Thread(
-        target=prepare_relevant_data, args=(all_historical_data_dict, True, setStatus)
+        target=prepare_relevant_data,
+        args=(all_historical_data_dict, True, setPrepareDataStatus),
     )
     t1.start()
     return "Started"

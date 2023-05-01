@@ -83,3 +83,20 @@ def load_x_and_y_parameters_from_model(model_name: str) -> Tuple[List[str], str]
     x_pars = json_dict["xParameters"]
     y_par = json_dict["yParameter"]
     return (x_pars, y_par)
+
+
+def load_training_data_from_model(model_name: str) -> List[str]:
+    # ternary operator for path
+    path = (
+        abs_path_current_model_parameters
+        if (model_name == "current_model")
+        else abs_path_models + "/" + model_name + "/model_parameters.json"
+    )
+    if not os.path.exists(path):
+        raise ValueError("Path does not exist")
+
+    # Load json from path
+    with open(path, "r") as f:
+        json_dict = json.load(f)
+    training_data = json_dict["trainingData"]
+    return training_data

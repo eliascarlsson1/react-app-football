@@ -1,5 +1,10 @@
 import shutil
+from typing import List, Dict, Any
 from ..data_handling.database_con import get_model_names, add_delete_model
+from .apply_model_utils import (
+    load_x_and_y_parameters_from_model,
+    load_training_data_from_model,
+)
 import os
 
 script_dir = os.path.dirname(__file__)
@@ -60,3 +65,23 @@ def ensure_save_models_to_database() -> bool:
             return False
 
     return True
+
+
+def get_model_information():
+    if not ensure_save_models_to_database():
+        raise Exception("Error: models folder and database are not in sync")
+
+    model_information: List[Dict[str, Any]] = []
+    model_names = get_model_names()
+
+    for name in model_names:
+        model_information.append(
+            {
+                "name": name,
+                "xParameters": load_x_and_y_parameters_from_model(name)[0],
+                "yParameter": load_x_and_y_parameters_from_model(name)[1],
+                "trainingData": load_training_data_from_model(name),
+            }
+        )
+
+    return model_information

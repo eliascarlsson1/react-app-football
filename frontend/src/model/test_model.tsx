@@ -3,9 +3,9 @@ import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import { Typography } from "@mui/material";
 import SingleSelect from "../components/singleselect";
-import { AppActionDispatcher } from "../appstatemanager";
+import { AppActionDispatcher, ModelInformation } from "../appstatemanager";
 
-export type TestData = { ROI: object[] } | null;
+export type TestData = { ROI: { id: string; roi: string }[] } | null;
 export type TestModelAction = {
 	type: "test model";
 	modelName: string;
@@ -13,7 +13,8 @@ export type TestModelAction = {
 	testName: string;
 };
 export type TestModelState = {
-	currentModels: string[];
+	currentModels: ModelInformation[];
+	historicalData: string[];
 	testResponse: TestData;
 };
 
@@ -25,20 +26,22 @@ export default function Test_model({
 	state: TestModelState;
 }) {
 	const [selectedModel, setSelectedModel] = useState<string>(
-		state.currentModels[0],
+		state.currentModels[0].name,
 	);
 
+	const currentModelNames = state.currentModels.map((model) => model.name);
+
 	if (
-		!state.currentModels.includes(selectedModel) &&
+		!currentModelNames.includes(selectedModel) &&
 		state.currentModels.length !== 0
 	) {
-		setSelectedModel(state.currentModels[0] ?? "");
+		setSelectedModel(state.currentModels[0].name ?? "");
 	}
 
 	return (
 		<Stack>
 			<SingleSelect
-				dataArray={state.currentModels}
+				dataArray={currentModelNames}
 				deliverSelected={(selected: string) => {
 					setSelectedModel(selected);
 				}}
@@ -59,8 +62,10 @@ export default function Test_model({
 			</Button>
 			<Stack direction={"column"}>
 				{state.testResponse
-					? state.testResponse.ROI.map((obj) => (
-							<Typography>{/* {obj.id}: {obj.roi} */}</Typography>
+					? state.testResponse.ROI.map((league) => (
+							<Typography>
+								{league.id}: {league.roi}
+							</Typography>
 					  ))
 					: "No test response"}
 			</Stack>
