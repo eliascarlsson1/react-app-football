@@ -8,10 +8,12 @@ import MultiSelect from "../components/multiselect";
 import DoubleTextSlider from "../components/doubletextslider";
 
 export type TestData = { ROI: { id: string; roi: string }[] } | null;
+
 export type TestModelAction = {
 	type: "test model";
 	modelName: string;
 	testData: string[];
+	filterData: FilterData;
 };
 export type TestModelState = {
 	currentModels: ModelInformation[];
@@ -26,6 +28,7 @@ export default function Test_model({
 	dispatcher: AppActionDispatcher;
 	state: TestModelState;
 }) {
+	//FIXME: Get filter data from create_test component
 	const [selectedModel, setSelectedModel] = useState<string>(
 		state.currentModels[0].name,
 	);
@@ -34,6 +37,8 @@ export default function Test_model({
 		0, 0.5,
 	]);
 	const [probability, setProbability] = useState<number[]>([50, 100]);
+	// FIXME: Dependant on yparam
+	const [outcome, setOutcome] = useState<string[]>(["0", "1"]);
 
 	const currentModelNames = state.currentModels.map((model) => model.name);
 
@@ -72,6 +77,12 @@ export default function Test_model({
 						type: "test model",
 						modelName: selectedModel,
 						testData: selectedDataToTest,
+						filterData: {
+							odds: oddsFilter,
+							confidenceOverOdds: confidenceOverOdds,
+							probability: probability,
+							outcome: outcome,
+						},
 					})
 				}
 			>
@@ -124,7 +135,14 @@ export default function Test_model({
 				}}
 				label="Calculated probability"
 			/>
-			<Typography>Bet on one or zero?</Typography>
+			<MultiSelect
+				dataArray={["0", "1"]}
+				deliverSelected={(outcome) => {
+					setOutcome(outcome);
+				}}
+				selected={outcome}
+				label={"Bet on outcome"}
+			/>
 		</Stack>
 	);
 }

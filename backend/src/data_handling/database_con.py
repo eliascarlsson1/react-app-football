@@ -65,3 +65,46 @@ def add_delete_model(add: bool, name: str) -> None:
         cursor.execute("DELETE FROM models WHERE name = ?", (name,))
     con.commit()
     con.close()
+
+
+def get_test_names() -> List[str]:
+    con = sqlite3.connect(database_abs_path)
+    cursor = con.cursor()
+    cursor.execute("SELECT name FROM tests")
+    results = cursor.fetchall()
+    names: List[str] = [result[0] for result in results]
+    return names
+
+
+def add_test(
+    name: str,
+    odds_high: float,
+    odds_low: float,
+    confidence_over_odds_high: float,
+    confidence_over_odds_low: float,
+    probability_low: float,
+    probability_high: float,
+    outcome: str,
+) -> None:
+    if name in get_test_names():
+        raise ValueError("Test name already exists")
+
+    con = sqlite3.connect(database_abs_path)
+    cursor = con.cursor()
+    cursor.execute(
+        """INSERT INTO tests (name, odds_high, odds_low, confidence_over_odds_high,
+                   confidence_over_odds_low, probability_low, probability_high, outcome)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+        (
+            name,
+            odds_high,
+            odds_low,
+            confidence_over_odds_high,
+            confidence_over_odds_low,
+            probability_low,
+            probability_high,
+            outcome,
+        ),
+    )
+    con.commit()
+    con.close()

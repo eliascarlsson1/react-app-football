@@ -12,7 +12,12 @@ from src.data_handling.database_con import (
     get_all_Y_parameters,
 )
 from src.model_handling.train_model import train_model
-from src.model_handling.manage import delete_model, save_model, get_model_information
+from src.model_handling.manage import (
+    delete_model,
+    save_model,
+    get_model_information,
+    save_test,
+)
 from src.prepare_data.prepare_data import prepare_relevant_data
 from src.scraping.update_csv import update_leagues
 from src.model_handling.test_model import get_roi_for_model_and_test
@@ -115,10 +120,21 @@ def save_model_call() -> str:
     return ret
 
 
+# Save test API Route
+@app.route("/api/save-test-call", methods=["POST"])
+def save_test_call() -> str:
+    object = request.get_json()
+    name: str = object.get("testName")
+    filterData: str = object.get("filterData")
+    ret: str = save_test(name, filterData)
+    return ret
+
+
 # Get roi from model and test API Route
 @app.route("/api/get-roi-model-test", methods=["POST"])
 def roi_test_model() -> Dict[str, str]:
     object = request.get_json()
+    print(object)
     modelName: str = object.get("modelName")
     testData: List[str] = object.get("testData")
     ret: Dict[str, str] = get_roi_for_model_and_test(testData, modelName)
