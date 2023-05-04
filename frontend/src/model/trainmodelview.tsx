@@ -53,7 +53,7 @@ export default function TrainModelView({
 			}}
 			padding={3}
 		>
-			<Stack direction={"row"} gap={20} paddingLeft={1} alignItems={"start"}>
+			<Stack direction={"row"} gap={17} paddingLeft={1} alignItems={"start"}>
 				<Typography variant="h5" gutterBottom>
 					Train model with XGBoost
 				</Typography>

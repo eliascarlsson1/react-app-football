@@ -7,6 +7,7 @@ import TrainModelView from "./model/trainmodelview";
 import Settingsview from "./settingsview/settingsview";
 import DeleteModel from "./model/deletemodel";
 import TestModel from "./model/test_model";
+import CreateTest from "./model/create_test";
 
 const appStateManager = new AppStateManager();
 
@@ -69,7 +70,7 @@ function App() {
 				{appState.tab === "Evaluate" ? (
 					<EvaluateView />
 				) : appState.tab === "Train model" ? (
-					<Stack direction={"row"}>
+					<Stack direction={"row"} gap={1}>
 						<TrainModelView
 							state={appStateManager
 								.getComponentState()
@@ -77,8 +78,9 @@ function App() {
 							dispatcher={appDispatcher}
 							appStateManager={appStateManager}
 						/>
-						<DeleteModel
-							state={appStateManager.getComponentState().getDeleteModelState()}
+
+						<CreateTest
+							state={appStateManager.getComponentState().getCreateTestState()}
 							dispatcher={appDispatcher}
 						/>
 						<TestModel
@@ -89,7 +91,8 @@ function App() {
 				) : (
 					<Settingsview
 						state={appStateManager.getComponentState().getSettingsViewState()}
-						dipsatcher={appDispatcher}
+						dispatcher={appDispatcher}
+						appStateManager={appStateManager}
 					/>
 				)}
 			</Stack>

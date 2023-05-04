@@ -92,28 +92,29 @@ def get_model_information():
     return model_information
 
 
-def save_test(name: str, filterData: Any):
+def save_test(filterData: Any):
     # 'filterData':
     # {'odds': [number, number],
+    # 'testName: string,
     # 'confidenceOverOdds': [number, number],
     # 'probability': [int, int],
     # 'outcome': [0, 1, ...]}}
 
     # FIXME: Test all parameters, so that they are as expected, especially outcome, array...
-
-    odds_high = float(filterData.get["odds"][1])
+    odds_high = float(filterData["odds"][1])
     odds_low = float(filterData["odds"][0])
     confidence_over_odds_high = float(filterData["confidenceOverOdds"][1])
     confidence_over_odds_low = float(filterData["confidenceOverOdds"][0])
     probability_high = int(filterData["probability"][1])
     probability_low = int(filterData["probability"][0])
-    outcome = filterData["outcome"]
+    outcome = ",".join(filterData["outcome"])
+    testName = filterData["testName"]
 
-    if name in get_test_names():
+    if testName in get_test_names():
         return "Error: test name already exists"
 
     add_test(
-        name,
+        testName,
         odds_high,
         odds_low,
         confidence_over_odds_high,

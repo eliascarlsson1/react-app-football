@@ -41,7 +41,7 @@ export default function Savemodel({
 				paddingTop={0.5}
 				paddingBottom={1}
 				color={getColorFromSaveModelServerState(state.saveModelServerState)}
-				width={200}
+				width={356.4}
 			>
 				{state.saveModelServerState}
 			</Typography>

@@ -19,15 +19,14 @@ def calculate_basic_roi(dataframe: pd.DataFrame, y_par: str) -> str:
         return "No odds column found"
 
     roi_df: pd.DataFrame = dataframe[["prediction", y_par, "odds_pred"]]
-    start_money: float = len(roi_df)
-    money: float = len(roi_df)
+    money_bet = 0
+    money_returned = 0
     for index, row in roi_df.iterrows():  # type: ignore
+        odds = float(row["odds_pred"])  # type: ignore
+        if math.isnan(odds):
+            continue
+        money_bet += 1
         if row["prediction"] == row[y_par]:
-            odds = float(row["odds_pred"])  # type: ignore
-            if math.isnan(odds):
-                continue
-            money += odds - 1
-        else:
-            money -= 1
+            money_returned += odds
 
-    return str(100 * money / start_money - 100) + "%"
+    return str(100 * money_returned / money_bet - 100) + "%"

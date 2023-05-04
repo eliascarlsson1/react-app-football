@@ -9,7 +9,7 @@ from ..data_handling.calculations import calculate_basic_roi
 # FIXME: Implement test later
 # Retruns a dictionary of key "PL2122" etc. to ROI
 def get_roi_for_model_and_test(
-    test_data: List[str], model: str, test: str = ""
+    test_data: List[str], model: str, test: str
 ) -> Dict[str, str]:
     df_dict = apply_model(model, test_data)
     roi_dict: Dict[str, str] = {}

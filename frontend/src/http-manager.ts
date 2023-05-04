@@ -1,4 +1,5 @@
 import { ModelInformation } from "./appstatemanager";
+import { FilterData } from "./model/create_test";
 
 export async function getHistoricalData(
 	updateHistoricalData: (historicalData: string[]) => void,
@@ -33,6 +34,18 @@ export async function getCurrentModels(
 		updateCurrentModels(dataToReturn);
 	} catch (error) {
 		console.error("Error in fetching current models:", error);
+	}
+}
+
+export async function getCurrentTests(
+	updateCurrentTests: (currentTests: string[]) => void,
+) {
+	try {
+		const response = await fetch("http://localhost:5000/api/current-tests");
+		const data: string[] = await response.json();
+		updateCurrentTests(data);
+	} catch (error) {
+		console.error("Error in fetching current tests:", error);
 	}
 }
 
@@ -102,6 +115,25 @@ export async function saveModel(
 		getResponse(responseText);
 	} catch (error) {
 		console.error("Error in saving model:", error);
+	}
+}
+
+export async function saveTest(
+	filterData: FilterData,
+	getResponse: (response: string) => void,
+) {
+	try {
+		const response = await fetch("http://localhost:5000/api/save-test-call", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ filterData }),
+		});
+		const responseText: string = await response.text();
+		getResponse(responseText);
+	} catch (error) {
+		console.error("Error in saving test:", error);
 	}
 }
 

@@ -16,6 +16,8 @@ import {
 	saveModel,
 	getRoiTestModel,
 	getPrepareDataProgess,
+	getCurrentTests,
+	saveTest,
 } from "./http-manager";
 import { DeleteModelAction, DeleteModelState } from "./model/deletemodel";
 import {
@@ -28,6 +30,11 @@ import {
 	SaveModelState,
 	SaveModelStatus,
 } from "./model/savemodel";
+import {
+	SaveTestAction,
+	SaveTestStatus,
+	CreateTestState,
+} from "./model/create_test";
 import { TestData, TestModelAction, TestModelState } from "./model/test_model";
 const _ = require("lodash");
 
@@ -47,8 +54,10 @@ export type AppState = {
 		trainModelStatus: TrainModelStatus;
 		saveModelState: SaveModelStatus;
 		prepareDataStatus: PrepareDataStatus;
+		saveTestStatus: SaveTestStatus;
 	};
 	currentModels: ModelInformation[] | null;
+	currentTests: string[] | null;
 	testResponse: TestData;
 	intervals: { prepareDataIntervalId: NodeJS.Timeout | null };
 };
@@ -58,7 +67,8 @@ export type AppAction =
 	| SettingsViewAction
 	| DeleteModelAction
 	| SaveModelAction
-	| TestModelAction;
+	| TestModelAction
+	| SaveTestAction;
 export type AppActionDispatcher = (action: AppAction) => void;
 
 class AppStateManager {
@@ -88,8 +98,10 @@ class AppStateManager {
 				trainModelStatus: "idle",
 				saveModelState: "idle",
 				prepareDataStatus: null,
+				saveTestStatus: "idle",
 			},
 			currentModels: null,
+			currentTests: null,
 			testResponse: null,
 			intervals: { prepareDataIntervalId: null },
 		};
@@ -118,6 +130,12 @@ class AppStateManager {
 		getCurrentModels((models) => {
 			const newAppState: AppState = _.cloneDeep(this.#appState);
 			newAppState.currentModels = models;
+			this.#setState(newAppState);
+		});
+
+		getCurrentTests((tests) => {
+			const newAppState: AppState = _.cloneDeep(this.#appState);
+			newAppState.currentTests = tests;
 			this.#setState(newAppState);
 		});
 	}
@@ -244,6 +262,26 @@ class AppStateManager {
 						newAppState.testResponse = { ROI: rois };
 						this.#setState(newAppState);
 					});
+					break;
+
+				case "save test":
+					newAppState.statuses.saveTestStatus = "saving test";
+					this.#setState(newAppState);
+					saveTest(action.filterData, (response) => {
+						const newAppState: AppState = _.cloneDeep(this.#appState);
+						if (response === "success") {
+							newAppState.statuses.saveTestStatus = "success";
+						} else {
+							newAppState.statuses.saveTestStatus = "error";
+							console.log(response);
+						}
+						this.#setState(newAppState);
+						getCurrentTests((tests) => {
+							const newAppState: AppState = _.cloneDeep(this.#appState);
+							newAppState.currentTests = tests;
+							this.#setState(newAppState);
+						});
+					});
 			}
 		};
 		return appDispatcher;
@@ -289,12 +327,19 @@ class ComponentStateManager {
 			currentModels: this.#appState.currentModels ?? [],
 			testResponse: this.#appState.testResponse,
 			historicalData: this.#appState.historicalData ?? [],
+			currentTests: this.#appState.currentTests ?? [],
 		};
 	}
 
 	getSettingsViewState(): SettingsViewState {
 		return {
 			prepareDataStatus: this.#appState.statuses.prepareDataStatus,
+		};
+	}
+
+	getCreateTestState(): CreateTestState {
+		return {
+			saveTestStatus: this.#appState.statuses.saveTestStatus,
 		};
 	}
 

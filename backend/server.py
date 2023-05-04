@@ -10,6 +10,7 @@ from src.data_handling.data_handling_utils import (
 from src.data_handling.database_con import (
     get_all_X_parameters,
     get_all_Y_parameters,
+    get_test_names,
 )
 from src.model_handling.train_model import train_model
 from src.model_handling.manage import (
@@ -24,6 +25,7 @@ from src.model_handling.test_model import get_roi_for_model_and_test
 
 app = Flask(__name__)
 CORS(app)  # Add this line to enable CORS for all routes
+app.config["CORS_HEADERS"] = "Content-Type"
 
 
 ### Variables ###
@@ -76,6 +78,12 @@ def current_models():
     return get_model_information()
 
 
+# Get current tests API Route
+@app.route("/api/current-tests")
+def current_tests():
+    return get_test_names()
+
+
 # Train model API Route
 @app.route("/api/train-model-call", methods=["POST"])
 def train_model_call() -> str:
@@ -124,9 +132,8 @@ def save_model_call() -> str:
 @app.route("/api/save-test-call", methods=["POST"])
 def save_test_call() -> str:
     object = request.get_json()
-    name: str = object.get("testName")
     filterData: str = object.get("filterData")
-    ret: str = save_test(name, filterData)
+    ret: str = save_test(filterData)
     return ret
 
 
@@ -136,8 +143,9 @@ def roi_test_model() -> Dict[str, str]:
     object = request.get_json()
     print(object)
     modelName: str = object.get("modelName")
+    testName = object.get("testName")
     testData: List[str] = object.get("testData")
-    ret: Dict[str, str] = get_roi_for_model_and_test(testData, modelName)
+    ret: Dict[str, str] = get_roi_for_model_and_test(testData, modelName, testName)
     return ret
 
 

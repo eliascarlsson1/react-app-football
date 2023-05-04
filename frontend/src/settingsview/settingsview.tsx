@@ -2,7 +2,8 @@ import React from "react";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import LinearProgress from "@mui/material/LinearProgress";
-import { AppActionDispatcher } from "../appstatemanager";
+import { AppActionDispatcher, AppStateManager } from "../appstatemanager";
+import DeleteModel from "../model/deletemodel";
 
 export type SettingsViewAction =
 	| { type: "prepare data" }
@@ -16,10 +17,12 @@ export type SettingsViewState = {
 
 export default function Settingsview({
 	state,
-	dipsatcher,
+	dispatcher,
+	appStateManager,
 }: {
 	state: SettingsViewState;
-	dipsatcher: AppActionDispatcher;
+	dispatcher: AppActionDispatcher;
+	appStateManager: AppStateManager;
 }) {
 	const progress =
 		(Number(state.prepareDataStatus?.status) /
@@ -29,27 +32,35 @@ export default function Settingsview({
 	const preparing = state.prepareDataStatus !== null;
 
 	return (
-		<Stack direction={"row"} gap={3}>
-			<Stack gap={2}>
+		<Stack>
+			<Stack direction={"row"} gap={3}>
+				<Stack gap={2}>
+					<Button
+						onClick={() => dispatcher({ type: "prepare data" })}
+						disabled={preparing}
+						variant="contained"
+					>
+						Prepare data
+					</Button>
+					{!preparing ? (
+						""
+					) : (
+						<LinearProgress variant="determinate" value={progress} />
+					)}
+				</Stack>
 				<Button
-					onClick={() => dipsatcher({ type: "prepare data" })}
-					disabled={preparing}
+					onClick={() => dispatcher({ type: "download data" })}
 					variant="contained"
 				>
-					Prepare data
+					Download data
 				</Button>
-				{!preparing ? (
-					""
-				) : (
-					<LinearProgress variant="determinate" value={progress} />
-				)}
 			</Stack>
-			<Button
-				onClick={() => dipsatcher({ type: "download data" })}
-				variant="contained"
-			>
-				Download data
-			</Button>
+			<Stack>
+				<DeleteModel
+					state={appStateManager.getComponentState().getDeleteModelState()}
+					dispatcher={dispatcher}
+				/>
+			</Stack>
 		</Stack>
 	);
 }
