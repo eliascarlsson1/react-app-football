@@ -11,6 +11,7 @@ from src.data_handling.database_con import (
     get_all_X_parameters,
     get_all_Y_parameters,
     get_test_names,
+    delete_test,
 )
 from src.model_handling.train_model import train_model
 from src.model_handling.manage import (
@@ -116,6 +117,15 @@ def delete_model_call() -> str:
     object = request.get_json()
     name: str = object.get("modelName")
     ret: str = delete_model(name)
+    return ret
+
+
+# Delete test API Route
+@app.route("/api/delete-test-call", methods=["POST"])
+def delete_test_call() -> str:
+    object = request.get_json()
+    name: str = object.get("testName")
+    ret: str = delete_test(name)
     return ret
 
 

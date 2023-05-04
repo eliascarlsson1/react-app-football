@@ -4,6 +4,7 @@ import Stack from "@mui/material/Stack";
 import LinearProgress from "@mui/material/LinearProgress";
 import { AppActionDispatcher, AppStateManager } from "../appstatemanager";
 import DeleteModel from "../model/deletemodel";
+import DeleteTest from "../test/deletetest";
 
 export type SettingsViewAction =
 	| { type: "prepare data" }
@@ -58,6 +59,10 @@ export default function Settingsview({
 			<Stack>
 				<DeleteModel
 					state={appStateManager.getComponentState().getDeleteModelState()}
+					dispatcher={dispatcher}
+				/>
+				<DeleteTest
+					state={appStateManager.getComponentState().getDeleteTestState()}
 					dispatcher={dispatcher}
 				/>
 			</Stack>

@@ -1,5 +1,5 @@
 import { ModelInformation } from "./appstatemanager";
-import { FilterData } from "./model/create_test";
+import { FilterData } from "./test/create_test";
 
 export async function getHistoricalData(
 	updateHistoricalData: (historicalData: string[]) => void,
@@ -96,6 +96,22 @@ export async function deleteModel(modelName: string, whenDone: () => void) {
 	} catch (error) {
 		whenDone();
 		console.error("Error in deleting model:", error);
+	}
+}
+
+export async function deleteTest(testName: string, whenDone: () => void) {
+	try {
+		await fetch("http://localhost:5000/api/delete-test-call", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ testName }),
+		});
+		whenDone();
+	} catch (error) {
+		whenDone();
+		console.error("Error in deleting test:", error);
 	}
 }
 

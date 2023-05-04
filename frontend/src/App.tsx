@@ -7,7 +7,7 @@ import TrainModelView from "./model/trainmodelview";
 import Settingsview from "./settingsview/settingsview";
 import DeleteModel from "./model/deletemodel";
 import TestModel from "./model/test_model";
-import CreateTest from "./model/create_test";
+import CreateTest from "./test/create_test";
 
 const appStateManager = new AppStateManager();
 

@@ -18,6 +18,7 @@ import {
 	getPrepareDataProgess,
 	getCurrentTests,
 	saveTest,
+	deleteTest,
 } from "./http-manager";
 import { DeleteModelAction, DeleteModelState } from "./model/deletemodel";
 import {
@@ -34,8 +35,9 @@ import {
 	SaveTestAction,
 	SaveTestStatus,
 	CreateTestState,
-} from "./model/create_test";
+} from "./test/create_test";
 import { TestData, TestModelAction, TestModelState } from "./model/test_model";
+import { DeleteTestAction, DeleteTestState } from "./test/deletetest";
 const _ = require("lodash");
 
 export type ModelInformation = {
@@ -68,7 +70,8 @@ export type AppAction =
 	| DeleteModelAction
 	| SaveModelAction
 	| TestModelAction
-	| SaveTestAction;
+	| SaveTestAction
+	| DeleteTestAction;
 export type AppActionDispatcher = (action: AppAction) => void;
 
 class AppStateManager {
@@ -232,6 +235,17 @@ class AppStateManager {
 					});
 					break;
 
+				case "delete test":
+					this.#setState(newAppState);
+					deleteTest(action.name, () => {
+						getCurrentTests((tests) => {
+							const newAppState: AppState = _.cloneDeep(this.#appState);
+							newAppState.currentTests = tests;
+							this.#setState(newAppState);
+						});
+					});
+					break;
+
 				case "save model":
 					newAppState.statuses.saveModelState = "saving model";
 					this.#setState(newAppState);
@@ -313,6 +327,12 @@ class ComponentStateManager {
 		);
 		return {
 			currentModels: currentModelNames ?? [],
+		};
+	}
+
+	getDeleteTestState(): DeleteTestState {
+		return {
+			currentTests: this.#appState.currentTests ?? [],
 		};
 	}
 

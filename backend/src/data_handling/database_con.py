@@ -76,6 +76,17 @@ def get_test_names() -> List[str]:
     return names
 
 
+def delete_test(name: str) -> str:
+    con = sqlite3.connect(database_abs_path)
+    cursor = con.cursor()
+    if name not in get_test_names():
+        return "Test name does not exist"
+    cursor.execute("DELETE FROM tests WHERE name = ?", (name,))
+    con.commit()
+    con.close()
+    return "success"
+
+
 def add_test(
     name: str,
     odds_high: float,
