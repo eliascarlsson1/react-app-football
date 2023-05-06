@@ -10,16 +10,14 @@ from ..data_handling.data_handling_utils import concatenate_df_dict
 
 
 # FIXME: Implement test later
-# FIXME: 
+# FIXME:
 def get_stats_for_model_and_test(
     test_data: List[str], model: str, test: str
 ) -> Dict[str, Any]:
-
     df_dict_before_filter = apply_model(model, test_data)
     df_dict_before_filter["all"] = concatenate_df_dict(df_dict_before_filter, test_data)
     df_dict = apply_test_to_df_dict(df_dict_before_filter, test)
     df_dict["all"] = concatenate_df_dict(df_dict, test_data)
-
 
     return_dict: Dict[str, Any] = {}
     y_par = load_x_and_y_parameters_from_model(model)[1]
