@@ -181,7 +181,7 @@ export async function downloadLatestData(
 	}
 }
 
-export async function getRoiTestModel(
+export async function getStatsModelTest(
 	testInfo: object,
 	getResponse: (response: object) => void,
 ) {

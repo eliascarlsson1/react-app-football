@@ -1,6 +1,6 @@
 import sqlite3
 import os
-from typing import List
+from typing import List, Any, Dict
 
 script_dir = os.path.dirname(__file__)
 path_to_db = "../../data/db.sqlite"
@@ -119,3 +119,22 @@ def add_test(
     )
     con.commit()
     con.close()
+
+
+def get_test_parameters(test_name: str) -> Dict[str, Any]:
+    con = sqlite3.connect(database_abs_path)
+    cursor = con.cursor()
+    cursor.execute("SELECT * FROM tests WHERE name = ?", (test_name,))
+    results = cursor.fetchall()
+    if len(results) == 0:
+        raise ValueError("Test name does not exist")
+    return_dict: Dict[str, Any] = {}
+    return_dict["name"] = results[0][0]
+    return_dict["odds_high"] = results[0][1]
+    return_dict["odds_low"] = results[0][2]
+    return_dict["confidence_over_odds_high"] = results[0][3]
+    return_dict["confidence_over_odds_low"] = results[0][4]
+    return_dict["probability_low"] = results[0][6]
+    return_dict["probability_high"] = results[0][5]
+    return_dict["outcome"] = results[0][7]
+    return return_dict

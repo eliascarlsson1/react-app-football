@@ -14,7 +14,7 @@ import {
 	downloadLatestData,
 	deleteModel,
 	saveModel,
-	getRoiTestModel,
+	getStatsModelTest,
 	getPrepareDataProgess,
 	getCurrentTests,
 	saveTest,
@@ -267,8 +267,8 @@ class AppStateManager {
 					break;
 
 				case "test model":
-					getRoiTestModel(action, (response) => {
-						const rois: { id: string; roi: string }[] = [];
+					getStatsModelTest(action, (response) => {
+						const rois: { id: string; roi: object }[] = [];
 						Object.entries(response).forEach(([key, value]) => {
 							rois.push({ id: key, roi: value });
 						});

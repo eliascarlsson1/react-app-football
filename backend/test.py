@@ -15,3 +15,7 @@
 # from src.model_handling.manage import save_model
 
 # print(save_model("test_model"))
+
+from src.model_handling.test_model import get_stats_for_model_and_test
+
+print(get_stats_for_model_and_test(["PL2223", "BL2223"], "current_model", "hard test"))

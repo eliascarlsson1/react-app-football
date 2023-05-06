@@ -1,0 +1,10 @@
+odds_0
+odds_1
+odds_pred - odds for prediction
+
+prediction
+prob_0
+prob_1
+prob_pred - probability for prediction
+
+prob_over_odds - probability over odds (decimal)

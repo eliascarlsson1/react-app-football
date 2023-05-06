@@ -22,7 +22,7 @@ from src.model_handling.manage import (
 )
 from src.prepare_data.prepare_data import prepare_relevant_data
 from src.scraping.update_csv import update_leagues
-from src.model_handling.test_model import get_roi_for_model_and_test
+from src.model_handling.test_model import get_stats_for_model_and_test
 
 app = Flask(__name__)
 CORS(app)  # Add this line to enable CORS for all routes
@@ -149,13 +149,13 @@ def save_test_call() -> str:
 
 # Get roi from model and test API Route
 @app.route("/api/get-roi-model-test", methods=["POST"])
-def roi_test_model() -> Dict[str, str]:
+def roi_test_model() -> Dict[str, Any]:
     object = request.get_json()
     print(object)
     modelName: str = object.get("modelName")
     testName = object.get("testName")
     testData: List[str] = object.get("testData")
-    ret: Dict[str, str] = get_roi_for_model_and_test(testData, modelName, testName)
+    ret: Dict[str, Any] = get_stats_for_model_and_test(testData, modelName, testName)
     return ret
 
 

@@ -58,8 +58,8 @@ def apply_model(model_name: str, data_list: List[str]) -> Dict[str, pd.DataFrame
             raise ValueError("Dataframe does not exist")
         df = pd.read_csv(abs_path_prepared_data + "/" + df_name + ".csv")  # type: ignore
         df["prediction"] = classifier.predict(df[xPar])  # type: ignore
-        df["prod_0"] = classifier.predict_proba(df[xPar])[:, 0]  # type: ignore
-        df["prod_1"] = classifier.predict_proba(df[xPar])[:, 1]  # type: ignore
+        df["prob_0"] = classifier.predict_proba(df[xPar])[:, 0]  # type: ignore
+        df["prob_1"] = classifier.predict_proba(df[xPar])[:, 1]  # type: ignore
         df = add_odds_pred(df, "AvgO25", "AvgU25")
         df_dict[df_name] = df
 

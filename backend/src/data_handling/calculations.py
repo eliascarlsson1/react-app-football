@@ -5,7 +5,7 @@ import math
 
 
 # Returns ROI in percantage relative to 100, betting 1 on all games
-def calculate_basic_roi(dataframe: pd.DataFrame, y_par: str) -> str:
+def calculate_basic_roi(dataframe: pd.DataFrame, y_par: str) -> float | str:
     if len(dataframe) == 0:
         return "Empty dataframe"
 
@@ -29,4 +29,4 @@ def calculate_basic_roi(dataframe: pd.DataFrame, y_par: str) -> str:
         if row["prediction"] == row[y_par]:
             money_returned += odds
 
-    return str(100 * money_returned / money_bet - 100) + "%"
+    return 100 * money_returned / money_bet - 100
