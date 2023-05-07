@@ -7,7 +7,7 @@ import math
 # Returns ROI in percantage relative to 100, betting 1 on all games
 def calculate_basic_roi(dataframe: pd.DataFrame, y_par: str) -> float | str:
     if len(dataframe) == 0:
-        return "Empty dataframe"
+        return "No games found"
 
     if "prediction" not in dataframe.columns:
         return "No prediction column found"

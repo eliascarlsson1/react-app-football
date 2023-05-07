@@ -181,6 +181,25 @@ export async function downloadLatestData(
 	}
 }
 
+export async function getRoiFromModel(
+	roiInfo: object,
+	getResponse: (response: object) => void,
+) {
+	try {
+		const response = await fetch("http://localhost:5000/api/get-roi-model", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(roiInfo),
+		});
+		const responseObject: object = await response.json();
+		getResponse(responseObject);
+	} catch (error) {
+		console.error("Error in getting ROI from model:", error);
+	}
+}
+
 export async function getStatsModelTest(
 	testInfo: object,
 	getResponse: (response: object) => void,

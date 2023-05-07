@@ -9,8 +9,16 @@ from ..data_handling.calculations import calculate_basic_roi
 from ..data_handling.data_handling_utils import concatenate_df_dict
 
 
-# FIXME: Implement test later
-# FIXME:
+def get_roi_for_model(test_data: List[str], model: str) -> Dict[str, str | float]:
+    df_dict = apply_model(model, test_data)
+    df_dict["all"] = concatenate_df_dict(df_dict, test_data)
+    y_par = load_x_and_y_parameters_from_model(model)[1]
+    roi_dict: Dict[str, str | float] = {}
+    for key in df_dict:
+        roi_dict[key] = calculate_basic_roi(df_dict[key], y_par)
+    return roi_dict
+
+
 def get_stats_for_model_and_test(
     test_data: List[str], model: str, test: str
 ) -> Dict[str, Any]:
@@ -37,20 +45,17 @@ def get_stats_for_dataframe(
     y_par: str,
 ) -> Dict[str, str]:
     this_df_dict: Dict[str, Any] = {}
-    this_df_dict["length_before_filter"] = len(df_dict_before_filter[key])
-    this_df_dict["length_after_filter"] = len(df_dict[key])
-    this_df_dict["prediction 0 before filter"] = len(
+    this_df_dict["id"] = key
+    this_df_dict["gamesBeforeFilter"] = len(df_dict_before_filter[key])
+    this_df_dict["gamesAfterFilter"] = len(df_dict[key])
+    this_df_dict["zeroBeforeFilter"] = len(
         df_dict_before_filter[key][df_dict_before_filter[key]["prediction"] == 0]
     )
-    this_df_dict["prediction 1 before filter"] = len(
+    this_df_dict["oneBeforeFilter"] = len(
         df_dict_before_filter[key][df_dict_before_filter[key]["prediction"] == 1]
     )
-    this_df_dict["prediction 0 after filter"] = len(
-        df_dict[key][df_dict[key]["prediction"] == 0]
-    )
-    this_df_dict["prediction 1 after filter"] = len(
-        df_dict[key][df_dict[key]["prediction"] == 1]
-    )
+    this_df_dict["zeroAfterFilter"] = len(df_dict[key][df_dict[key]["prediction"] == 0])
+    this_df_dict["oneAfterFilter"] = len(df_dict[key][df_dict[key]["prediction"] == 1])
     this_df_dict["roi"] = calculate_basic_roi(df_dict[key], y_par)
 
     return this_df_dict

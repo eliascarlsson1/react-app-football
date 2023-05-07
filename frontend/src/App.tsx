@@ -11,7 +11,7 @@ import CreateTest from "./test/create_test";
 
 const appStateManager = new AppStateManager();
 
-export type TopMenuTabOption = "Evaluate" | "Train model" | "Settings";
+export type TopMenuTabOption = "Evaluate" | "Train model" | "Test" | "Settings";
 export type TopMenuTabAction = {
 	type: "top menu tab";
 	selectedTab: TopMenuTabOption;
@@ -53,7 +53,12 @@ function App() {
 	const appDispatcher = appStateManager.getAppActionDispatcher();
 
 	// App handles the top menu tab
-	const tabValues: TopMenuTabOption[] = ["Evaluate", "Train model", "Settings"];
+	const tabValues: TopMenuTabOption[] = [
+		"Evaluate",
+		"Train model",
+		"Test",
+		"Settings",
+	];
 	const deliverSelectedIndex = (selectedIndex: number) => {
 		const selectedTab = tabValues[selectedIndex];
 		appDispatcher({ type: "top menu tab", selectedTab });
@@ -78,7 +83,9 @@ function App() {
 							dispatcher={appDispatcher}
 							appStateManager={appStateManager}
 						/>
-
+					</Stack>
+				) : appState.tab === "Test" ? (
+					<Stack>
 						<CreateTest
 							state={appStateManager.getComponentState().getCreateTestState()}
 							dispatcher={appDispatcher}

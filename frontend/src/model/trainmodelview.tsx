@@ -8,6 +8,7 @@ import { AppActionDispatcher } from "../appstatemanager";
 import SingleSelect from "../components/singleselect";
 import SaveModel from "./savemodel";
 import { AppStateManager } from "../appstatemanager";
+import MultiSelect from "../components/multiselect";
 
 export type TrainModelStatus = "idle" | "training" | "success" | "error";
 
@@ -16,6 +17,7 @@ export type TrainModelViewState = {
 	xParameters: string[];
 	yParameters: string[];
 	trainModelStatus: "idle" | "training" | "success" | "error";
+	trainModelRoi: { id: string; roi: string }[];
 };
 
 export type TrainModelAction = {
@@ -26,6 +28,7 @@ export type TrainModelAction = {
 	learningRate: number;
 	maxDepth: number;
 	numberEstimators: number;
+	testData: string[];
 };
 
 export default function TrainModelView({
@@ -44,6 +47,13 @@ export default function TrainModelView({
 	const [maxDepth, setMaxDepth] = useState<number>(4);
 	const [numberEstimators, setNumberEstimators] = useState<number>(250);
 
+	// historical data not in training data
+	const testDataArray = state.historicalData.filter(
+		(data) => !trainingData.includes(data),
+	);
+
+	const [testData, setTestData] = useState<string[]>([]);
+
 	return (
 		<Stack
 			sx={{
@@ -57,6 +67,21 @@ export default function TrainModelView({
 				<Typography variant="h5" gutterBottom>
 					Train model with XGBoost
 				</Typography>
+				<MultiSelect
+					dataArray={testDataArray}
+					deliverSelected={(selectedData) => {
+						setTestData(selectedData);
+					}}
+					label="Test data"
+				/>
+
+				{state.trainModelRoi.map((roi) => {
+					return (
+						<Typography>
+							{roi.id} {roi.roi}
+						</Typography>
+					);
+				})}
 				<Stack>
 					<Button
 						variant="contained"
@@ -70,6 +95,7 @@ export default function TrainModelView({
 								learningRate,
 								maxDepth,
 								numberEstimators,
+								testData,
 							})
 						}
 						disabled={state.trainModelStatus === "training"}

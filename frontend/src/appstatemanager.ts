@@ -19,6 +19,7 @@ import {
 	getCurrentTests,
 	saveTest,
 	deleteTest,
+	getRoiFromModel,
 } from "./http-manager";
 import { DeleteModelAction, DeleteModelState } from "./model/deletemodel";
 import {
@@ -38,6 +39,7 @@ import {
 } from "./test/create_test";
 import { TestData, TestModelAction, TestModelState } from "./model/test_model";
 import { DeleteTestAction, DeleteTestState } from "./test/deletetest";
+import { getTestDataArray, getTrainModelRoi } from "./appstatemanagerutils";
 const _ = require("lodash");
 
 export type ModelInformation = {
@@ -58,9 +60,10 @@ export type AppState = {
 		prepareDataStatus: PrepareDataStatus;
 		saveTestStatus: SaveTestStatus;
 	};
+	trainModelRoi: { id: string; roi: string }[];
 	currentModels: ModelInformation[] | null;
 	currentTests: string[] | null;
-	testResponse: TestData;
+	testResponse: TestData[] | null;
 	intervals: { prepareDataIntervalId: NodeJS.Timeout | null };
 };
 export type AppAction =
@@ -104,6 +107,7 @@ class AppStateManager {
 				saveTestStatus: "idle",
 			},
 			currentModels: null,
+			trainModelRoi: [],
 			currentTests: null,
 			testResponse: null,
 			intervals: { prepareDataIntervalId: null },
@@ -184,6 +188,19 @@ class AppStateManager {
 						const newAppState: AppState = _.cloneDeep(this.#appState);
 						if (response === "success") {
 							newAppState.statuses.trainModelStatus = "success";
+							if (action.testData.length > 0) {
+								getRoiFromModel(
+									{ testData: action.testData, modelName: "current_model" },
+									(response) => {
+										const newAppState: AppState = _.cloneDeep(this.#appState);
+										newAppState.trainModelRoi = getTrainModelRoi(response);
+										this.#setState(newAppState);
+									},
+								);
+							} else {
+								newAppState.trainModelRoi = [];
+								this.#setState(newAppState);
+							}
 						} else {
 							newAppState.statuses.trainModelStatus = "error";
 							console.log(response);
@@ -268,12 +285,9 @@ class AppStateManager {
 
 				case "test model":
 					getStatsModelTest(action, (response) => {
-						const rois: { id: string; roi: object }[] = [];
-						Object.entries(response).forEach(([key, value]) => {
-							rois.push({ id: key, roi: value });
-						});
+						const testDataArray = getTestDataArray(response);
 						const newAppState: AppState = _.cloneDeep(this.#appState);
-						newAppState.testResponse = { ROI: rois };
+						newAppState.testResponse = testDataArray;
 						this.#setState(newAppState);
 					});
 					break;
@@ -369,6 +383,7 @@ class ComponentStateManager {
 			xParameters: this.#appState.xParameters ?? [],
 			yParameters: this.#appState.yParameters ?? [],
 			trainModelStatus: this.#appState.statuses.trainModelStatus,
+			trainModelRoi: this.#appState.trainModelRoi,
 		};
 	}
 }

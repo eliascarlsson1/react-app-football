@@ -7,7 +7,16 @@ import { AppActionDispatcher, ModelInformation } from "../appstatemanager";
 import MultiSelect from "../components/multiselect";
 import DoubleTextSlider from "../components/doubletextslider";
 
-export type TestData = { ROI: { id: string; roi: string }[] } | null;
+export type TestData = {
+	id: string;
+	roi: string;
+	gamesBeforeFilter: number;
+	gamesAfterFilter: number;
+	zeroBeforeFilter: number;
+	zeroAfterFilter: number;
+	oneBeforeFilter: number;
+	oneAfterFilter: number;
+};
 
 export type TestModelAction = {
 	type: "test model";
@@ -18,7 +27,7 @@ export type TestModelAction = {
 export type TestModelState = {
 	currentModels: ModelInformation[];
 	historicalData: string[];
-	testResponse: TestData;
+	testResponse: TestData[] | null;
 	currentTests: string[];
 };
 
@@ -109,9 +118,11 @@ export default function Test_model({
 			</Button>
 			<Stack direction={"column"}>
 				{state.testResponse
-					? state.testResponse.ROI.map((league) => (
+					? state.testResponse.map((obj) => (
 							<Typography>
-								{league.id}: {league.roi}
+								{obj.id} {obj.roi} {obj.gamesBeforeFilter}{" "}
+								{obj.gamesAfterFilter} {obj.zeroBeforeFilter}{" "}
+								{obj.zeroAfterFilter} {obj.oneBeforeFilter} {obj.oneAfterFilter}
 							</Typography>
 					  ))
 					: "No test response"}
