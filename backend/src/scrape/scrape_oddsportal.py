@@ -9,19 +9,6 @@ def scrape():
     country = "england"
     tournament = "premier-league"
 
-    def fi(a: str):
-        try:
-            driver.find_element("xpath", a).text
-        except:
-            return False
-
-    def ffi(a: str):
-        if fi(a) != False:
-            return driver.find_element("xpath", a).text
-
-    def fffi(a: str):
-        return ffi(a)
-
     def fi2(a: str):
         try:
             driver.find_element("xpath", a).click()
@@ -41,7 +28,7 @@ def scrape():
     top_link = "https://www.oddsportal.com/{}/{}/{}/".format(
         "football", country, tournament
     )
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+    driver = webdriver.Chrome()
     driver.get(top_link)
     reject_ads()
 
@@ -80,10 +67,8 @@ def scrape():
 
     # Collect the over/under data for each game
     # for link in game_links:
-    print(get_odds(driver, game_links[0]))
+    print(get_odds(driver, game_links[0]).keys())
 
-
-## FIXME: Only works for over/under +2.5
 def get_odds(
     driver: webdriver.Chrome, link: str
 ) -> Dict[str, Dict[str, List[float]]] | None:
@@ -115,7 +100,8 @@ def get_odds(
             odds_dict = {}
             key = ou.text
             try:
-                print("Try clicking", key)
+                #FIXME: right now scroll problem
+                driver.execute_script("arguments[0].scrollIntoView();", child)
                 child.click()
             except:
                 continue
