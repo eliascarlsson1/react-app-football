@@ -59,6 +59,7 @@ def prepared_scraped_games():
     # Return scrape df/ save to file
     print("Not implemented yet")
 
+
 def prepare_scraped_game(
     HomeTeam: str,
     AwayTeam: str,
@@ -74,7 +75,7 @@ def prepare_scraped_game(
 ) -> pd.DataFrame:
     current_data = pd.read_csv(relevant_data_path + "/" + league + year + ".csv")  # type: ignore
     current_data = pdu.add_simple_features(current_data)
-    
+
     ## FIXME: Heavy to create table only for this..
     ## FIXME: Assuming the teams to predict did not play this date...
     tables: Any = create_tables_for_every_date(current_data)
@@ -106,7 +107,6 @@ def prepare_scraped_game(
     row_data.to_csv("row_data.csv")
     print(row_data)
     return row_data
-
 
 
 def load_one_season(

@@ -19,6 +19,5 @@ prepare_scraped_game(
     "2223",
     "PL",
     all_df_dict=all_historical_data_dict,
-    elo_tilt_handler = elo_tilt_handler,
+    elo_tilt_handler=elo_tilt_handler,
 )
-
