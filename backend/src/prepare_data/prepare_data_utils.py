@@ -32,8 +32,11 @@ def add_simple_features(raw_data: pd.DataFrame) -> pd.DataFrame:
 
 
 def calculate_features_from_table(
-        row_data: pd.DataFrame,
-    raw_data: pd.DataFrame, league: str, year: str, all_df_dict: Dict[str, pd.DataFrame]
+    row_data: pd.DataFrame,
+    raw_data: pd.DataFrame,
+    league: str,
+    year: str,
+    all_df_dict: Dict[str, pd.DataFrame],
 ) -> pd.DataFrame:
     ## If not preparing scrape row_data and raw_data is the same
 

@@ -62,7 +62,10 @@ def prepare_scraped_game(
     league: str,
     all_df_dict: Dict[str, pd.DataFrame],
 ) -> pd.DataFrame:
-    current_data = pd.read_csv(prepared_data_path + "/" + league + year + ".csv")  # type: ignore
+    current_data = pd.read_csv(relevant_data_path + "/" + league + year + ".csv")  # type: ignore
+    current_data = pdu.add_simple_features(current_data)
+    # print current data headers
+
     row_data = pd.DataFrame(
         {
             "HomeTeam": [HomeTeam],
@@ -78,13 +81,12 @@ def prepare_scraped_game(
             "FTR": "unknown",
         }
     )
-    ##FIXME: trick, concat my data to current data, then remove it again
-    concated_data = pd.concat([current_data, row_data])
-    print(concated_data)
 
-    concated_data = pdu.calculate_features_from_table(
-        concated_data, league, year, all_df_dict
+    row_data = pdu.calculate_features_from_table(
+        row_data, current_data, league, year, all_df_dict
     )
+    row_data.to_csv("row_data.csv")
+    print(row_data)
 
 
 
@@ -99,8 +101,8 @@ def load_one_season(
     raw_data = pdu.add_simple_features(raw_data)
 
     # Calculating features
-    raw_data = pd.DataFrame = pdu.calculate_features_from_table(raw_data,
-        raw_data, league, year, all_df_dict
+    raw_data = pd.DataFrame = pdu.calculate_features_from_table(
+        raw_data, raw_data, league, year, all_df_dict
     )
     raw_data = add_tilt_and_elo(raw_data, elo_tilt_handler, league, year)
 
