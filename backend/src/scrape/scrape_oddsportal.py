@@ -41,20 +41,23 @@ def scrape_league(country: str, tournament: str):
     # Collect the over/under data for each game, and team names
 
     over_under_string = "/#over-under;2"
+    one_x_two_string = "/#1X2;2"
     data_rows = []
 
     for link in game_links:
+
+        # Get over/under odds
         driver.get(link + over_under_string)
-        table = get_odds(driver)
         info = get_teams_and_date(driver)
-        if table == None:
+        over_under_odds = get_over_under_odds(driver)
+        if over_under_odds == None:
             continue
         if len(info) == 0:
             continue
         # Make a dataframe row and append to data_rows
-        encoded_odds = json.dumps(table)
+        encoded_odds_over_under = json.dumps(over_under_odds)
         scrape_time = pd.Timestamp.utcnow().isoformat()
-        data_rows.append([country, tournament, scrape_time] + info + [encoded_odds])  # type: ignore
+        data_rows.append([country, tournament, scrape_time] + info + [encoded_odds_over_under])  # type: ignore
 
     # Convert data_rows to a dataframe
     old_df = pd.read_csv("./data/scrape.csv")  # type: ignore
@@ -73,7 +76,6 @@ def scrape_league(country: str, tournament: str):
     )
     df = pd.concat([old_df, df], ignore_index=True)  # type: ignore
     df.to_csv("./data/scrape.csv", index=False)
-
 
 def get_teams_and_date(driver: webdriver.Chrome) -> List[str]:
     # Return [home_team, away_team, date, time]
@@ -145,7 +147,7 @@ def get_game_links(driver: webdriver.Chrome, top_link: str) -> List[str]:
     return game_links
 
 
-def get_odds(driver: webdriver.Chrome) -> Dict[str, Dict[str, List[float]]] | None:
+def get_over_under_odds(driver: webdriver.Chrome) -> Dict[str, Dict[str, List[float]]] | None:
     # Return dict: Dict[odds_type: Dict[bookmaker: List[odds]]
     # List odds in order, 0 first, 1 second...
 

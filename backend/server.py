@@ -21,7 +21,7 @@ from src.model_handling.manage import (
     save_test,
 )
 from src.prepare_data.prepare_data import prepare_relevant_data
-from src.scraping.update_csv import update_leagues
+from src.scrape.update_csv import update_leagues
 from src.model_handling.test_model import (
     get_stats_for_model_and_test,
     get_roi_for_model,

@@ -8,6 +8,8 @@ from ..data_handling.database_con import (
     get_all_Y_parameters,
     get_current_year,
 )
+from ..create_tables.create_table import create_tables_for_every_date  # type: ignore
+
 
 all_x_par = get_all_X_parameters()
 all_y_par = get_all_Y_parameters()
@@ -49,10 +51,17 @@ def prepare_relevant_data(
     return "success"
 
 
+def prepared_scraped_games():
+    ## FIXME: WIP
+    # Collect all scraped games
+    # - Odds over under 2.5, average
+    # Change team name to a name that i recognize
+    # Return scrape df/ save to file
+    print("Not implemented yet")
+
 def prepare_scraped_game(
     HomeTeam: str,
     AwayTeam: str,
-    Date: str,
     OddsOver: str,
     OddsUnder: str,
     OddsH: str,
@@ -61,10 +70,15 @@ def prepare_scraped_game(
     year: str,
     league: str,
     all_df_dict: Dict[str, pd.DataFrame],
+    elo_tilt_handler: et.Elo_Tilt_Handler,
 ) -> pd.DataFrame:
     current_data = pd.read_csv(relevant_data_path + "/" + league + year + ".csv")  # type: ignore
     current_data = pdu.add_simple_features(current_data)
-    # print current data headers
+    
+    ## FIXME: Heavy to create table only for this..
+    ## FIXME: Assuming the teams to predict did not play this date...
+    tables: Any = create_tables_for_every_date(current_data)
+    date = list(tables.keys())[-2]
 
     row_data = pd.DataFrame(
         {
@@ -75,7 +89,7 @@ def prepare_scraped_game(
             "AvgA": [OddsA],
             "AvgH": [OddsH],
             "AvgD": [OddsD],
-            "Date": [Date],
+            "Date": [date],
             "GameIndex": ["Predicted_game"],
             "TG": "unknown",
             "FTR": "unknown",
@@ -85,8 +99,13 @@ def prepare_scraped_game(
     row_data = pdu.calculate_features_from_table(
         row_data, current_data, league, year, all_df_dict
     )
+
+    # Add elo and tild
+    row_data = add_tilt_and_elo(row_data, elo_tilt_handler, league, year)
+
     row_data.to_csv("row_data.csv")
     print(row_data)
+    return row_data
 
 
 
