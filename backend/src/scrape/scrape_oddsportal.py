@@ -40,7 +40,6 @@ def scrape_league(country: str, tournament: str):
     over_under_string = "/#over-under;2"
     one_x_two_string = "/#1X2;2"
 
-    data_rows = []
     for link in game_links:
         # Get over/under odds
         driver.get(link + over_under_string)
@@ -56,8 +55,6 @@ def scrape_league(country: str, tournament: str):
         encoded_odds_over_under = json.dumps(over_under_odds)
 
         # 1x2 odds
-        print(info)
-        print(link)
         driver.get(link + one_x_two_string)
         time.sleep(0.5)
         driver.get(link + one_x_two_string)
@@ -70,25 +67,28 @@ def scrape_league(country: str, tournament: str):
 
         # Make a dataframe row and append to data_rows
         scrape_time = pd.Timestamp.utcnow().isoformat()
-        data_rows.append([country, tournament, scrape_time] + info + [encoded_odds_over_under] + [encoded_one_x_two_odds])  # type: ignore
+        data_row = [country, tournament, scrape_time] + info + [encoded_odds_over_under] + [encoded_one_x_two_odds]  # type: ignore
 
-    # Convert data_rows to a dataframe
-    # old_df = pd.read_csv("./data/scrape.csv")  # type: ignore
-    df = pd.DataFrame(
-        data_rows,
-        columns=[
-            "country",
-            "tournament",
-            "scrape_time",
-            "home_team",
-            "away_team",
-            "date",
-            "time",
-            "odds_over_under",
-            "odds_one_x_two",
-        ],
-    )
-    # df = pd.concat([old_df, df], ignore_index=True)  # type: ignore
+        df = pd.DataFrame(
+            [data_row],
+            columns=[
+                "country",
+                "tournament",
+                "scrape_time",
+                "home_team",
+                "away_team",
+                "date",
+                "time",
+                "odds_over_under",
+                "odds_one_x_two",
+            ],
+        )
+        write_to_csv(df)
+
+
+def write_to_csv(df: pd.DataFrame):
+    old_df = pd.read_csv("./data/scrape.csv")  # type: ignore
+    df = pd.concat([old_df, df], ignore_index=True)  # type: ignore
     df.to_csv("./data/scrape.csv", index=False)
 
 
@@ -283,8 +283,8 @@ def get_one_x_two_odds(
     return bookmaker_to_odds
 
 
-if __name__ == "__main__":
-    country = "england"
-    tournament = "premier-league"
+# if __name__ == "__main__":
+#     country = "england"
+#     tournament = "premier-league"
 
-    scrape_league(country, tournament)
+#     scrape_league(country, tournament)
