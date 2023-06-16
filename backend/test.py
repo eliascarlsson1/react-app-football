@@ -1,21 +1,23 @@
-# from src.model_handling.test_model import get_roi_for_model_and_test
-# from src.data_handling.data_handling_utils import get_historical_data_list
+# from src.prepare_data.prepare_data import prepare_scraped_game
+from src.data_handling.data_handling_utils import get_all_historical_data_dict
 
-# print(get_roi_for_model_and_test(get_historical_data_list(), "current_model"))
 
-# from src.prepare_data.prepare_data import prepare_relevant_data
-# from src.data_handling.data_handling_utils import get_all_historical_data_dict
+# ### Variables ###
+all_historical_data_dict = get_all_historical_data_dict()
 
-# def function(status, total):
-#     print(status, total)
+# prepare_scraped_game(
+#     "Chelsea",
+#     "Brentford",
+#     "27/04/2023",
+#     "OddsOver",
+#     "OddsUnder",
+#     "OddsH",
+#     "OddsA",
+#     "OddsD",
+#     "2223",
+#     "PL",
+#     all_df_dict=all_historical_data_dict,
+# )
 
-# df_dict = get_all_historical_data_dict()
-# prepare_relevant_data(df_dict, True, function)
-
-# from src.model_handling.manage import save_model
-
-# print(save_model("test_model"))
-
-from src.model_handling.test_model import get_stats_for_model_and_test
-
-print(get_stats_for_model_and_test(["PL2223", "BL2223"], "current_model", "hard test"))
+from src.prepare_data.prepare_data import prepare_relevant_data
+prepare_relevant_data(all_df_dict=all_historical_data_dict, only_current_year=True, setStatus=print)

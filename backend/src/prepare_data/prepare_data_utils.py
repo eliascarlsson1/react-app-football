@@ -32,38 +32,41 @@ def add_simple_features(raw_data: pd.DataFrame) -> pd.DataFrame:
 
 
 def calculate_features_from_table(
+        row_data: pd.DataFrame,
     raw_data: pd.DataFrame, league: str, year: str, all_df_dict: Dict[str, pd.DataFrame]
 ) -> pd.DataFrame:
+    ## If not preparing scrape row_data and raw_data is the same
+
     tables: Any = create_tables_for_every_date(raw_data)
     # fmt: off
-    raw_data["Played"] = raw_data.apply(played_avg, tables=tables, axis=1)  # type: ignore
-    raw_data["HtPos"] = raw_data.apply(position, team="HomeTeam", tables=tables, axis=1)  # type: ignore
-    raw_data["AtPos"] = raw_data.apply(position, team="AwayTeam", tables=tables, axis=1)  # type: ignore
-    raw_data["HtSGLG"] = raw_data.apply(glg, team="HomeTeam", s_or_c="Goals_Scored", data=raw_data, axis=1)  # type: ignore
-    raw_data["AtSGLG"] = raw_data.apply(glg, team="AwayTeam", s_or_c="Goals_Scored", data=raw_data, axis=1)  # type: ignore
-    raw_data["HtCGLG"] = raw_data.apply(glg, team="HomeTeam", s_or_c="Goals_Conceded", data=raw_data, axis=1)  # type: ignore
-    raw_data["AtCGLG"] = raw_data.apply(glg, team="AwayTeam", s_or_c="Goals_Conceded", data=raw_data, axis=1)  # type: ignore
-    raw_data["HtASGPG"] = raw_data.apply(average_scored_gpg, team="HomeTeam", tables=tables, axis=1)  # type: ignore
-    raw_data["AtASGPG"] = raw_data.apply(average_scored_gpg, team="AwayTeam", tables=tables, axis=1)  # type: ignore
-    raw_data["HtACGPG"] = raw_data.apply(average_conceded_gpg, team="HomeTeam", tables=tables, axis=1) # type: ignore
-    raw_data["AtACGPG"] = raw_data.apply(average_conceded_gpg, team="AwayTeam", tables=tables, axis=1) # type: ignore
-    raw_data["HtASGP5G"] = raw_data.apply(average_scored_gp5g, team="HomeTeam", tables=tables, data=raw_data, axis=1) # type: ignore
-    raw_data["AtASGP5G"] = raw_data.apply(average_scored_gp5g, team="AwayTeam", tables=tables, data=raw_data, axis=1) # type: ignore
-    raw_data["HtACGP5G"] = raw_data.apply(average_conceded_gp5g, team="HomeTeam", tables=tables, data=raw_data, axis=1) # type: ignore
-    raw_data["AtACGP5G"] = raw_data.apply(average_conceded_gp5g, team="AwayTeam", tables=tables, data=raw_data, axis=1) # type: ignore
-    raw_data["HtASGP3G"] = raw_data.apply(average_gp3g, team="HomeTeam", s_or_c="Goals_Scored", tables=tables, data=raw_data, axis=1) # type: ignore
-    raw_data["AtASGP3G"] = raw_data.apply(average_gp3g, team="AwayTeam", s_or_c="Goals_Scored", tables=tables, data=raw_data, axis=1) # type: ignore
-    raw_data["HtACGP3G"] = raw_data.apply(average_gp3g, team="HomeTeam", s_or_c="Goals_Conceded", tables=tables, data=raw_data, axis=1) # type: ignore
-    raw_data["AtACGP3G"] = raw_data.apply(average_gp3g, team="AwayTeam", s_or_c="Goals_Conceded", tables=tables, data=raw_data, axis=1) # type: ignore
-    raw_data["HtpercentGO"] = raw_data.apply(percent_games_over, team="HomeTeam", data=raw_data, axis=1) # type: ignore
-    raw_data["AtpercentGO"] = raw_data.apply(percent_games_over, team="AwayTeam", data=raw_data, axis=1) # type: ignore
+    row_data["Played"] = row_data.apply(played_avg, tables=tables, axis=1)  # type: ignore
+    row_data["HtPos"] = row_data.apply(position, team="HomeTeam", tables=tables, axis=1)  # type: ignore
+    row_data["AtPos"] = row_data.apply(position, team="AwayTeam", tables=tables, axis=1)  # type: ignore
+    row_data["HtSGLG"] = row_data.apply(glg, team="HomeTeam", s_or_c="Goals_Scored", data=raw_data, axis=1)  # type: ignore
+    row_data["AtSGLG"] = row_data.apply(glg, team="AwayTeam", s_or_c="Goals_Scored", data=raw_data, axis=1)  # type: ignore
+    row_data["HtCGLG"] = row_data.apply(glg, team="HomeTeam", s_or_c="Goals_Conceded", data=raw_data, axis=1)  # type: ignore
+    row_data["AtCGLG"] = row_data.apply(glg, team="AwayTeam", s_or_c="Goals_Conceded", data=raw_data, axis=1)  # type: ignore
+    row_data["HtASGPG"] = row_data.apply(average_scored_gpg, team="HomeTeam", tables=tables, axis=1)  # type: ignore
+    row_data["AtASGPG"] = row_data.apply(average_scored_gpg, team="AwayTeam", tables=tables, axis=1)  # type: ignore
+    row_data["HtACGPG"] = row_data.apply(average_conceded_gpg, team="HomeTeam", tables=tables, axis=1) # type: ignore
+    row_data["AtACGPG"] = row_data.apply(average_conceded_gpg, team="AwayTeam", tables=tables, axis=1) # type: ignore
+    row_data["HtASGP5G"] = row_data.apply(average_scored_gp5g, team="HomeTeam", tables=tables, data=raw_data, axis=1) # type: ignore
+    row_data["AtASGP5G"] = row_data.apply(average_scored_gp5g, team="AwayTeam", tables=tables, data=raw_data, axis=1) # type: ignore
+    row_data["HtACGP5G"] = row_data.apply(average_conceded_gp5g, team="HomeTeam", tables=tables, data=raw_data, axis=1) # type: ignore
+    row_data["AtACGP5G"] = row_data.apply(average_conceded_gp5g, team="AwayTeam", tables=tables, data=raw_data, axis=1) # type: ignore
+    row_data["HtASGP3G"] = row_data.apply(average_gp3g, team="HomeTeam", s_or_c="Goals_Scored", tables=tables, data=raw_data, axis=1) # type: ignore
+    row_data["AtASGP3G"] = row_data.apply(average_gp3g, team="AwayTeam", s_or_c="Goals_Scored", tables=tables, data=raw_data, axis=1) # type: ignore
+    row_data["HtACGP3G"] = row_data.apply(average_gp3g, team="HomeTeam", s_or_c="Goals_Conceded", tables=tables, data=raw_data, axis=1) # type: ignore
+    row_data["AtACGP3G"] = row_data.apply(average_gp3g, team="AwayTeam", s_or_c="Goals_Conceded", tables=tables, data=raw_data, axis=1) # type: ignore
+    row_data["HtpercentGO"] = row_data.apply(percent_games_over, team="HomeTeam", data=raw_data, axis=1) # type: ignore
+    row_data["AtpercentGO"] = row_data.apply(percent_games_over, team="AwayTeam", data=raw_data, axis=1) # type: ignore
     # fmt: on
     dict_keys = []
     for filename in os.listdir(all_data_path):  # type: ignore
         if filename[0:2] == league:
             if int(year) >= int(filename[2:6]):  # type: ignore
                 dict_keys.append(filename[0:6])  # type: ignore
-    raw_data["AGTM"] = raw_data.apply(  # type: ignore
+    row_data["AGTM"] = row_data.apply(  # type: ignore
         average_goals_this_matchup,
         dict_keys=dict_keys,
         year=year,
@@ -71,7 +74,7 @@ def calculate_features_from_table(
         all_df_dict=all_df_dict,
     )
 
-    return raw_data
+    return row_data
 
 
 # Calculate from table

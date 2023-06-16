@@ -49,6 +49,45 @@ def prepare_relevant_data(
     return "success"
 
 
+def prepare_scraped_game(
+    HomeTeam: str,
+    AwayTeam: str,
+    Date: str,
+    OddsOver: str,
+    OddsUnder: str,
+    OddsH: str,
+    OddsA: str,
+    OddsD: str,
+    year: str,
+    league: str,
+    all_df_dict: Dict[str, pd.DataFrame],
+) -> pd.DataFrame:
+    current_data = pd.read_csv(prepared_data_path + "/" + league + year + ".csv")  # type: ignore
+    row_data = pd.DataFrame(
+        {
+            "HomeTeam": [HomeTeam],
+            "AwayTeam": [AwayTeam],
+            "AvgO25": [OddsOver],
+            "AvgU25": [OddsUnder],
+            "AvgA": [OddsA],
+            "AvgH": [OddsH],
+            "AvgD": [OddsD],
+            "Date": [Date],
+            "GameIndex": ["Predicted_game"],
+            "TG": "unknown",
+            "FTR": "unknown",
+        }
+    )
+    ##FIXME: trick, concat my data to current data, then remove it again
+    concated_data = pd.concat([current_data, row_data])
+    print(concated_data)
+
+    concated_data = pdu.calculate_features_from_table(
+        concated_data, league, year, all_df_dict
+    )
+
+
+
 def load_one_season(
     raw_data: pd.DataFrame,
     league: str,
@@ -60,7 +99,7 @@ def load_one_season(
     raw_data = pdu.add_simple_features(raw_data)
 
     # Calculating features
-    raw_data = pd.DataFrame = pdu.calculate_features_from_table(
+    raw_data = pd.DataFrame = pdu.calculate_features_from_table(raw_data,
         raw_data, league, year, all_df_dict
     )
     raw_data = add_tilt_and_elo(raw_data, elo_tilt_handler, league, year)

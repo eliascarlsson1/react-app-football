@@ -212,8 +212,8 @@ def get_odds(driver: webdriver.Chrome) -> Dict[str, Dict[str, List[float]]] | No
     return bookmaker_to_odds
 
 
-if __name__ == "__main__":
-    country = "england"
-    tournament = "premier-league"
+# if __name__ == "__main__":
+#     country = "england"
+#     tournament = "premier-league"
 
-    scrape_league(country, tournament)
+#     scrape_league(country, tournament)
