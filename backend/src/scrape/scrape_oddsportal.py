@@ -27,10 +27,8 @@ def scrape_league(country: str, tournament: str):
     )
     driver = webdriver.Chrome()
     driver.get(top_link)
+    time.sleep(1)
     reject_ads()
-
-    # sleep for five
-    # time.sleep(5)
 
     game_links = get_game_links(driver, top_link)
     if len(game_links) == 0:
@@ -38,44 +36,61 @@ def scrape_league(country: str, tournament: str):
         driver.close()
         return
 
-    # Collect the over/under data for each game, and team names
-
+    # Collect the over/under + 1x2 data for each game, and team names
     over_under_string = "/#over-under;2"
     one_x_two_string = "/#1X2;2"
-    data_rows = []
 
     for link in game_links:
-
         # Get over/under odds
         driver.get(link + over_under_string)
+        time.sleep(0.5)
         info = get_teams_and_date(driver)
         over_under_odds = get_over_under_odds(driver)
-        if over_under_odds == None:
-            continue
         if len(info) == 0:
+            print("No info found")
             continue
-        # Make a dataframe row and append to data_rows
+        if over_under_odds == None:
+            print("No over/under odds found", info)
+            continue
         encoded_odds_over_under = json.dumps(over_under_odds)
-        scrape_time = pd.Timestamp.utcnow().isoformat()
-        data_rows.append([country, tournament, scrape_time] + info + [encoded_odds_over_under])  # type: ignore
 
-    # Convert data_rows to a dataframe
+        # 1x2 odds
+        driver.get(link + one_x_two_string)
+        time.sleep(0.5)
+        driver.get(link + one_x_two_string)
+        time.sleep(0.5)
+        one_x_two_odds = get_one_x_two_odds(driver)
+        if one_x_two_odds == None:
+            print("No one_x_two_odds found", info)
+            continue
+        encoded_one_x_two_odds = json.dumps(one_x_two_odds)
+
+        # Make a dataframe row and append to data_rows
+        scrape_time = pd.Timestamp.utcnow().isoformat()
+        data_row = [country, tournament, scrape_time] + info + [encoded_odds_over_under] + [encoded_one_x_two_odds]  # type: ignore
+
+        df = pd.DataFrame(
+            [data_row],
+            columns=[
+                "country",
+                "tournament",
+                "scrape_time",
+                "home_team",
+                "away_team",
+                "date",
+                "time",
+                "odds_over_under",
+                "odds_one_x_two",
+            ],
+        )
+        write_to_csv(df)
+
+
+def write_to_csv(df: pd.DataFrame):
     old_df = pd.read_csv("./data/scrape.csv")  # type: ignore
-    df = pd.DataFrame(
-        data_rows,
-        columns=[
-            "country",
-            "tournament",
-            "scrape_time",
-            "home_team",
-            "away_team",
-            "date",
-            "time",
-            "odds_over_under",
-        ],
-    )
     df = pd.concat([old_df, df], ignore_index=True)  # type: ignore
     df.to_csv("./data/scrape.csv", index=False)
+
 
 def get_teams_and_date(driver: webdriver.Chrome) -> List[str]:
     # Return [home_team, away_team, date, time]
@@ -147,12 +162,13 @@ def get_game_links(driver: webdriver.Chrome, top_link: str) -> List[str]:
     return game_links
 
 
-def get_over_under_odds(driver: webdriver.Chrome) -> Dict[str, Dict[str, List[float]]] | None:
+def get_over_under_odds(
+    driver: webdriver.Chrome,
+) -> Dict[str, Dict[str, List[str]]] | None:
     # Return dict: Dict[odds_type: Dict[bookmaker: List[odds]]
     # List odds in order, 0 first, 1 second...
 
     # Navigate to the over/under page
-    time.sleep(0.5)
     ou_odds_div_path = "/html/body/div[1]/div/div[1]/div/main/div[2]/div[4]"
     try:
         ou_odds_div = driver.find_element("xpath", ou_odds_div_path)
@@ -162,7 +178,7 @@ def get_over_under_odds(driver: webdriver.Chrome) -> Dict[str, Dict[str, List[fl
         return
 
     # Fill the dict for each bet type
-    bookmaker_to_odds: Dict[str, Dict[str, List[float]]] = {}
+    bookmaker_to_odds: Dict[str, Dict[str, List[str]]] = {}
     ou_odds_div_children = ou_odds_div.find_elements("xpath", ".//div")  # type: ignore
     for child in ou_odds_div_children:
         text_rel_path = ".//div/div[2]/p[1]"
@@ -210,6 +226,59 @@ def get_over_under_odds(driver: webdriver.Chrome) -> Dict[str, Dict[str, List[fl
                         continue
                 odds_dict[bookmaker.text] = [odds_low.text, odds_high.text]
             bookmaker_to_odds[key] = odds_dict
+
+    return bookmaker_to_odds
+
+
+def get_one_x_two_odds(
+    driver: webdriver.Chrome,
+) -> Dict[str, List[str]] | None:
+    # Return dict: Dict[bookmaker: List[odds]]
+
+    one_x_two_path = "/html/body/div[1]/div/div[1]/div/main/div[2]/div[4]/div[2]/div"
+    try:
+        one_x_two_div = driver.find_element("xpath", one_x_two_path)
+    except:
+        print("all_over_under_odds_path incorrect")
+        driver.close()
+        return
+
+    bookmaker_to_odds: Dict[str, List[str]] = {}
+    one_x_two_div_children = one_x_two_div.find_elements("xpath", ".//div")  # type: ignore
+    betmaker_relative_path = ".//div[1]/a[2]/p"
+    odds_1_path = ".//div[2]/div/div/"
+    odds_x_path = ".//div[3]/div/div/"
+    odds_2_path = ".//div[4]/div/div/"
+    for child in one_x_two_div_children:
+        try:
+            betmaker = child.find_element("xpath", betmaker_relative_path)  # type: ignore
+        except:
+            continue
+        try:
+            odds_1 = child.find_element("xpath", odds_1_path + "p")  # type: ignore
+            if odds_1.text == "":
+                odds_1 = child.find_element("xpath", odds_1_path + "a")  # type: ignore
+        except:
+            print("odds_1 not found")
+            continue
+
+        try:
+            odds_x = child.find_element("xpath", odds_x_path + "p")  # type: ignore
+            if odds_x.text == "":
+                odds_x = child.find_element("xpath", odds_x_path + "a")  # type: ignore
+        except:
+            print("odds_x not found")
+            continue
+
+        try:
+            odds_2 = child.find_element("xpath", odds_2_path + "p")  # type: ignore
+            if odds_2.text == "":
+                odds_2 = child.find_element("xpath", odds_2_path + "a")  # type: ignore
+        except:
+            print("odds_2 not found")
+            continue
+
+        bookmaker_to_odds[betmaker.text] = [odds_1.text, odds_x.text, odds_2.text]
 
     return bookmaker_to_odds
 
