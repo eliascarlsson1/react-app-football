@@ -42,40 +42,58 @@ def scrape_league(country: str, tournament: str):
 
     over_under_string = "/#over-under;2"
     one_x_two_string = "/#1X2;2"
-    data_rows = []
 
-    for link in game_links:
+    driver.get(game_links[0] + one_x_two_string)
 
-        # Get over/under odds
-        driver.get(link + over_under_string)
-        info = get_teams_and_date(driver)
-        over_under_odds = get_over_under_odds(driver)
-        if over_under_odds == None:
-            continue
-        if len(info) == 0:
-            continue
-        # Make a dataframe row and append to data_rows
-        encoded_odds_over_under = json.dumps(over_under_odds)
-        scrape_time = pd.Timestamp.utcnow().isoformat()
-        data_rows.append([country, tournament, scrape_time] + info + [encoded_odds_over_under])  # type: ignore
+    one_x_two_path = "/html/body/div[1]/div/div[1]/div/main/div[2]/div[4]/div[2]/div"
+    try:
+        one_x_two_div = driver.find_element("xpath", one_x_two_path)
+    except:
+        print("all_over_under_odds_path incorrect")
+        driver.close()
+        return
+    print(one_x_two_div)
+    one_x_two_div_children = one_x_two_div.find_elements_by_xpath(".//div") # type: ignore
+    betmaker_relative_path = ""
+    for child in one_x_two_div_children:
+        
 
-    # Convert data_rows to a dataframe
-    old_df = pd.read_csv("./data/scrape.csv")  # type: ignore
-    df = pd.DataFrame(
-        data_rows,
-        columns=[
-            "country",
-            "tournament",
-            "scrape_time",
-            "home_team",
-            "away_team",
-            "date",
-            "time",
-            "odds_over_under",
-        ],
-    )
-    df = pd.concat([old_df, df], ignore_index=True)  # type: ignore
-    df.to_csv("./data/scrape.csv", index=False)
+    /html/body/div[1]/div/div[1]/div/main/div[2]/div[4]/div[2]/div/div[2]/div[1]/a[2]/p
+
+    # data_rows = []
+
+    # for link in game_links:
+
+    #     # Get over/under odds
+    #     driver.get(link + over_under_string)
+    #     info = get_teams_and_date(driver)
+    #     over_under_odds = get_over_under_odds(driver)
+    #     if over_under_odds == None:
+    #         continue
+    #     if len(info) == 0:
+    #         continue
+    #     # Make a dataframe row and append to data_rows
+    #     encoded_odds_over_under = json.dumps(over_under_odds)
+    #     scrape_time = pd.Timestamp.utcnow().isoformat()
+    #     data_rows.append([country, tournament, scrape_time] + info + [encoded_odds_over_under])  # type: ignore
+
+    # # Convert data_rows to a dataframe
+    # old_df = pd.read_csv("./data/scrape.csv")  # type: ignore
+    # df = pd.DataFrame(
+    #     data_rows,
+    #     columns=[
+    #         "country",
+    #         "tournament",
+    #         "scrape_time",
+    #         "home_team",
+    #         "away_team",
+    #         "date",
+    #         "time",
+    #         "odds_over_under",
+    #     ],
+    # )
+    # df = pd.concat([old_df, df], ignore_index=True)  # type: ignore
+    # df.to_csv("./data/scrape.csv", index=False)
 
 def get_teams_and_date(driver: webdriver.Chrome) -> List[str]:
     # Return [home_team, away_team, date, time]
@@ -152,7 +170,7 @@ def get_over_under_odds(driver: webdriver.Chrome) -> Dict[str, Dict[str, List[fl
     # List odds in order, 0 first, 1 second...
 
     # Navigate to the over/under page
-    time.sleep(0.5)
+    time.sleep(0.5) ## FIXME: neccesay?
     ou_odds_div_path = "/html/body/div[1]/div/div[1]/div/main/div[2]/div[4]"
     try:
         ou_odds_div = driver.find_element("xpath", ou_odds_div_path)
@@ -214,8 +232,8 @@ def get_over_under_odds(driver: webdriver.Chrome) -> Dict[str, Dict[str, List[fl
     return bookmaker_to_odds
 
 
-# if __name__ == "__main__":
-#     country = "england"
-#     tournament = "premier-league"
+if __name__ == "__main__":
+    country = "england"
+    tournament = "premier-league"
 
-#     scrape_league(country, tournament)
+    scrape_league(country, tournament)
