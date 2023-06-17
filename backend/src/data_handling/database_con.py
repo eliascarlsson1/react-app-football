@@ -153,6 +153,7 @@ def get_league_id_from_country_tournament(country: str, tournament: str) -> str 
         return
     return results[0][0]
 
+
 def get_country_and_tournament_from_league_id(league: str) -> List[str] | None:
     con = sqlite3.connect(database_abs_path)
     cursor = con.cursor()
@@ -165,6 +166,7 @@ def get_country_and_tournament_from_league_id(league: str) -> List[str] | None:
         print("Can not find league", league)
         return
     return [results[0][0], results[0][1]]
+
 
 def get_historical_data_name_from_oddsportal_name(team_name: str) -> str:
     # I have a table called team_name with historica_data_name and oddsportal_name

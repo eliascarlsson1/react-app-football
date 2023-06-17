@@ -8,7 +8,7 @@ from ..data_handling.database_con import (
     get_all_Y_parameters,
     get_current_year,
     get_league_id_from_country_tournament,
-    get_historical_data_name_from_oddsportal_name
+    get_historical_data_name_from_oddsportal_name,
 )
 from ..create_tables.create_table import create_tables_for_every_date  # type: ignore
 from ..scrape.scrape_utils import (
@@ -58,9 +58,7 @@ def prepare_relevant_data(
     return "success"
 
 
-def prepared_scraped_games(
-    all_df_dict: Dict[str, pd.DataFrame]
-):
+def prepared_scraped_games(all_df_dict: Dict[str, pd.DataFrame]):
     # Writes to data/prepared_scrape.csv
 
     # col_name_to_odds = Dictionary from odds to colname,
@@ -107,7 +105,7 @@ def prepared_scraped_games(
         prepare_scrape_df_rows.append(row)  # type: ignore
 
     ## FIXME: Maybe load old data and append for every row...
-    df = pd.concat(prepare_scrape_df_rows) # type: ignore
+    df = pd.concat(prepare_scrape_df_rows)  # type: ignore
     df.to_csv("./data/prepared_scrape.csv", index=False)  # type: ignore
 
 
@@ -163,7 +161,6 @@ def prepare_scraped_game(
     row_data["ScrapeTime"] = scrape_time
     row_data["ScrapeGameIndex"] = scrape_game_index
     row_data["league"] = league
-    
 
     return row_data
 

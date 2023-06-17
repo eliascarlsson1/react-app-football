@@ -173,32 +173,40 @@ def roi_test_model() -> Dict[str, Any]:
     ret: Dict[str, Any] = get_stats_for_model_and_test(testData, modelName, testName)
     return ret
 
+
 # Scrape leagues by id API Route
 @app.route("/api/scrape-leagues-by-id", methods=["POST"])
 def scrape_leagues_by_id() -> str:
     leagueIds: List[str] = request.get_json()
-    for leagueId in leagueIds:
-        country_league_list = get_country_and_tournament_from_league_id(leagueId)
-        country = country_league_list[0] #type: ignore
-        tournament = country_league_list[1] #type: ignore
-        if type(country) != str or type(tournament) != str: #type: ignore
-            print("Error finding country and tournament from leagueId:" + leagueId)
-            return "Error"
-        else:
-            print("Scraping " + country + " " + tournament)
-            scrape_league(country, tournament)
-    return "Success"
-# Test this api in powershell: 
-# Invoke-RestMethod -Uri 'http://localhost:5000/api/scrape-leagues-by-id' 
+
+    def scrape_leagues_in_background(leagueIds: List[str]) -> None:
+        for leagueId in leagueIds:
+            country_league_list = get_country_and_tournament_from_league_id(leagueId)
+            country = country_league_list[0]  # type: ignore
+            tournament = country_league_list[1]  # type: ignore
+
+            if not isinstance(country, str) or not isinstance(tournament, str):
+                print("Error finding country and tournament from leagueId: " + leagueId)
+            else:
+                print("Scraping " + country + " " + tournament)
+                scrape_league(country, tournament)
+
+    thread = Thread(target=scrape_leagues_in_background, args=(leagueIds,))
+    thread.start()
+
+    return "Scrape started"
+
+
+# Test this api in powershell:
+# Invoke-RestMethod -Uri 'http://localhost:5000/api/scrape-leagues-by-id'
 # -Method POST -Body '["BL", "PL"]' -Headers @{'Content-Type' = 'application/json'}
+
 
 # Prepare scraped data
 @app.route("/api/prepare-scraped-data", methods=["POST"])
 def prepare_scraped_data() -> str:
     prepared_scraped_games(all_df_dict=all_historical_data_dict)
     return "Success"
-
-
 
 
 if __name__ == "__main__":
