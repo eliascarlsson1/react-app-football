@@ -138,3 +138,23 @@ def get_test_parameters(test_name: str) -> Dict[str, Any]:
     return_dict["probability_high"] = results[0][5]
     return_dict["outcome"] = results[0][7]
     return return_dict
+
+
+def get_league_from_country_tournament(country: str, tournament: str) -> str | None:
+    con = sqlite3.connect(database_abs_path)
+    cursor = con.cursor()
+    # I have a table called leagues, i want the id if
+    # country = oddsportal_country and tournament = oddsportal_tournament
+    cursor.execute(
+        "SELECT id FROM leagues WHERE oddsportal_country = ? AND oddsportal_tournament = ?",
+        (country, tournament),
+    )
+    results = cursor.fetchall()
+    if len(results) == 0:
+        print("Can not find league", country, tournament)
+        return
+    return results[0][0]
+
+
+if __name__ == "__main__":
+    print(get_league_from_country_tournament("england", "premier-league"))

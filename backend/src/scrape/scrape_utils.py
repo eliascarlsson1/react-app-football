@@ -14,14 +14,9 @@ def filter_scrape_for_upcoming_games(scrape: pd.DataFrame) -> pd.DataFrame:
 
 
 def filter_scrape_for_last_scraped(scrape: pd.DataFrame) -> pd.DataFrame:
-    scrape["id"] = (
-        scrape["home_team"] + scrape["away_team"] + scrape["date"] + scrape["time"]
-    )
-
     # Filter scrape to only have one of each id, with the latest scrape_time
     scrape = scrape.sort_values(by=["scrape_time"], ascending=False)  # type: ignore
-    scrape = scrape.drop_duplicates(subset=["id"], keep="first")
-    scrape = scrape.drop(columns=["id"])
+    scrape = scrape.drop_duplicates(subset=["scrape_game_index"], keep="first")
     return scrape
 
 
@@ -112,7 +107,9 @@ def get_one_x_two_odds_for_bookmaker(
 # if __name__ == "__main__":
 #     df = pd.read_csv("./data/scrape.csv")  # type: ignore
 #     filtered_df = filter_scrape_for_upcoming_games(df)
+#     print(filtered_df)
 #     filtered_df = filter_scrape_for_last_scraped(filtered_df)
+#     print(filtered_df)
 
 #     jsonStr = filtered_df["odds_over_under"].iloc[0]  # type: ignore
 #     if type(jsonStr) == str:  # type: ignore
@@ -168,5 +165,4 @@ def get_avg_odds_for_odds(row: Any, odds: str) -> List[float] | None:
             print("Could not read json object from dataframe: ", jsonStr)  # type: ignore
             return None
         avgs = get_average_one_x_two_odds(jsonStr)
-        print(avgs)
         return avgs

@@ -7,6 +7,7 @@ from ..data_handling.database_con import (
     get_all_X_parameters,
     get_all_Y_parameters,
     get_current_year,
+    get_league_from_country_tournament,
 )
 from ..create_tables.create_table import create_tables_for_every_date  # type: ignore
 from ..scrape.scrape_utils import (
@@ -75,14 +76,18 @@ def prepared_scraped_games(
     for odds, col_names in odds_to_colname.items():
         add_average_odds(df, col_names, odds)
 
-    print(df)
-
+    ## FIXME: Build dctionaries to translate team names and country/league + year...
+    ## FIXME: Take these dictionaries from the database?
+    year = get_current_year()
     prepare_scrape_df_rows = []
     for index, row in df.iterrows():  # type: ignore
+        league = get_league_from_country_tournament(row["country"], row["tournament"])  # type: ignore
+        if league == None:
+            continue
         row = prepare_scraped_game(
             row["home_team"],  # type: ignore
             row["away_team"],  # type: ignore
-            row["game_date"],  # type: ignore
+            row["date"] + " " + row["time"],  # type: ignore
             row["scrape_time"],  # type: ignore
             row["scrape_game_index"],  # type: ignore
             row["AvgO25"],  # type: ignore
@@ -90,19 +95,14 @@ def prepared_scraped_games(
             row["AvgH"],  # type: ignore
             row["AvgA"],  # type: ignore
             row["AvgD"],  # type: ignore
-            row["Year"],  # type: ignore
-            row["League"],  # type: ignore
+            year,  # type: ignore
+            league,  # type: ignore
             all_df_dict,
             elo_tilt_handler,
         )
         prepare_scrape_df_rows.append(row)  # type: ignore
 
-    ## FIXME: WIP
-    # Collect all scraped games
-    # - Odds over under 2.5, average
-    # Change team name to a name that i recognize
-    # Return scrape df/ save to file
-
+    ## FIXME: Concatenate do df and save
     print("Not implemented yet")
 
 
@@ -154,9 +154,9 @@ def prepare_scraped_game(
     row_data = add_tilt_and_elo(row_data, elo_tilt_handler, league, year)
 
     # Tidy up the dataframe
-    # FIXME: Somehow include bookmaker odds or a game id so i can find bookmaker odds
     row_data["Date"] = game_date
     row_data["ScrapeTime"] = scrape_time
+    row_data["ScrapeGameIndex"] = scrape_game_index
 
     row_data.to_csv("row_data.csv")
     print(row_data)
