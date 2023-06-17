@@ -7,7 +7,8 @@ from ..data_handling.database_con import (
     get_all_X_parameters,
     get_all_Y_parameters,
     get_current_year,
-    get_league_from_country_tournament,
+    get_league_id_from_country_tournament,
+    get_historical_data_name_from_oddsportal_name
 )
 from ..create_tables.create_table import create_tables_for_every_date  # type: ignore
 from ..scrape.scrape_utils import (
@@ -58,8 +59,8 @@ def prepare_relevant_data(
 
 
 def prepared_scraped_games(
-    elo_tilt_handler: et.Elo_Tilt_Handler, all_df_dict: Dict[str, pd.DataFrame]
-) -> pd.DataFrame:
+    all_df_dict: Dict[str, pd.DataFrame]
+):
     # Writes to data/prepared_scrape.csv
 
     # col_name_to_odds = Dictionary from odds to colname,
@@ -67,6 +68,8 @@ def prepared_scraped_games(
     odds_to_colname: Dict[str, List[str]] = {}
     odds_to_colname["Over/Under +2.5"] = ["AvgU25", "AvgO25"]
     odds_to_colname["one_x_two"] = ["AvgH", "AvgD", "AvgA"]
+
+    elo_tilt_handler = et.Elo_Tilt_Handler(all_df_dict)
 
     df = pd.read_csv("./data/scrape.csv")  # type: ignore
     df = filter_scrape_for_last_scraped(df)
@@ -76,17 +79,18 @@ def prepared_scraped_games(
     for odds, col_names in odds_to_colname.items():
         add_average_odds(df, col_names, odds)
 
-    ## FIXME: Build dctionaries to translate team names and country/league + year...
-    ## FIXME: Take these dictionaries from the database?
+    ## FIXME: Function to translate team names, db?
     year = get_current_year()
     prepare_scrape_df_rows = []
     for index, row in df.iterrows():  # type: ignore
-        league = get_league_from_country_tournament(row["country"], row["tournament"])  # type: ignore
+        home_team = get_historical_data_name_from_oddsportal_name(row["home_team"])  # type: ignore
+        away_team = get_historical_data_name_from_oddsportal_name(row["away_team"])  # type: ignore
+        league = get_league_id_from_country_tournament(row["country"], row["tournament"])  # type: ignore
         if league == None:
             continue
         row = prepare_scraped_game(
-            row["home_team"],  # type: ignore
-            row["away_team"],  # type: ignore
+            home_team,  # type: ignore
+            away_team,  # type: ignore
             row["date"] + " " + row["time"],  # type: ignore
             row["scrape_time"],  # type: ignore
             row["scrape_game_index"],  # type: ignore
@@ -102,8 +106,9 @@ def prepared_scraped_games(
         )
         prepare_scrape_df_rows.append(row)  # type: ignore
 
-    ## FIXME: Concatenate do df and save
-    print("Not implemented yet")
+    ## FIXME: Maybe load old data and append for every row...
+    df = pd.concat(prepare_scrape_df_rows) # type: ignore
+    df.to_csv("./data/prepared_scrape.csv", index=False)  # type: ignore
 
 
 def prepare_scraped_game(
@@ -157,9 +162,9 @@ def prepare_scraped_game(
     row_data["Date"] = game_date
     row_data["ScrapeTime"] = scrape_time
     row_data["ScrapeGameIndex"] = scrape_game_index
+    row_data["league"] = league
+    
 
-    row_data.to_csv("row_data.csv")
-    print(row_data)
     return row_data
 
 

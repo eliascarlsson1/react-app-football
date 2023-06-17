@@ -285,8 +285,8 @@ def get_one_x_two_odds(
     return bookmaker_to_odds
 
 
-# if __name__ == "__main__":
-#     country = "england"
-#     tournament = "premier-league"
+if __name__ == "__main__":
+    country = "england"
+    tournament = "premier-league"
 
-#     scrape_league(country, tournament)
+    scrape_league(country, tournament)

@@ -12,6 +12,7 @@ from src.data_handling.database_con import (
     get_all_Y_parameters,
     get_test_names,
     delete_test,
+    get_country_and_tournament_from_league_id,
 )
 from src.model_handling.train_model import train_model
 from src.model_handling.manage import (
@@ -20,8 +21,9 @@ from src.model_handling.manage import (
     get_model_information,
     save_test,
 )
-from src.prepare_data.prepare_data import prepare_relevant_data
+from src.prepare_data.prepare_data import prepare_relevant_data, prepared_scraped_games
 from src.scrape.update_csv import update_leagues
+from src.scrape.scrape_oddsportal import scrape_league
 from src.model_handling.test_model import (
     get_stats_for_model_and_test,
     get_roi_for_model,
@@ -170,6 +172,33 @@ def roi_test_model() -> Dict[str, Any]:
     testData: List[str] = object.get("testData")
     ret: Dict[str, Any] = get_stats_for_model_and_test(testData, modelName, testName)
     return ret
+
+# Scrape leagues by id API Route
+@app.route("/api/scrape-leagues-by-id", methods=["POST"])
+def scrape_leagues_by_id() -> str:
+    leagueIds: List[str] = request.get_json()
+    for leagueId in leagueIds:
+        country_league_list = get_country_and_tournament_from_league_id(leagueId)
+        country = country_league_list[0] #type: ignore
+        tournament = country_league_list[1] #type: ignore
+        if type(country) != str or type(tournament) != str: #type: ignore
+            print("Error finding country and tournament from leagueId:" + leagueId)
+            return "Error"
+        else:
+            print("Scraping " + country + " " + tournament)
+            scrape_league(country, tournament)
+    return "Success"
+# Test this api in powershell: 
+# Invoke-RestMethod -Uri 'http://localhost:5000/api/scrape-leagues-by-id' 
+# -Method POST -Body '["BL", "PL"]' -Headers @{'Content-Type' = 'application/json'}
+
+# Prepare scraped data
+@app.route("/api/prepare-scraped-data", methods=["POST"])
+def prepare_scraped_data() -> str:
+    prepared_scraped_games(all_df_dict=all_historical_data_dict)
+    return "Success"
+
+
 
 
 if __name__ == "__main__":

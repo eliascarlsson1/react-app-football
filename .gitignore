@@ -1,3 +1,4 @@
 # Data
 backend/data/*
 !backend/data/db.sqlite
+!backend/data/scrape.csv

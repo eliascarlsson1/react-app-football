@@ -147,7 +147,6 @@ def add_average_odds(df: pd.DataFrame, col_names: List[str], odds: str):
     for col_name in col_names:
         values = add_to_df_dict[col_name]
         df[col_name] = values
-        print(col_name, " added")
 
 
 def get_avg_odds_for_odds(row: Any, odds: str) -> List[float] | None:

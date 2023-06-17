@@ -140,11 +140,9 @@ def get_test_parameters(test_name: str) -> Dict[str, Any]:
     return return_dict
 
 
-def get_league_from_country_tournament(country: str, tournament: str) -> str | None:
+def get_league_id_from_country_tournament(country: str, tournament: str) -> str | None:
     con = sqlite3.connect(database_abs_path)
     cursor = con.cursor()
-    # I have a table called leagues, i want the id if
-    # country = oddsportal_country and tournament = oddsportal_tournament
     cursor.execute(
         "SELECT id FROM leagues WHERE oddsportal_country = ? AND oddsportal_tournament = ?",
         (country, tournament),
@@ -155,6 +153,36 @@ def get_league_from_country_tournament(country: str, tournament: str) -> str | N
         return
     return results[0][0]
 
+def get_country_and_tournament_from_league_id(league: str) -> List[str] | None:
+    con = sqlite3.connect(database_abs_path)
+    cursor = con.cursor()
+    cursor.execute(
+        "SELECT oddsportal_country, oddsportal_tournament FROM leagues WHERE id = ?",
+        (league,),
+    )
+    results = cursor.fetchall()
+    if len(results) == 0:
+        print("Can not find league", league)
+        return
+    return [results[0][0], results[0][1]]
+
+def get_historical_data_name_from_oddsportal_name(team_name: str) -> str:
+    # I have a table called team_name with historica_data_name and oddsportal_name
+
+    con = sqlite3.connect(database_abs_path)
+    cursor = con.cursor()
+    cursor.execute(
+        "SELECT historical_data_name FROM team_name WHERE oddsportal_name = ?",
+        (team_name,),
+    )
+    results = cursor.fetchall()
+    if len(results) == 0:
+        return team_name
+    return results[0][0]
+
 
 if __name__ == "__main__":
-    print(get_league_from_country_tournament("england", "premier-league"))
+    print(get_league_id_from_country_tournament("england", "premier-league"))
+    print(get_country_and_tournament_from_league_id("BL"))
+    print(get_historical_data_name_from_oddsportal_name("Manchester City"))
+    print(get_historical_data_name_from_oddsportal_name("Sheffield United"))
