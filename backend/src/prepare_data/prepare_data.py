@@ -1,6 +1,6 @@
 import os
 import pandas as pd
-from typing import Dict, Any
+from typing import Dict, Any, List
 from . import prepare_data_utils as pdu
 from . import elo_tilt as et
 from ..data_handling.database_con import (
@@ -9,6 +9,11 @@ from ..data_handling.database_con import (
     get_current_year,
 )
 from ..create_tables.create_table import create_tables_for_every_date  # type: ignore
+from ..scrape.scrape_utils import (
+    filter_scrape_for_last_scraped,
+    filter_scrape_for_upcoming_games,
+    add_average_odds,
+)
 
 
 all_x_par = get_all_X_parameters()
@@ -51,18 +56,62 @@ def prepare_relevant_data(
     return "success"
 
 
-def prepared_scraped_games():
+def prepared_scraped_games(
+    elo_tilt_handler: et.Elo_Tilt_Handler, all_df_dict: Dict[str, pd.DataFrame]
+) -> pd.DataFrame:
+    # Writes to data/prepared_scrape.csv
+
+    # col_name_to_odds = Dictionary from odds to colname,
+    # e.g. Dict["Over/Under +2.5", ["AvgU25", "AvgO25"]] - in the correct order
+    odds_to_colname: Dict[str, List[str]] = {}
+    odds_to_colname["Over/Under +2.5"] = ["AvgU25", "AvgO25"]
+    odds_to_colname["one_x_two"] = ["AvgH", "AvgD", "AvgA"]
+
+    df = pd.read_csv("./data/scrape.csv")  # type: ignore
+    df = filter_scrape_for_last_scraped(df)
+    df = filter_scrape_for_upcoming_games(df)
+
+    # Adds average odds to df
+    for odds, col_names in odds_to_colname.items():
+        add_average_odds(df, col_names, odds)
+
+    print(df)
+
+    prepare_scrape_df_rows = []
+    for index, row in df.iterrows():  # type: ignore
+        row = prepare_scraped_game(
+            row["home_team"],  # type: ignore
+            row["away_team"],  # type: ignore
+            row["game_date"],  # type: ignore
+            row["scrape_time"],  # type: ignore
+            row["scrape_game_index"],  # type: ignore
+            row["AvgO25"],  # type: ignore
+            row["AvgU25"],  # type: ignore
+            row["AvgH"],  # type: ignore
+            row["AvgA"],  # type: ignore
+            row["AvgD"],  # type: ignore
+            row["Year"],  # type: ignore
+            row["League"],  # type: ignore
+            all_df_dict,
+            elo_tilt_handler,
+        )
+        prepare_scrape_df_rows.append(row)  # type: ignore
+
     ## FIXME: WIP
     # Collect all scraped games
     # - Odds over under 2.5, average
     # Change team name to a name that i recognize
     # Return scrape df/ save to file
+
     print("Not implemented yet")
 
 
 def prepare_scraped_game(
     HomeTeam: str,
     AwayTeam: str,
+    game_date: str,
+    scrape_time: str,
+    scrape_game_index: str,
     OddsOver: str,
     OddsUnder: str,
     OddsH: str,
@@ -103,6 +152,11 @@ def prepare_scraped_game(
 
     # Add elo and tild
     row_data = add_tilt_and_elo(row_data, elo_tilt_handler, league, year)
+
+    # Tidy up the dataframe
+    # FIXME: Somehow include bookmaker odds or a game id so i can find bookmaker odds
+    row_data["Date"] = game_date
+    row_data["ScrapeTime"] = scrape_time
 
     row_data.to_csv("row_data.csv")
     print(row_data)

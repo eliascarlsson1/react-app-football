@@ -67,7 +67,8 @@ def scrape_league(country: str, tournament: str):
 
         # Make a dataframe row and append to data_rows
         scrape_time = pd.Timestamp.utcnow().isoformat()
-        data_row = [country, tournament, scrape_time] + info + [encoded_odds_over_under] + [encoded_one_x_two_odds]  # type: ignore
+        scrape_game_index = info[0] + info[1] + info[2]
+        data_row = [country, tournament, scrape_time] + info + [encoded_odds_over_under] + [encoded_one_x_two_odds] + [scrape_game_index]  # type: ignore
 
         df = pd.DataFrame(
             [data_row],
@@ -81,6 +82,7 @@ def scrape_league(country: str, tournament: str):
                 "time",
                 "odds_over_under",
                 "odds_one_x_two",
+                "scrape_game_index",
             ],
         )
         write_to_csv(df)
@@ -283,8 +285,8 @@ def get_one_x_two_odds(
     return bookmaker_to_odds
 
 
-# if __name__ == "__main__":
-#     country = "england"
-#     tournament = "premier-league"
+if __name__ == "__main__":
+    country = "england"
+    tournament = "premier-league"
 
-#     scrape_league(country, tournament)
+    scrape_league(country, tournament)
