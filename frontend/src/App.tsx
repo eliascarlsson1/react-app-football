@@ -4,14 +4,14 @@ import Stack from "@mui/material/Stack";
 import BasicTabs from "./components/basictabs";
 import EvaluateView from "./evaluate/evaluateview";
 import TrainModelView from "./model/trainmodelview";
-import Settingsview from "./settingsview/settingsview";
-import DeleteModel from "./model/deletemodel";
+import DataView from "./dataview/dataview";
+import DeleteTest from "./test/deletetest";
 import TestModel from "./model/test_model";
 import CreateTest from "./test/create_test";
 
 const appStateManager = new AppStateManager();
 
-export type TopMenuTabOption = "Evaluate" | "Train model" | "Test" | "Settings";
+export type TopMenuTabOption = "Evaluate" | "Train model" | "Test" | "Data";
 export type TopMenuTabAction = {
 	type: "top menu tab";
 	selectedTab: TopMenuTabOption;
@@ -57,7 +57,7 @@ function App() {
 		"Evaluate",
 		"Train model",
 		"Test",
-		"Settings",
+		"Data",
 	];
 	const deliverSelectedIndex = (selectedIndex: number) => {
 		const selectedTab = tabValues[selectedIndex];
@@ -94,10 +94,14 @@ function App() {
 							state={appStateManager.getComponentState().getTestModelState()}
 							dispatcher={appDispatcher}
 						/>
+						<DeleteTest
+							state={appStateManager.getComponentState().getDeleteTestState()}
+							dispatcher={appDispatcher}
+						/>
 					</Stack>
 				) : (
-					<Settingsview
-						state={appStateManager.getComponentState().getSettingsViewState()}
+					<DataView
+						state={appStateManager.getComponentState().getDataViewState()}
 						dispatcher={appDispatcher}
 						appStateManager={appStateManager}
 					/>

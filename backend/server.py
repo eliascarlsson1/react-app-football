@@ -13,6 +13,7 @@ from src.data_handling.database_con import (
     get_test_names,
     delete_test,
     get_country_and_tournament_from_league_id,
+    get_all_league_ids_to_names,
 )
 from src.model_handling.train_model import train_model
 from src.model_handling.manage import (
@@ -207,6 +208,12 @@ def scrape_leagues_by_id() -> str:
 def prepare_scraped_data() -> str:
     prepared_scraped_games(all_df_dict=all_historical_data_dict)
     return "Success"
+
+
+# Get all league ids to names
+@app.route("/api/get-league-ids-to-names", methods=["GET"])
+def get_league_ids_to_names() -> str:
+    return json.dumps(get_all_league_ids_to_names())
 
 
 if __name__ == "__main__":

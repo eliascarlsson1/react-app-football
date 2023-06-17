@@ -20,13 +20,15 @@ import {
 	saveTest,
 	deleteTest,
 	getRoiFromModel,
+	scrapeData,
+	getAllLeagueIdsToName,
 } from "./http-manager";
 import { DeleteModelAction, DeleteModelState } from "./model/deletemodel";
 import {
-	SettingsViewState,
-	SettingsViewAction,
+	DataViewAction,
+	DataViewState,
 	PrepareDataStatus,
-} from "./settingsview/settingsview";
+} from "./dataview/dataview";
 import {
 	SaveModelAction,
 	SaveModelState,
@@ -54,6 +56,7 @@ export type AppState = {
 	historicalData: string[] | null;
 	xParameters: string[] | null;
 	yParameters: string[] | null;
+	leagueIdsToName: Map<string, string> | null;
 	statuses: {
 		trainModelStatus: TrainModelStatus;
 		saveModelState: SaveModelStatus;
@@ -69,7 +72,7 @@ export type AppState = {
 export type AppAction =
 	| TopMenuTabAction
 	| TrainModelAction
-	| SettingsViewAction
+	| DataViewAction
 	| DeleteModelAction
 	| SaveModelAction
 	| TestModelAction
@@ -100,6 +103,7 @@ class AppStateManager {
 			historicalData: null,
 			xParameters: null,
 			yParameters: null,
+			leagueIdsToName: null,
 			statuses: {
 				trainModelStatus: "idle",
 				saveModelState: "idle",
@@ -143,6 +147,12 @@ class AppStateManager {
 		getCurrentTests((tests) => {
 			const newAppState: AppState = _.cloneDeep(this.#appState);
 			newAppState.currentTests = tests;
+			this.#setState(newAppState);
+		});
+
+		getAllLeagueIdsToName((leagueIdsToName) => {
+			const newAppState: AppState = _.cloneDeep(this.#appState);
+			newAppState.leagueIdsToName = leagueIdsToName;
 			this.#setState(newAppState);
 		});
 	}
@@ -310,6 +320,11 @@ class AppStateManager {
 							this.#setState(newAppState);
 						});
 					});
+					break;
+
+				case "scrape data":
+					scrapeData(action.leagueIds);
+					break;
 			}
 		};
 		return appDispatcher;
@@ -365,9 +380,10 @@ class ComponentStateManager {
 		};
 	}
 
-	getSettingsViewState(): SettingsViewState {
+	getDataViewState(): DataViewState {
 		return {
 			prepareDataStatus: this.#appState.statuses.prepareDataStatus,
+			leagueIdsToName: this.#appState.leagueIdsToName,
 		};
 	}
 

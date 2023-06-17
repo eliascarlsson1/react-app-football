@@ -3,25 +3,25 @@ import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import LinearProgress from "@mui/material/LinearProgress";
 import { AppActionDispatcher, AppStateManager } from "../appstatemanager";
-import DeleteModel from "../model/deletemodel";
-import DeleteTest from "../test/deletetest";
 
-export type SettingsViewAction =
+export type DataViewAction =
 	| { type: "prepare data" }
-	| { type: "download data" };
+	| { type: "download data" }
+	| { type: "scrape data"; leagueIds: string[] };
 
 export type PrepareDataStatus = null | { status: string; total: string };
 
-export type SettingsViewState = {
+export type DataViewState = {
 	prepareDataStatus: PrepareDataStatus;
+	leagueIdsToName: Map<string, string> | null;
 };
 
-export default function Settingsview({
+export default function DataView({
 	state,
 	dispatcher,
 	appStateManager,
 }: {
-	state: SettingsViewState;
+	state: DataViewState;
 	dispatcher: AppActionDispatcher;
 	appStateManager: AppStateManager;
 }) {
@@ -31,6 +31,8 @@ export default function Settingsview({
 		100;
 
 	const preparing = state.prepareDataStatus !== null;
+
+	//FIXME: Add options for leagues to scrape.
 
 	return (
 		<Stack>
@@ -55,17 +57,16 @@ export default function Settingsview({
 				>
 					Download data
 				</Button>
+				<Button
+					onClick={() =>
+						dispatcher({ type: "scrape data", leagueIds: ["BL", "PL"] })
+					}
+					variant="contained"
+				>
+					Scrape PL
+				</Button>
 			</Stack>
-			<Stack>
-				<DeleteModel
-					state={appStateManager.getComponentState().getDeleteModelState()}
-					dispatcher={dispatcher}
-				/>
-				<DeleteTest
-					state={appStateManager.getComponentState().getDeleteTestState()}
-					dispatcher={dispatcher}
-				/>
-			</Stack>
+			<Stack></Stack>
 		</Stack>
 	);
 }

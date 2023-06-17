@@ -21,7 +21,6 @@ export function getTestDataArray(response: object): TestData[] {
 export function getTrainModelRoi(
 	response: object,
 ): { id: string; roi: string }[] {
-	console.log(response);
 	const trainModelRoi: { id: string; roi: string }[] = [];
 	Object.entries(response).forEach(([key, value]) => {
 		const roi: { id: string; roi: string } = {

@@ -13,6 +13,21 @@ export async function getHistoricalData(
 	}
 }
 
+export async function getAllLeagueIdsToName(
+	updateLeagueIdsToName: (leagueIdsToName: Map<string, string>) => void,
+) {
+	try {
+		const response = await fetch(
+			"http://localhost:5000/api/get-league-ids-to-names",
+		);
+		const data: Object = await response.json();
+		const idToNameMap = new Map(Object.entries(data));
+		updateLeagueIdsToName(idToNameMap);
+	} catch (error) {
+		console.error("Error in fetching league ids to name:", error);
+	}
+}
+
 export async function getCurrentModels(
 	updateCurrentModels: (currentModels: ModelInformation[]) => void,
 ) {
@@ -30,7 +45,6 @@ export async function getCurrentModels(
 						},
 				  ]
 				: data;
-		console.log(dataToReturn);
 		updateCurrentModels(dataToReturn);
 	} catch (error) {
 		console.error("Error in fetching current models:", error);
@@ -231,5 +245,20 @@ export async function getPrepareDataProgess(
 		getResponse(responseObject);
 	} catch (error) {
 		console.error("Error in getting prepare data progress: ", error);
+	}
+}
+
+// Post function with leagueIds = string[]
+export async function scrapeData(leagueIds: string[]) {
+	try {
+		await fetch("http://localhost:5000/api/scrape-leagues-by-id", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(leagueIds),
+		});
+	} catch (error) {
+		console.error("Error in scraping data:", error);
 	}
 }

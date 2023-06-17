@@ -34,6 +34,15 @@ def get_all_league_ids() -> List[str]:
     return ids
 
 
+def get_all_league_ids_to_names() -> Dict[str, str]:
+    con = sqlite3.connect(database_abs_path)
+    cursor = con.cursor()
+    cursor.execute("SELECT id, name FROM leagues")
+    results = cursor.fetchall()
+    ids_to_names: Dict[str, str] = {result[0]: result[1] for result in results}
+    return ids_to_names
+
+
 def get_current_year() -> str:
     con = sqlite3.connect(database_abs_path)
     cursor = con.cursor()
@@ -188,3 +197,4 @@ if __name__ == "__main__":
     print(get_country_and_tournament_from_league_id("BL"))
     print(get_historical_data_name_from_oddsportal_name("Manchester City"))
     print(get_historical_data_name_from_oddsportal_name("Sheffield United"))
+    print(get_all_league_ids_to_names())
