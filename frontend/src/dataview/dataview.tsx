@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import LinearProgress from "@mui/material/LinearProgress";
 import { AppActionDispatcher, AppStateManager } from "../appstatemanager";
+import MultiSelect from "../components/multiselect";
 
 export type DataViewAction =
 	| { type: "prepare data" }
@@ -32,7 +33,25 @@ export default function DataView({
 
 	const preparing = state.prepareDataStatus !== null;
 
-	//FIXME: Add options for leagues to scrape.
+	// Leagues to scrape
+	const idToName = state.leagueIdsToName ?? new Map();
+	const nameToId: Map<string, string> = new Map();
+	for (const [id, name] of idToName) {
+		nameToId.set(name, id);
+	}
+	const [selectedLeagues, setSelectedLeagues] = useState(
+		Array.from(nameToId.keys()),
+	);
+	const onScrapeClick = () => {
+		const selectedIds: string[] = [];
+		for (const name of selectedLeagues) {
+			const id = nameToId.get(name);
+			if (id) {
+				selectedIds.push(id);
+			}
+		}
+		dispatcher({ type: "scrape data", leagueIds: selectedIds });
+	};
 
 	return (
 		<Stack>
@@ -57,14 +76,19 @@ export default function DataView({
 				>
 					Download data
 				</Button>
-				<Button
-					onClick={() =>
-						dispatcher({ type: "scrape data", leagueIds: ["BL", "PL"] })
-					}
-					variant="contained"
-				>
-					Scrape PL
-				</Button>
+				<Stack direction={"column"}>
+					<MultiSelect
+						dataArray={Array.from(nameToId.keys())}
+						deliverSelected={(selected: string[]) => {
+							setSelectedLeagues(selected);
+						}}
+						selected={selectedLeagues}
+						label="Scrape leagues"
+					></MultiSelect>
+					<Button onClick={onScrapeClick} variant="contained">
+						Scrape
+					</Button>
+				</Stack>
 			</Stack>
 			<Stack></Stack>
 		</Stack>
