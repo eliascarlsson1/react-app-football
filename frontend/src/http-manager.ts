@@ -262,3 +262,18 @@ export async function scrapeData(leagueIds: string[]) {
 		console.error("Error in scraping data:", error);
 	}
 }
+
+export async function prepareScrapedData(
+	getResponse: (response: string) => void,
+) {
+	try {
+		const response = await fetch(
+			"http://localhost:5000/api/prepare-scraped-data",
+			{ method: "POST" },
+		);
+		const responseText: string = await response.text();
+		getResponse(responseText);
+	} catch (error) {
+		console.error("Error in preparing scraped data:", error);
+	}
+}

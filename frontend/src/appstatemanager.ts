@@ -22,6 +22,7 @@ import {
 	getRoiFromModel,
 	scrapeData,
 	getAllLeagueIdsToName,
+	prepareScrapedData,
 } from "./http-manager";
 import { DeleteModelAction, DeleteModelState } from "./model/deletemodel";
 import {
@@ -44,6 +45,8 @@ import { DeleteTestAction, DeleteTestState } from "./test/deletetest";
 import { getTestDataArray, getTrainModelRoi } from "./appstatemanagerutils";
 const _ = require("lodash");
 
+export type BasicStringStatus = "idle" | "loading" | "success" | "error";
+
 export type ModelInformation = {
 	name: string;
 	xParameters: string[];
@@ -62,6 +65,7 @@ export type AppState = {
 		saveModelState: SaveModelStatus;
 		prepareDataStatus: PrepareDataStatus;
 		saveTestStatus: SaveTestStatus;
+		prepareScrapeStatus: BasicStringStatus;
 	};
 	trainModelRoi: { id: string; roi: string }[];
 	currentModels: ModelInformation[] | null;
@@ -109,6 +113,7 @@ class AppStateManager {
 				saveModelState: "idle",
 				prepareDataStatus: null,
 				saveTestStatus: "idle",
+				prepareScrapeStatus: "idle",
 			},
 			currentModels: null,
 			trainModelRoi: [],
@@ -325,6 +330,24 @@ class AppStateManager {
 				case "scrape data":
 					scrapeData(action.leagueIds);
 					break;
+				case "prepare scraped data":
+					newAppState.statuses.prepareScrapeStatus = "loading";
+					this.#setState(newAppState);
+					prepareScrapedData((response) => {
+						const newAppState: AppState = _.cloneDeep(this.#appState);
+						if (response === "Success") {
+							newAppState.statuses.prepareScrapeStatus = "success";
+						} else {
+							newAppState.statuses.prepareScrapeStatus = "error";
+						}
+						this.#setState(newAppState);
+						// Set timeout to set idle after 5 seconds
+						setTimeout(() => {
+							const newAppState: AppState = _.cloneDeep(this.#appState);
+							newAppState.statuses.prepareScrapeStatus = "idle";
+							this.#setState(newAppState);
+						}, 5000);
+					});
 			}
 		};
 		return appDispatcher;
@@ -384,6 +407,7 @@ class ComponentStateManager {
 		return {
 			prepareDataStatus: this.#appState.statuses.prepareDataStatus,
 			leagueIdsToName: this.#appState.leagueIdsToName,
+			prepareScrapeStatus: this.#appState.statuses.prepareScrapeStatus,
 		};
 	}
 
