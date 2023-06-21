@@ -209,7 +209,7 @@ def scrape_leagues_by_id() -> str:
 def prepare_scraped_data() -> str:
     try:
         prepared_scraped_games(all_df_dict=all_historical_data_dict)
-    except Exception as e:
+    except:
         print("An error occurred:")
         traceback.print_exc()
         return "Failed"
