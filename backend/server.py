@@ -29,6 +29,7 @@ from src.model_handling.test_model import (
     get_stats_for_model_and_test,
     get_roi_for_model,
 )
+import traceback
 
 app = Flask(__name__)
 CORS(app)  # Add this line to enable CORS for all routes
@@ -206,7 +207,12 @@ def scrape_leagues_by_id() -> str:
 # Prepare scraped data
 @app.route("/api/prepare-scraped-data", methods=["POST"])
 def prepare_scraped_data() -> str:
-    prepared_scraped_games(all_df_dict=all_historical_data_dict)
+    try:
+        prepared_scraped_games(all_df_dict=all_historical_data_dict)
+    except Exception as e:
+        print("An error occurred:")
+        traceback.print_exc()
+        return "Failed"
     return "Success"
 
 
