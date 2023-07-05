@@ -88,7 +88,8 @@ export type AppAction =
 	| SaveModelAction
 	| TestModelAction
 	| SaveTestAction
-	| DeleteTestAction;
+	| DeleteTestAction
+	| PipelineViewAction;
 export type AppActionDispatcher = (action: AppAction) => void;
 
 class AppStateManager {
@@ -362,6 +363,9 @@ class AppStateManager {
 							this.#setState(newAppState);
 						}, 5000);
 					});
+					break;
+				case "delete pipeline":
+					console.log("Delete pipeline");
 			}
 		};
 		return appDispatcher;

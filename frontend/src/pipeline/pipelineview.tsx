@@ -1,5 +1,6 @@
 import React from "react";
 import { AppActionDispatcher } from "../appstatemanager";
+import PipelineRow from "./pipelinerow";
 
 export type PipelineInformation = {
 	name: string;
@@ -32,5 +33,15 @@ export default function PipelineView({
 	state: PipelineViewState;
 	dispatcher: AppActionDispatcher;
 }) {
-	return <div>{JSON.stringify(state.pipelines)}</div>;
+	return (
+		<div>
+			{state.pipelines.map((pipeline) => (
+				<PipelineRow
+					pipeline={pipeline}
+					dispatcher={dispatcher}
+					key={pipeline.name}
+				></PipelineRow>
+			))}
+		</div>
+	);
 }
