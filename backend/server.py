@@ -14,6 +14,10 @@ from src.data_handling.database_con import (
     delete_test,
     get_country_and_tournament_from_league_id,
     get_all_league_ids_to_names,
+    get_pipeline_names,
+    get_pipeline_parameters,
+    add_pipeline,
+    delete_pipeline,
 )
 from src.model_handling.train_model import train_model
 from src.model_handling.manage import (
@@ -220,6 +224,37 @@ def prepare_scraped_data() -> str:
 @app.route("/api/get-league-ids-to-names", methods=["GET"])
 def get_league_ids_to_names() -> str:
     return json.dumps(get_all_league_ids_to_names())
+
+
+# Get all pipeline information
+@app.route("/api/get-pipeline-information", methods=["GET"])
+def get_pipeline_information_call() -> str:
+    pipeline_names = get_pipeline_names()
+    pipeline_information: List[Any] = []
+    for pipeline_name in pipeline_names:
+        pipeline_information.append(get_pipeline_parameters(pipeline_name))
+    return json.dumps(pipeline_information)
+
+
+# Delete pipeline
+@app.route("/api/delete-pipeline", methods=["POST"])
+def delete_pipeline_call() -> str:
+    object = request.get_json()
+    pipeline_name: str = object.get("pipelineName")
+    ret: str = delete_pipeline(pipeline_name)
+    return ret
+
+
+# Save pipeline
+@app.route("/api/save-pipeline", methods=["POST"])
+def save_pipeline_call() -> str:
+    object = request.get_json()
+    name: str = object.get("name")
+    model: str = object.get("model")
+    test: str = object.get("test")
+    leagues: List[str] = object.get("leagues")
+    ret = add_pipeline(name, model, test, leagues)
+    return ret
 
 
 if __name__ == "__main__":

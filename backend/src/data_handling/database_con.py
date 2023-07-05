@@ -227,9 +227,9 @@ def add_pipeline(
     model: str,
     test: str,
     leagues: List[str],
-) -> None:
+) -> str:
     if name in get_pipeline_names():
-        raise ValueError("Pipeline name already exists")
+        return "Pipeline name already exists"
 
     con = sqlite3.connect(database_abs_path)
     cursor = con.cursor()
@@ -245,6 +245,7 @@ def add_pipeline(
     )
     con.commit()
     con.close()
+    return "success"
 
 
 def delete_pipeline(name: str) -> str:
