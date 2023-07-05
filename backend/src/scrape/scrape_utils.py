@@ -20,7 +20,9 @@ def filter_scrape_for_last_scraped(scrape: pd.DataFrame) -> pd.DataFrame:
     return scrape
 
 
-def get_average_over_under_odds(type: str, encodedJsonObj: str) -> List[float] | None:
+def get_over_under_odds(
+    type: str, encodedJsonObj: str
+) -> Dict[str, List[float]] | None:
     # Returns odds [0, 1]
 
     try:
@@ -34,6 +36,16 @@ def get_average_over_under_odds(type: str, encodedJsonObj: str) -> List[float] |
         print("Type not found in json object")
         return None
 
+    return odds
+
+
+def get_average_over_under_odds(type: str, encodedJsonObj: str) -> List[float] | None:
+    # Returns odds [0, 1]
+
+    odds = get_over_under_odds(type, encodedJsonObj)
+    if odds == None:
+        return None
+
     list1 = [float(odds[i][0]) for i in odds]
     list2 = [float(odds[i][1]) for i in odds]
 
@@ -41,6 +53,12 @@ def get_average_over_under_odds(type: str, encodedJsonObj: str) -> List[float] |
     average2 = sum(list2) / len(list2)
 
     return [average1, average2]
+
+
+def get_bookmaker_to_over_under_odds(
+    type: str, encodedJsonObj: str
+) -> Dict[str, List[float]] | None:
+    return None
 
 
 def get_over_under_odds_for_bookmaker(
@@ -66,13 +84,23 @@ def get_over_under_odds_for_bookmaker(
     return [bookmaker_odds[0], bookmaker_odds[1]]
 
 
-def get_average_one_x_two_odds(encodedJsonObj: str) -> List[float] | None:
+def get_one_x_two_odds(encodedJsonObj: str) -> Dict[str, List[float]] | None:
     # Returns odds [0, 1, 2]
 
     try:
         jsonObj = json.loads(encodedJsonObj)
     except:
         print("Could not decode json object")
+        return None
+
+    return jsonObj
+
+
+def get_average_one_x_two_odds(encodedJsonObj: str) -> List[float] | None:
+    # Returns odds [0, 1, 2]
+
+    jsonObj = get_one_x_two_odds(encodedJsonObj)
+    if jsonObj == None:
         return None
 
     list1 = [float(jsonObj[i][0]) for i in jsonObj]
@@ -104,28 +132,26 @@ def get_one_x_two_odds_for_bookmaker(
     return [bookmaker_odds[0], bookmaker_odds[1], bookmaker_odds[2]]
 
 
-# if __name__ == "__main__":
-#     df = pd.read_csv("./data/scrape.csv")  # type: ignore
-#     filtered_df = filter_scrape_for_upcoming_games(df)
-#     print(filtered_df)
-#     filtered_df = filter_scrape_for_last_scraped(filtered_df)
-#     print(filtered_df)
+if __name__ == "__main__":
+    df = pd.read_csv("./data/scrape.csv")  # type: ignore
+    filtered_df = filter_scrape_for_upcoming_games(df)
+    filtered_df = filter_scrape_for_last_scraped(filtered_df)
 
-#     jsonStr = filtered_df["odds_over_under"].iloc[0]  # type: ignore
-#     if type(jsonStr) == str:  # type: ignore
-#         b = get_over_under_odds_for_bookmaker("Over/Under +2.5", "test", "Pinnacle")
-#         print(b)
+    jsonStr = filtered_df["odds_over_under"].iloc[0]  # type: ignore
+    if type(jsonStr) == str:  # type: ignore
+        b = get_over_under_odds_for_bookmaker("Over/Under +2.5", "test", "Pinnacle")
+        print(b)
 
-#         a = get_average_over_under_odds("Over/Under +2.5", jsonStr)
-#         print(a)
+        a = get_average_over_under_odds("Over/Under +2.5", jsonStr)
+        print(a)
 
-#     jsonStr2 = filtered_df["odds_one_x_two"].iloc[0]  # type: ignore
-#     if type(jsonStr2) == str:  # type: ignore
-#         c = get_average_one_x_two_odds(jsonStr2)
-#         print(c)
+    jsonStr2 = filtered_df["odds_one_x_two"].iloc[0]  # type: ignore
+    if type(jsonStr2) == str:  # type: ignore
+        c = get_average_one_x_two_odds(jsonStr2)
+        print(c)
 
-#         d = get_one_x_two_odds_for_bookmaker(jsonStr2, "Pinnacle")
-#         print(d)
+        d = get_one_x_two_odds_for_bookmaker(jsonStr2, "Pinnacle")
+        print(d)
 
 
 # Apply functions to dataframe
