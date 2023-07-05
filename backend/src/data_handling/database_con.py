@@ -1,5 +1,6 @@
 import sqlite3
 import os
+import json
 from typing import List, Any, Dict
 
 script_dir = os.path.dirname(__file__)
@@ -192,9 +193,77 @@ def get_historical_data_name_from_oddsportal_name(team_name: str) -> str:
     return results[0][0]
 
 
+def get_pipeline_names():
+    con = sqlite3.connect(database_abs_path)
+    cursor = con.cursor()
+    cursor.execute("SELECT name FROM pipelines")
+    results = cursor.fetchall()
+    names: List[str] = [result[0] for result in results]
+    return names
+
+
+def get_pipeline_parameters(pipelineName: str) -> Dict[str, Any]:
+    con = sqlite3.connect(database_abs_path)
+    cursor = con.cursor()
+    cursor.execute("SELECT * FROM pipelines WHERE name = ?", (pipelineName,))
+    results = cursor.fetchall()
+    if len(results) == 0:
+        raise ValueError("Pipeline name does not exist")
+    return_dict: Dict[str, Any] = {}
+    return_dict["name"] = results[0][0]
+    return_dict["model"] = results[0][1]
+    return_dict["test"] = results[0][2]
+    leagues = results[0][3]
+    try:
+        leagues = json.loads(leagues)
+    except:
+        leagues = []
+    return_dict["leagues"] = leagues
+    return return_dict
+
+
+def add_pipeline(
+    name: str,
+    model: str,
+    test: str,
+    leagues: List[str],
+) -> None:
+    if name in get_pipeline_names():
+        raise ValueError("Pipeline name already exists")
+
+    con = sqlite3.connect(database_abs_path)
+    cursor = con.cursor()
+    cursor.execute(
+        """INSERT INTO pipelines (name, model, test, leagues)
+                   VALUES (?, ?, ?, ?)""",
+        (
+            name,
+            model,
+            test,
+            json.dumps(leagues),
+        ),
+    )
+    con.commit()
+    con.close()
+
+
+def delete_pipeline(name: str) -> str:
+    con = sqlite3.connect(database_abs_path)
+    cursor = con.cursor()
+    if name not in get_pipeline_names():
+        return "Pipeline name does not exist"
+    cursor.execute("DELETE FROM pipelines WHERE name = ?", (name,))
+    con.commit()
+    con.close()
+    return "success"
+
+
 if __name__ == "__main__":
-    print(get_league_id_from_country_tournament("england", "premier-league"))
-    print(get_country_and_tournament_from_league_id("BL"))
-    print(get_historical_data_name_from_oddsportal_name("Manchester City"))
-    print(get_historical_data_name_from_oddsportal_name("Sheffield United"))
-    print(get_all_league_ids_to_names())
+    print(
+        get_pipeline_names()
+    )  # print(get_league_id_from_country_tournament("england", "premier-league"))
+    print(get_pipeline_parameters("my pipeline"))
+    # print(get_country_and_tournament_from_league_id("BL"))
+    # print(get_historical_data_name_from_oddsportal_name("Manchester City"))
+    # print(get_historical_data_name_from_oddsportal_name("Sheffield United"))
+    # print(get_all_league_ids_to_names())
