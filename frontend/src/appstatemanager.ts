@@ -23,6 +23,7 @@ import {
 	scrapeData,
 	getAllLeagueIdsToName,
 	prepareScrapedData,
+	getPipelineInformation,
 } from "./http-manager";
 import { DeleteModelAction, DeleteModelState } from "./model/deletemodel";
 import {
@@ -40,6 +41,11 @@ import {
 	SaveTestStatus,
 	CreateTestState,
 } from "./test/create_test";
+import {
+	PipelineInformation,
+	PipelineViewAction,
+	PipelineViewState,
+} from "./pipeline/pipelineview";
 import { TestData, TestModelAction, TestModelState } from "./model/test_model";
 import { DeleteTestAction, DeleteTestState } from "./test/deletetest";
 import { getTestDataArray, getTrainModelRoi } from "./appstatemanagerutils";
@@ -72,6 +78,7 @@ export type AppState = {
 	currentTests: string[] | null;
 	testResponse: TestData[] | null;
 	intervals: { prepareDataIntervalId: NodeJS.Timeout | null };
+	pipelines: PipelineInformation[] | null;
 };
 export type AppAction =
 	| TopMenuTabAction
@@ -120,6 +127,7 @@ class AppStateManager {
 			currentTests: null,
 			testResponse: null,
 			intervals: { prepareDataIntervalId: null },
+			pipelines: null,
 		};
 		return initalAppState;
 	}
@@ -158,6 +166,12 @@ class AppStateManager {
 		getAllLeagueIdsToName((leagueIdsToName) => {
 			const newAppState: AppState = _.cloneDeep(this.#appState);
 			newAppState.leagueIdsToName = leagueIdsToName;
+			this.#setState(newAppState);
+		});
+
+		getPipelineInformation((pipelines) => {
+			const newAppState: AppState = _.cloneDeep(this.#appState);
+			newAppState.pipelines = pipelines;
 			this.#setState(newAppState);
 		});
 	}
@@ -424,6 +438,12 @@ class ComponentStateManager {
 			yParameters: this.#appState.yParameters ?? [],
 			trainModelStatus: this.#appState.statuses.trainModelStatus,
 			trainModelRoi: this.#appState.trainModelRoi,
+		};
+	}
+
+	getPipelineViewState(): PipelineViewState {
+		return {
+			pipelines: this.#appState.pipelines ?? [],
 		};
 	}
 }

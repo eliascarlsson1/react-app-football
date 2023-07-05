@@ -277,3 +277,17 @@ export async function prepareScrapedData(
 		console.error("Error in preparing scraped data:", error);
 	}
 }
+
+export async function getPipelineInformation(
+	getResponse: (response: any[]) => void,
+) {
+	try {
+		const response = await fetch(
+			"http://localhost:5000/api/get-pipeline-information",
+		);
+		const responseObject: any[] = await response.json();
+		getResponse(responseObject);
+	} catch (error) {
+		console.error("Error in getting pipeline information:", error);
+	}
+}

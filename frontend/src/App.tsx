@@ -8,10 +8,16 @@ import DataView from "./dataview/dataview";
 import DeleteTest from "./test/deletetest";
 import TestModel from "./model/test_model";
 import CreateTest from "./test/create_test";
+import PipelineView from "./pipeline/pipelineview";
 
 const appStateManager = new AppStateManager();
 
-export type TopMenuTabOption = "Evaluate" | "Train model" | "Test" | "Data";
+export type TopMenuTabOption =
+	| "Evaluate"
+	| "Train model"
+	| "Test"
+	| "Data"
+	| "Pipeline";
 export type TopMenuTabAction = {
 	type: "top menu tab";
 	selectedTab: TopMenuTabOption;
@@ -56,6 +62,7 @@ function App() {
 		"Train model",
 		"Test",
 		"Data",
+		"Pipeline",
 	];
 	const deliverSelectedIndex = (selectedIndex: number) => {
 		const selectedTab = tabValues[selectedIndex];
@@ -97,6 +104,11 @@ function App() {
 							dispatcher={appDispatcher}
 						/>
 					</Stack>
+				) : appState.tab === "Pipeline" ? (
+					<PipelineView
+						state={appStateManager.getComponentState().getPipelineViewState()}
+						dispatcher={appDispatcher}
+					></PipelineView>
 				) : (
 					<DataView
 						state={appStateManager.getComponentState().getDataViewState()}
