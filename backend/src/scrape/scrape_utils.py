@@ -132,26 +132,26 @@ def get_one_x_two_odds_for_bookmaker(
     return [bookmaker_odds[0], bookmaker_odds[1], bookmaker_odds[2]]
 
 
-if __name__ == "__main__":
-    df = pd.read_csv("./data/scrape.csv")  # type: ignore
-    filtered_df = filter_scrape_for_upcoming_games(df)
-    filtered_df = filter_scrape_for_last_scraped(filtered_df)
+# if __name__ == "__main__":
+#     df = pd.read_csv("./data/scrape.csv")  # type: ignore
+#     filtered_df = filter_scrape_for_upcoming_games(df)
+#     filtered_df = filter_scrape_for_last_scraped(filtered_df)
 
-    jsonStr = filtered_df["odds_over_under"].iloc[0]  # type: ignore
-    if type(jsonStr) == str:  # type: ignore
-        b = get_over_under_odds_for_bookmaker("Over/Under +2.5", "test", "Pinnacle")
-        print(b)
+#     jsonStr = filtered_df["odds_over_under"].iloc[0]  # type: ignore
+#     if type(jsonStr) == str:  # type: ignore
+#         b = get_over_under_odds_for_bookmaker("Over/Under +2.5", "test", "Pinnacle")
+#         print(b)
 
-        a = get_average_over_under_odds("Over/Under +2.5", jsonStr)
-        print(a)
+#         a = get_average_over_under_odds("Over/Under +2.5", jsonStr)
+#         print(a)
 
-    jsonStr2 = filtered_df["odds_one_x_two"].iloc[0]  # type: ignore
-    if type(jsonStr2) == str:  # type: ignore
-        c = get_average_one_x_two_odds(jsonStr2)
-        print(c)
+#     jsonStr2 = filtered_df["odds_one_x_two"].iloc[0]  # type: ignore
+#     if type(jsonStr2) == str:  # type: ignore
+#         c = get_average_one_x_two_odds(jsonStr2)
+#         print(c)
 
-        d = get_one_x_two_odds_for_bookmaker(jsonStr2, "Pinnacle")
-        print(d)
+#         d = get_one_x_two_odds_for_bookmaker(jsonStr2, "Pinnacle")
+#         print(d)
 
 
 # Apply functions to dataframe
