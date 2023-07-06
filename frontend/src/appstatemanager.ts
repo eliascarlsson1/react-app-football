@@ -24,6 +24,7 @@ import {
 	getAllLeagueIdsToName,
 	prepareScrapedData,
 	getPipelineInformation,
+	deletePipeline,
 } from "./http-manager";
 import { DeleteModelAction, DeleteModelState } from "./model/deletemodel";
 import {
@@ -366,7 +367,17 @@ class AppStateManager {
 					});
 					break;
 				case "delete pipeline":
-					console.log("Delete pipeline");
+					deletePipeline(action.name, (response) => {
+						if (response === "success") {
+							getPipelineInformation((pipelines) => {
+								const newAppState: AppState = _.cloneDeep(this.#appState);
+								newAppState.pipelines = pipelines;
+								this.#setState(newAppState);
+							});
+						} else {
+							console.log(response);
+						}
+					});
 			}
 		};
 		return appDispatcher;

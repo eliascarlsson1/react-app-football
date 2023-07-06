@@ -291,3 +291,22 @@ export async function getPipelineInformation(
 		console.error("Error in getting pipeline information:", error);
 	}
 }
+
+export async function deletePipeline(
+	pipelineName: string,
+	getResponse: (reponse: string) => void,
+) {
+	try {
+		const response = await fetch("http://localhost:5000/api/delete-pipeline", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ pipelineName }),
+		});
+		const responseText: string = await response.text();
+		getResponse(responseText);
+	} catch (error) {
+		console.error("Error in deleting pipeline:", error);
+	}
+}
