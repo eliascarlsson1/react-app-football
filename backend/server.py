@@ -257,5 +257,14 @@ def save_pipeline_call() -> str:
     return ret
 
 
+# Apply pipeline
+@app.route("/api/apply-pipeline", methods=["POST"])
+def apply_pipeline_call() -> str:
+    object = request.get_json()
+    pipeline_name: str = object.get("pipelineName")
+    print(pipeline_name, "applied")
+    return "wip"
+
+
 if __name__ == "__main__":
     app.run(debug=True)

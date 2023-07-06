@@ -43,12 +43,14 @@ function App() {
 	appStateManager.onRender(appState, setAppState);
 
 	// Loaded data successfully?
+	//FIXME: Add more checks here
 	if (
 		!(
 			appState.historicalData &&
 			appState.xParameters &&
 			appState.yParameters &&
-			appState.currentModels
+			appState.currentModels &&
+			appState.currentTests
 		)
 	) {
 		return <div>Waiting for server..</div>;

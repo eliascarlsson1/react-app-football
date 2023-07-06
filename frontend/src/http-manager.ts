@@ -330,3 +330,22 @@ export async function addPipeline(
 		console.error("Error in adding pipeline:", error);
 	}
 }
+
+export async function applyPipeline(
+	pipelineName: string,
+	getResponse: (reponse: string) => void,
+) {
+	try {
+		const response = await fetch("http://localhost:5000/api/apply-pipeline", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ pipelineName }),
+		});
+		const responseText: string = await response.text();
+		getResponse(responseText);
+	} catch (error) {
+		console.error("Error in applying pipeline:", error);
+	}
+}

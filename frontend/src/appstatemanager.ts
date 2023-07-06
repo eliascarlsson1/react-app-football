@@ -26,6 +26,7 @@ import {
 	getPipelineInformation,
 	deletePipeline,
 	addPipeline,
+	applyPipeline,
 } from "./http-manager";
 import { DeleteModelAction, DeleteModelState } from "./model/deletemodel";
 import {
@@ -391,6 +392,11 @@ class AppStateManager {
 						} else {
 							console.log(response);
 						}
+					});
+					break;
+				case "apply pipeline":
+					applyPipeline(action.name, (response) => {
+						console.log(response);
 					});
 			}
 		};

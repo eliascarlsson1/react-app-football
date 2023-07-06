@@ -24,7 +24,8 @@ export type PipelineViewAction =
 	| {
 			type: "delete pipeline";
 			name: string;
-	  };
+	  }
+	| { type: "apply pipeline"; name: string };
 
 export default function PipelineView({
 	state,
@@ -50,6 +51,9 @@ export default function PipelineView({
 				))}
 			</Stack>
 			<Stack>
+				<Typography variant="h5" gutterBottom>
+					Add pipeline
+				</Typography>
 				<CreateNewPipeline
 					dispatcher={dispatcher}
 					state={appStateManager
