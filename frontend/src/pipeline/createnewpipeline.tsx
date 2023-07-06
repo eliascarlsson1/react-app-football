@@ -25,10 +25,12 @@ export default function CreateNewPipeline({
 				onClick={() => {
 					dispatcher({
 						type: "add pipeline",
-						name: "pipeline name",
-						model: "model name",
-						test: "test name",
-						leagues: ["league1", "league2"],
+						pipeline: {
+							name: "new pipeline",
+							model: "model",
+							test: "test",
+							leagues: ["league1", "league2"],
+						},
 					});
 				}}
 			></Button>

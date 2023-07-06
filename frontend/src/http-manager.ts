@@ -1,4 +1,5 @@
 import { ModelInformation } from "./appstatemanager";
+import { PipelineInformation } from "./pipeline/pipelineview";
 import { FilterData } from "./test/create_test";
 
 export async function getHistoricalData(
@@ -308,5 +309,24 @@ export async function deletePipeline(
 		getResponse(responseText);
 	} catch (error) {
 		console.error("Error in deleting pipeline:", error);
+	}
+}
+
+export async function addPipeline(
+	pipeline: PipelineInformation,
+	getResponse: (reponse: string) => void,
+) {
+	try {
+		const response = await fetch("http://localhost:5000/api/save-pipeline", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify(pipeline),
+		});
+		const responseText: string = await response.text();
+		getResponse(responseText);
+	} catch (error) {
+		console.error("Error in adding pipeline:", error);
 	}
 }

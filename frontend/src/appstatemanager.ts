@@ -25,6 +25,7 @@ import {
 	prepareScrapedData,
 	getPipelineInformation,
 	deletePipeline,
+	addPipeline,
 } from "./http-manager";
 import { DeleteModelAction, DeleteModelState } from "./model/deletemodel";
 import {
@@ -368,6 +369,19 @@ class AppStateManager {
 					break;
 				case "delete pipeline":
 					deletePipeline(action.name, (response) => {
+						if (response === "success") {
+							getPipelineInformation((pipelines) => {
+								const newAppState: AppState = _.cloneDeep(this.#appState);
+								newAppState.pipelines = pipelines;
+								this.#setState(newAppState);
+							});
+						} else {
+							console.log(response);
+						}
+					});
+					break;
+				case "add pipeline":
+					addPipeline(action.pipeline, (response) => {
 						if (response === "success") {
 							getPipelineInformation((pipelines) => {
 								const newAppState: AppState = _.cloneDeep(this.#appState);

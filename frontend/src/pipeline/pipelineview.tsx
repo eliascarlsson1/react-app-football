@@ -19,10 +19,7 @@ export type PipelineViewState = {
 export type PipelineViewAction =
 	| {
 			type: "add pipeline";
-			name: string;
-			model: string;
-			test: string;
-			leagues: string[];
+			pipeline: PipelineInformation;
 	  }
 	| {
 			type: "delete pipeline";
