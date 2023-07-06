@@ -66,6 +66,24 @@ def apply_model(model_name: str, data_list: List[str]) -> Dict[str, pd.DataFrame
     return df_dict
 
 
+def apply_model_to_df(model_name: str, df: pd.DataFrame) -> pd.DataFrame:
+    # ternary operator for path
+    path = (
+        abs_path_current_model
+        if (model_name == "current_model")
+        else abs_path_models + "/" + model_name + "/model.json"
+    )
+    classifier = load_model(path)
+    [xPar, yPar] = load_x_and_y_parameters_from_model(model_name)  # type: ignore
+
+    df["prediction"] = classifier.predict(df[xPar])  # type: ignore
+    df["prob_0"] = classifier.predict_proba(df[xPar])[:, 0]  # type: ignore
+    df["prob_1"] = classifier.predict_proba(df[xPar])[:, 1]  # type: ignore
+    df = add_odds_pred(df, "AvgO25", "AvgU25")
+
+    return df
+
+
 # Tuple[x_pars, y_par]
 def load_x_and_y_parameters_from_model(model_name: str) -> Tuple[List[str], str]:
     # ternary operator for path

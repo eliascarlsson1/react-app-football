@@ -30,3 +30,7 @@ def add_odds_pred(dataframe: pd.DataFrame, odds0: str, odds1: str) -> pd.DataFra
     dataframe["prob_over_odds"] = dataframe["prob_pred"] - 1 / dataframe["odds_pred"]
 
     return dataframe
+
+
+def filter_df_for_leagues(df: pd.DataFrame, leagues: List[str]) -> pd.DataFrame:
+    return df[df["league"].isin(leagues)]  # type: ignore

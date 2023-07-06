@@ -9,6 +9,7 @@ file_path = os.path.dirname(os.path.abspath(__file__))
 data_path = os.path.join(file_path, relative_data_path)
 relevant_data_path = data_path + "/historical_data/relevant_data"
 prepared_data_path = data_path + "/prepared_data"
+prepared_scrape_data_csv = data_path + "/prepared_scrape.csv"
 all_data_path = data_path + "/historical_data/all_data"
 
 
@@ -57,6 +58,10 @@ def get_all_historical_data_dict() -> dict[str, pd.DataFrame]:
             df_dict[league + year] = pd.read_csv(path)  # type: ignore
 
     return df_dict
+
+
+def load_prepared_scrape() -> pd.DataFrame:
+    return pd.read_csv(prepared_scrape_data_csv)  # type: ignore
 
 
 # Selects and concatenates dataframes from a df_dict

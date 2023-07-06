@@ -33,6 +33,7 @@ from src.model_handling.test_model import (
     get_stats_for_model_and_test,
     get_roi_for_model,
 )
+from src.model_handling.pipeline import apply_pipeline
 import traceback
 
 app = Flask(__name__)
@@ -259,11 +260,15 @@ def save_pipeline_call() -> str:
 
 # Apply pipeline
 @app.route("/api/apply-pipeline", methods=["POST"])
-def apply_pipeline_call() -> str:
+def apply_pipeline_call() -> List[str]:
     object = request.get_json()
     pipeline_name: str = object.get("pipelineName")
-    print(pipeline_name, "applied")
-    return "wip"
+    applied_df = apply_pipeline(pipeline_name)
+    if applied_df is None:
+        return []
+    # From applied df make a list of string from col ScrapeGameIndex
+    list_of_scrape_game_index: List[str] = applied_df["ScrapeGameIndex"].tolist()  # type: ignore
+    return list_of_scrape_game_index
 
 
 if __name__ == "__main__":
