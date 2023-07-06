@@ -108,6 +108,7 @@ function App() {
 					<PipelineView
 						state={appStateManager.getComponentState().getPipelineViewState()}
 						dispatcher={appDispatcher}
+						appStateManager={appStateManager}
 					></PipelineView>
 				) : (
 					<DataView

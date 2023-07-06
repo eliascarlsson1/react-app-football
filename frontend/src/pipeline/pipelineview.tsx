@@ -1,6 +1,9 @@
 import React from "react";
-import { AppActionDispatcher } from "../appstatemanager";
+import Stack from "@mui/material/Stack";
+import { Typography } from "@mui/material";
+import { AppActionDispatcher, AppStateManager } from "../appstatemanager";
 import PipelineRow from "./pipelinerow";
+import CreateNewPipeline from "./createnewpipeline";
 
 export type PipelineInformation = {
 	name: string;
@@ -29,19 +32,34 @@ export type PipelineViewAction =
 export default function PipelineView({
 	state,
 	dispatcher,
+	appStateManager,
 }: {
 	state: PipelineViewState;
 	dispatcher: AppActionDispatcher;
+	appStateManager: AppStateManager;
 }) {
 	return (
 		<div>
-			{state.pipelines.map((pipeline) => (
-				<PipelineRow
-					pipeline={pipeline}
+			<Stack direction={"column"}>
+				<Typography variant="h5" gutterBottom>
+					My pipelines
+				</Typography>
+				{state.pipelines.map((pipeline) => (
+					<PipelineRow
+						pipeline={pipeline}
+						dispatcher={dispatcher}
+						key={pipeline.name}
+					></PipelineRow>
+				))}
+			</Stack>
+			<Stack>
+				<CreateNewPipeline
 					dispatcher={dispatcher}
-					key={pipeline.name}
-				></PipelineRow>
-			))}
+					state={appStateManager
+						.getComponentState()
+						.getCreateNewPipelineState()}
+				></CreateNewPipeline>
+			</Stack>
 		</div>
 	);
 }

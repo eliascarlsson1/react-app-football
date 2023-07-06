@@ -46,6 +46,7 @@ import {
 	PipelineViewAction,
 	PipelineViewState,
 } from "./pipeline/pipelineview";
+import { CreateNewPipelineState } from "./pipeline/createnewpipeline";
 import { TestData, TestModelAction, TestModelState } from "./model/test_model";
 import { DeleteTestAction, DeleteTestState } from "./test/deletetest";
 import { getTestDataArray, getTrainModelRoi } from "./appstatemanagerutils";
@@ -448,6 +449,14 @@ class ComponentStateManager {
 	getPipelineViewState(): PipelineViewState {
 		return {
 			pipelines: this.#appState.pipelines ?? [],
+		};
+	}
+
+	getCreateNewPipelineState(): CreateNewPipelineState {
+		return {
+			currentModels: this.#appState.currentModels ?? [],
+			currentTests: this.#appState.currentTests ?? [],
+			leagueIdsToName: this.#appState.leagueIdsToName ?? new Map(),
 		};
 	}
 }
