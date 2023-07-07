@@ -1,6 +1,6 @@
 from ..model_handling.apply_model_utils import apply_model_to_df
 from ..model_handling.test_model import apply_test_to_df
-from typing import Dict, List
+from typing import List
 import pandas as pd
 from ..data_handling.database_con import get_pipeline_parameters
 from ..data_handling.data_handling_utils import load_prepared_scrape
