@@ -19,6 +19,7 @@ export type Odds =
 			>;
 	  };
 
+// FIXME: Some infromation about prediction probability, and a curve over probability for this model...
 export type GameBetInformation = {
 	homeTeam: string;
 	awayTeam: string;
