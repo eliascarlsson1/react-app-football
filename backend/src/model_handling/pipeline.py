@@ -1,4 +1,8 @@
-from ..model_handling.apply_model_utils import apply_model_to_df, load_training_data_from_model, load_x_and_y_parameters_from_model
+from ..model_handling.apply_model_utils import (
+    apply_model_to_df,
+    load_training_data_from_model,
+    load_x_and_y_parameters_from_model,
+)
 from ..model_handling.test_model import apply_test_to_df
 from typing import List, Dict, Any
 import pandas as pd
@@ -35,6 +39,7 @@ def apply_pipeline(pipeline_name: str) -> pd.DataFrame | None:
     print("filtered_predicted_game_df: ", filtered_predicted_game_df)
     return filtered_predicted_game_df
 
+
 def get_game_bet_information(row: Any, pipeline_name: str) -> Dict[str, Any]:
     information_dict: Dict[str, Any] = {}
     print(row)
@@ -62,7 +67,6 @@ def get_game_bet_information(row: Any, pipeline_name: str) -> Dict[str, Any]:
     information_dict["model"] = model_information
     information_dict["test"] = test
     information_dict["pipelineName"] = pipeline_name
-
 
     ## FIXME: Odds information, refine!
     information_dict["odds"] = {}

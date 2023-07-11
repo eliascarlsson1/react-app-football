@@ -26,13 +26,13 @@ export type GameBetInformation = {
 	date: string;
 	pipelineName: string;
 	prediction: string;
-	oddsPrediction: string,
+	oddsPrediction: string;
 	model: ModelInformation;
 	test: string; // FIXME: Test information later
 	testDataForScrape: TestData;
 	testDataForLeague: TestData;
 	odds: Odds;
-	oddsportalLink: string
+	oddsportalLink: string;
 };
 
 export default function BetInformationView({

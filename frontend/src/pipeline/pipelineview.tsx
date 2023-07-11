@@ -75,7 +75,8 @@ const mockState: GameBetInformation = {
 		]),
 		best_bookmaker: "Bookmaker1",
 	},
-	oddsportalLink: "https://www.oddsportal.com/football/england/premier-league/burnley-manchester-city-EkT4QbqS/",
+	oddsportalLink:
+		"https://www.oddsportal.com/football/england/premier-league/burnley-manchester-city-EkT4QbqS/",
 };
 
 export default function PipelineView({

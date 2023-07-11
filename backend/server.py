@@ -33,7 +33,7 @@ from src.model_handling.test_model import (
     get_stats_for_model_and_test,
     get_roi_for_model,
 )
-from src.model_handling.pipeline import (apply_pipeline, get_game_bet_information)
+from src.model_handling.pipeline import apply_pipeline, get_game_bet_information
 import traceback
 
 app = Flask(__name__)
@@ -202,6 +202,8 @@ def scrape_leagues_by_id() -> str:
     thread.start()
 
     return "Scrape started"
+
+
 # Test this api in powershell:
 # Invoke-RestMethod -Uri 'http://localhost:5000/api/scrape-leagues-by-id'
 # -Method POST -Body '["BL", "PL"]' -Headers @{'Content-Type' = 'application/json'}
@@ -264,10 +266,10 @@ def apply_pipeline_call() -> List[Dict[str, Any]]:
     applied_df = apply_pipeline(pipeline_name)
     if applied_df is None:
         return []
-    
+
     game_information_list: List[Dict[str, Any]] = []
-    for index, row in applied_df.iterrows(): # type: ignore
-        game_information_dict = get_game_bet_information(row, pipeline_name) 
+    for index, row in applied_df.iterrows():  # type: ignore
+        game_information_dict = get_game_bet_information(row, pipeline_name)
         game_information_list = game_information_list + [game_information_dict]
 
     return game_information_list
@@ -280,7 +282,7 @@ def apply_pipeline_call() -> List[Dict[str, Any]]:
 # 	pipelineName: string;
 # 	prediction: string;
 # 	model: ModelInformation;
-# 	test: string; 
+# 	test: string;
 # 	testDataForScrape: TestData; // FIXME: Test information later
 # 	testDataForLeague: TestData;
 # 	odds: Odds;
