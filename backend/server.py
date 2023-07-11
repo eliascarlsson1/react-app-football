@@ -33,7 +33,7 @@ from src.model_handling.test_model import (
     get_stats_for_model_and_test,
     get_roi_for_model,
 )
-from src.model_handling.pipeline import apply_pipeline
+from src.model_handling.pipeline import (apply_pipeline, get_game_bet_information)
 import traceback
 
 app = Flask(__name__)
@@ -202,8 +202,6 @@ def scrape_leagues_by_id() -> str:
     thread.start()
 
     return "Scrape started"
-
-
 # Test this api in powershell:
 # Invoke-RestMethod -Uri 'http://localhost:5000/api/scrape-leagues-by-id'
 # -Method POST -Body '["BL", "PL"]' -Headers @{'Content-Type' = 'application/json'}
@@ -260,16 +258,34 @@ def save_pipeline_call() -> str:
 
 # Apply pipeline
 @app.route("/api/apply-pipeline", methods=["POST"])
-def apply_pipeline_call() -> List[str]:
+def apply_pipeline_call() -> List[Dict[str, Any]]:
     object = request.get_json()
     pipeline_name: str = object.get("pipelineName")
     applied_df = apply_pipeline(pipeline_name)
     if applied_df is None:
         return []
-    # From applied df make a list of string from col ScrapeGameIndex
-    list_of_scrape_game_index: List[str] = applied_df["ScrapeGameIndex"].tolist()  # type: ignore
-    return list_of_scrape_game_index
+    
+    game_information_list: List[Dict[str, Any]] = []
+    for index, row in applied_df.iterrows(): # type: ignore
+        game_information_dict = get_game_bet_information(row, pipeline_name) 
+        game_information_list = game_information_list + [game_information_dict]
 
+    return game_information_list
+
+
+# export type GameBetInformation = {
+# 	homeTeam: string;
+# 	awayTeam: string;
+# 	date: string;
+# 	pipelineName: string;
+# 	prediction: string;
+# 	model: ModelInformation;
+# 	test: string; 
+# 	testDataForScrape: TestData; // FIXME: Test information later
+# 	testDataForLeague: TestData;
+# 	odds: Odds;
+# 	oddsportalLink: string
+# };
 
 if __name__ == "__main__":
     app.run(debug=True)

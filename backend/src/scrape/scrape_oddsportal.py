@@ -68,7 +68,7 @@ def scrape_league(country: str, tournament: str):
         # Make a dataframe row and append to data_rows
         scrape_time = pd.Timestamp.utcnow().isoformat()
         scrape_game_index = info[0] + info[1] + info[2]
-        data_row = [country, tournament, scrape_time] + info + [encoded_odds_over_under] + [encoded_one_x_two_odds] + [scrape_game_index]  # type: ignore
+        data_row = [country, tournament, scrape_time] + info + [encoded_odds_over_under] + [encoded_one_x_two_odds] + [scrape_game_index] + [link]  # type: ignore
 
         df = pd.DataFrame(
             [data_row],
@@ -83,6 +83,7 @@ def scrape_league(country: str, tournament: str):
                 "odds_over_under",
                 "odds_one_x_two",
                 "scrape_game_index",
+                "oddsportal_link",
             ],
         )
         write_to_csv(df)
@@ -237,11 +238,11 @@ def get_one_x_two_odds(
 ) -> Dict[str, List[str]] | None:
     # Return dict: Dict[bookmaker: List[odds]]
 
-    one_x_two_path = "/html/body/div[1]/div/div[1]/div/main/div[2]/div[4]/div[2]/div"
+    one_x_two_path = "/html/body/div[1]/div/div[1]/div/main/div[2]/div[4]/div[1]/div"
     try:
         one_x_two_div = driver.find_element("xpath", one_x_two_path)
     except:
-        print("all_over_under_odds_path incorrect")
+        print("one_x_two_path incorrect")
         driver.close()
         return
 
@@ -285,8 +286,8 @@ def get_one_x_two_odds(
     return bookmaker_to_odds
 
 
-if __name__ == "__main__":
-    country = "england"
-    tournament = "premier-league"
+# if __name__ == "__main__":
+#     country = "england"
+#     tournament = "premier-league"
 
-    scrape_league(country, tournament)
+#     scrape_league(country, tournament)

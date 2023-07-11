@@ -38,6 +38,7 @@ const mockState: GameBetInformation = {
 	date: "2023-07-07",
 	pipelineName: "Pipeline Name",
 	prediction: "Prediction",
+	oddsPrediction: "Odds Prediction",
 	model: {
 		name: "Model Name",
 		xParameters: ["xParameter1", "xParameter2"],
@@ -74,6 +75,7 @@ const mockState: GameBetInformation = {
 		]),
 		best_bookmaker: "Bookmaker1",
 	},
+	oddsportalLink: "https://www.oddsportal.com/football/england/premier-league/burnley-manchester-city-EkT4QbqS/",
 };
 
 export default function PipelineView({

@@ -92,6 +92,7 @@ def prepared_scraped_games(all_df_dict: Dict[str, pd.DataFrame]):
             row["date"] + " " + row["time"],  # type: ignore
             row["scrape_time"],  # type: ignore
             row["scrape_game_index"],  # type: ignore
+            row["oddsportal_link"],  # type: ignore
             row["AvgO25"],  # type: ignore
             row["AvgU25"],  # type: ignore
             row["AvgH"],  # type: ignore
@@ -115,6 +116,7 @@ def prepare_scraped_game(
     game_date: str,
     scrape_time: str,
     scrape_game_index: str,
+    oddsportal_link: str,
     OddsOver: str,
     OddsUnder: str,
     OddsH: str,
@@ -161,6 +163,7 @@ def prepare_scraped_game(
     row_data["ScrapeTime"] = scrape_time
     row_data["ScrapeGameIndex"] = scrape_game_index
     row_data["league"] = league
+    row_data["oddsportal_link"] = oddsportal_link
 
     return row_data
 

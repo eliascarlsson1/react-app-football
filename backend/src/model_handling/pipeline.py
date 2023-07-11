@@ -1,6 +1,6 @@
-from ..model_handling.apply_model_utils import apply_model_to_df
+from ..model_handling.apply_model_utils import apply_model_to_df, load_training_data_from_model, load_x_and_y_parameters_from_model
 from ..model_handling.test_model import apply_test_to_df
-from typing import List
+from typing import List, Dict, Any
 import pandas as pd
 from ..data_handling.database_con import get_pipeline_parameters
 from ..data_handling.data_handling_utils import load_prepared_scrape
@@ -34,6 +34,39 @@ def apply_pipeline(pipeline_name: str) -> pd.DataFrame | None:
     filtered_predicted_game_df = apply_test_to_df(predicted_games_df, test)
     print("filtered_predicted_game_df: ", filtered_predicted_game_df)
     return filtered_predicted_game_df
+
+def get_game_bet_information(row: Any, pipeline_name: str) -> Dict[str, Any]:
+    information_dict: Dict[str, Any] = {}
+    print(row)
+    ## Information from row
+    information_dict["homeTeam"] = row["HomeTeam"]
+    information_dict["awayTeam"] = row["AwayTeam"]
+    information_dict["date"] = row["Date"]
+    information_dict["prediction"] = row["prediction"]
+    information_dict["oddsPrediction"] = row["odds_pred"]
+    information_dict["oddsportalLink"] = row["oddsportal_link"]
+
+    ## Pipeline, model and test parameters
+    pipeline_parameters = get_pipeline_parameters(pipeline_name)
+    test = pipeline_parameters["test"]
+
+    # Model
+    model = pipeline_parameters["model"]
+    x_y_parameters = load_x_and_y_parameters_from_model(model)
+    training_data = load_training_data_from_model(model)
+    model_information = {
+        "xParameters": x_y_parameters[0],
+        "yParameter": x_y_parameters[1],
+        "trainingData": training_data,
+    }
+    information_dict["model"] = model_information
+    information_dict["test"] = test
+    information_dict["pipelineName"] = pipeline_name
+
+
+    ## FIXME: Odds information, refine!
+    information_dict["odds"] = {}
+    return information_dict
 
 
 if __name__ == "__main__":
