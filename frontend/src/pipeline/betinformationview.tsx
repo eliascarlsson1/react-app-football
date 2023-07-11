@@ -1,5 +1,7 @@
 import React from "react";
 import { Stack } from "@mui/material";
+import { Typography } from "@mui/material";
+import { Link } from "@mui/material";
 import type { ModelInformation } from "../appstatemanager";
 import type { TestData } from "../model/test_model";
 import DisplayTestData from "../components/displaytestdata";
@@ -36,6 +38,7 @@ export type GameBetInformation = {
 	odds: Odds;
 	oddsportalLink: string;
 	timeOfScrape: string;
+	//FIXME: Time of scrape broken?
 };
 
 export default function BetInformationView({
@@ -43,10 +46,34 @@ export default function BetInformationView({
 }: {
 	state: GameBetInformation;
 }) {
+	const betType =
+		state.model.yParameter === "OvUn25"
+			? "Over under 2.5 goals"
+			: "FIXME: Another bet";
+
+	const prediction = state.prediction === "0" ? "Over" : "Under";
+
 	return (
-		<Stack direction={"column"} gap={1}>
-			<h3>Hello From Game Bet Information</h3>
-			<DisplayTestData state={state.testDataForLeague}/>
+		<Stack direction={"column"} gap={1} padding={3} alignItems={"flex-start"}>
+			<Stack direction={"row"} gap={1} alignItems={"center"}>
+				<Typography>
+					{state.homeTeam} vs {state.awayTeam} ({state.date})
+				</Typography>
+				<Link href={state.oddsportalLink}>(Oddsportal)</Link>
+			</Stack>
+			<Typography>
+				{betType}. Prediction: {prediction} (odds:{" "}
+				{Number(state.oddsPrediction).toPrecision(3)}). Scraped at{" "}
+				{state.timeOfScrape}
+			</Typography>
+			<Typography>
+				Pipeline: {state.pipelineName} (model: {state.model.name},test:{" "}
+				{state.test}). Model trained on {state.model.trainingData.join(", ")}
+			</Typography>
+			<Stack direction={"column"}>
+				<Typography>Stats for model and test on historical data:</Typography>
+				<DisplayTestData state={state.testDataForLeague} />
+			</Stack>
 		</Stack>
 	);
 }

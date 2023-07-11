@@ -10,15 +10,15 @@ export default function DisplayTestData({ state }: { state: TestData }) {
 				<Typography>ID: {state.id}.</Typography>
 				<Typography>ROI: {Number(state.roi).toPrecision(3)}.</Typography>
 			</Stack>
-				<Typography>
-					Games before filter (0,1): {state.gamesBeforeFilter} (
-					{state.zeroBeforeFilter},{state.oneBeforeFilter})
-				</Typography>
+			<Typography>
+				Games before filter (0,1): {state.gamesBeforeFilter} (
+				{state.zeroBeforeFilter},{state.oneBeforeFilter})
+			</Typography>
 
-				<Typography>
-					Games after filter (0,1): {state.gamesAfterFilter} (
-					{state.zeroAfterFilter},{state.oneAfterFilter})
-				</Typography>
+			<Typography>
+				Games after filter (0,1): {state.gamesAfterFilter} (
+				{state.zeroAfterFilter},{state.oneAfterFilter})
+			</Typography>
 		</Stack>
 	);
 }
