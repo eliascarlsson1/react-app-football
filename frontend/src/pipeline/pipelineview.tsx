@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import Stack from "@mui/material/Stack";
 import { Typography } from "@mui/material";
+import { Pagination } from "@mui/material";
 import { AppActionDispatcher, AppStateManager } from "../appstatemanager";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
@@ -19,6 +20,7 @@ export type PipelineInformation = {
 export type PipelineViewState = {
 	pipelines: PipelineInformation[];
 	gameBetInformation: GameBetInformation[];
+	gameBetInformationOpen: boolean;
 };
 
 export type PipelineViewAction =
@@ -30,7 +32,8 @@ export type PipelineViewAction =
 			type: "delete pipeline";
 			name: string;
 	  }
-	| { type: "apply pipeline"; name: string };
+	| { type: "apply pipeline"; name: string }
+	| { type: "close game bet information" };
 
 export default function PipelineView({
 	state,
@@ -41,7 +44,13 @@ export default function PipelineView({
 	dispatcher: AppActionDispatcher;
 	appStateManager: AppStateManager;
 }) {
-	const [open, setOpen] = React.useState(false);
+	const [page, setPage] = React.useState(1);
+	const handlePageChange = (
+		event: React.ChangeEvent<unknown>,
+		value: number,
+	) => {
+		setPage(value);
+	};
 
 	console.log(state.gameBetInformation);
 	return (
@@ -70,32 +79,36 @@ export default function PipelineView({
 				></CreateNewPipeline>
 			</Stack>
 
-			<Dialog open={open}>
-				<Stack>
-					Use this modal to step page between different bet information views
+			<Dialog open={state.gameBetInformationOpen}>
+				<Stack alignItems={"center"} width={500} paddingY={3}>
 					{state.gameBetInformation.length > 0 ? (
 						<BetInformationView
-							state={state.gameBetInformation[0]}
+							state={state.gameBetInformation[page - 1]}
 						></BetInformationView>
 					) : (
 						"No bet information available"
 					)}
-					<Button
-						onClick={() => {
-							setOpen(false);
-						}}
+					<Stack
+						direction={"row"}
+						alignItems={"center"}
+						paddingTop={1}
+						justifyContent={"space-between"}
+						width={"95%"}
 					>
-						Close modal
-					</Button>
+						<Pagination
+							count={state.gameBetInformation.length}
+							onChange={handlePageChange}
+						/>
+						<Button
+							onClick={() => {
+								dispatcher({ type: "close game bet information" });
+							}}
+						>
+							Close modal
+						</Button>
+					</Stack>
 				</Stack>
 			</Dialog>
-			<Button
-				onClick={() => {
-					setOpen(true);
-				}}
-			>
-				Open modal
-			</Button>
 		</div>
 	);
 }

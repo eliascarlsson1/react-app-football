@@ -54,7 +54,13 @@ export default function BetInformationView({
 	const prediction = state.prediction === "0" ? "Over" : "Under";
 
 	return (
-		<Stack direction={"column"} gap={1} padding={3} alignItems={"flex-start"}>
+		<Stack
+			direction={"column"}
+			gap={1}
+			paddingX={3}
+			paddingY={1}
+			alignItems={"flex-start"}
+		>
 			<Stack direction={"row"} gap={1} alignItems={"center"}>
 				<Typography>
 					{state.homeTeam} vs {state.awayTeam} ({state.date})

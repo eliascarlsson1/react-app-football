@@ -77,6 +77,7 @@ export type AppState = {
 		prepareDataStatus: PrepareDataStatus;
 		saveTestStatus: SaveTestStatus;
 		prepareScrapeStatus: BasicStringStatus;
+		gameBetInformationOpen: boolean;
 	};
 	trainModelRoi: { id: string; roi: string }[];
 	currentModels: ModelInformation[] | null;
@@ -128,6 +129,7 @@ class AppStateManager {
 				prepareDataStatus: null,
 				saveTestStatus: "idle",
 				prepareScrapeStatus: "idle",
+				gameBetInformationOpen: false,
 			},
 			currentModels: null,
 			trainModelRoi: [],
@@ -401,8 +403,15 @@ class AppStateManager {
 					applyPipeline(action.name, (response) => {
 						const newAppState: AppState = _.cloneDeep(this.#appState);
 						newAppState.gameBetInformation = response;
+						newAppState.statuses.gameBetInformationOpen = true;
 						this.#setState(newAppState);
 					});
+					break;
+				case "close game bet information": {
+					const newAppState: AppState = _.cloneDeep(this.#appState);
+					newAppState.statuses.gameBetInformationOpen = false;
+					this.#setState(newAppState);
+				}
 			}
 		};
 		return appDispatcher;
@@ -486,6 +495,7 @@ class ComponentStateManager {
 		return {
 			pipelines: this.#appState.pipelines ?? [],
 			gameBetInformation: this.#appState.gameBetInformation,
+			gameBetInformationOpen: this.#appState.statuses.gameBetInformationOpen,
 		};
 	}
 
