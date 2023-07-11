@@ -275,19 +275,5 @@ def apply_pipeline_call() -> List[Dict[str, Any]]:
     return game_information_list
 
 
-# export type GameBetInformation = {
-# 	homeTeam: string;
-# 	awayTeam: string;
-# 	date: string;
-# 	pipelineName: string;
-# 	prediction: string;
-# 	model: ModelInformation;
-# 	test: string;
-# 	testDataForScrape: TestData; // FIXME: Test information later
-# 	testDataForLeague: TestData;
-# 	odds: Odds;
-# 	oddsportalLink: string
-# };
-
 if __name__ == "__main__":
     app.run(debug=True)

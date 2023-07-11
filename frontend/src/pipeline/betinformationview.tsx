@@ -1,6 +1,8 @@
 import React from "react";
+import { Stack } from "@mui/material";
 import type { ModelInformation } from "../appstatemanager";
 import type { TestData } from "../model/test_model";
+import DisplayTestData from "../components/displaytestdata";
 
 // This is per game and not per pipeline, more scalable...
 
@@ -33,6 +35,7 @@ export type GameBetInformation = {
 	testDataForLeague: TestData;
 	odds: Odds;
 	oddsportalLink: string;
+	timeOfScrape: string;
 };
 
 export default function BetInformationView({
@@ -41,8 +44,9 @@ export default function BetInformationView({
 	state: GameBetInformation;
 }) {
 	return (
-		<div>
+		<Stack direction={"column"} gap={1}>
 			<h3>Hello From Game Bet Information</h3>
-		</div>
+			<DisplayTestData state={state.testDataForLeague}/>
+		</Stack>
 	);
 }

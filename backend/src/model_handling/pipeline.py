@@ -3,10 +3,10 @@ from ..model_handling.apply_model_utils import (
     load_training_data_from_model,
     load_x_and_y_parameters_from_model,
 )
-from ..model_handling.test_model import apply_test_to_df
+from ..model_handling.test_model import apply_test_to_df, get_stats_for_model_and_test
 from typing import List, Dict, Any
 import pandas as pd
-from ..data_handling.database_con import get_pipeline_parameters
+from ..data_handling.database_con import get_pipeline_parameters, get_current_year
 from ..data_handling.data_handling_utils import load_prepared_scrape
 from ..data_handling.dataframes_handling import filter_df_for_leagues
 
@@ -42,7 +42,6 @@ def apply_pipeline(pipeline_name: str) -> pd.DataFrame | None:
 
 def get_game_bet_information(row: Any, pipeline_name: str) -> Dict[str, Any]:
     information_dict: Dict[str, Any] = {}
-    print(row)
     ## Information from row
     information_dict["homeTeam"] = row["HomeTeam"]
     information_dict["awayTeam"] = row["AwayTeam"]
@@ -64,9 +63,18 @@ def get_game_bet_information(row: Any, pipeline_name: str) -> Dict[str, Any]:
         "yParameter": x_y_parameters[1],
         "trainingData": training_data,
     }
+
+    # Stats for model and test
+    league = row["league"] + get_current_year()
+    stats = get_stats_for_model_and_test([league], model, test)
+    stats_league = stats[league]
+    information_dict["testDataForLeague"] = stats_league
+
     information_dict["model"] = model_information
     information_dict["test"] = test
     information_dict["pipelineName"] = pipeline_name
+
+    ## FIXME: Messing stats for scraped games
 
     ## FIXME: Odds information, refine!
     information_dict["odds"] = {}

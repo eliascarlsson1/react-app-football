@@ -53,6 +53,7 @@ import { CreateNewPipelineState } from "./pipeline/createnewpipeline";
 import { TestData, TestModelAction, TestModelState } from "./model/test_model";
 import { DeleteTestAction, DeleteTestState } from "./test/deletetest";
 import { getTestDataArray, getTrainModelRoi } from "./appstatemanagerutils";
+import { GameBetInformation } from "./pipeline/betinformationview";
 const _ = require("lodash");
 
 export type BasicStringStatus = "idle" | "loading" | "success" | "error";
@@ -83,6 +84,7 @@ export type AppState = {
 	testResponse: TestData[] | null;
 	intervals: { prepareDataIntervalId: NodeJS.Timeout | null };
 	pipelines: PipelineInformation[] | null;
+	gameBetInformation: GameBetInformation[];
 };
 export type AppAction =
 	| TopMenuTabAction
@@ -133,6 +135,7 @@ class AppStateManager {
 			testResponse: null,
 			intervals: { prepareDataIntervalId: null },
 			pipelines: null,
+			gameBetInformation: [],
 		};
 		return initalAppState;
 	}
@@ -396,7 +399,9 @@ class AppStateManager {
 					break;
 				case "apply pipeline":
 					applyPipeline(action.name, (response) => {
-						console.log(response);
+						const newAppState: AppState = _.cloneDeep(this.#appState);
+						newAppState.gameBetInformation = response;
+						this.#setState(newAppState);
 					});
 			}
 		};
@@ -480,6 +485,7 @@ class ComponentStateManager {
 	getPipelineViewState(): PipelineViewState {
 		return {
 			pipelines: this.#appState.pipelines ?? [],
+			gameBetInformation: this.#appState.gameBetInformation,
 		};
 	}
 

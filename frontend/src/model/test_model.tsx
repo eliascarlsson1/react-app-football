@@ -3,6 +3,7 @@ import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
 import { Typography } from "@mui/material";
 import SingleSelect from "../components/singleselect";
+import DisplayTestData from "../components/displaytestdata";
 import { AppActionDispatcher, ModelInformation } from "../appstatemanager";
 import MultiSelect from "../components/multiselect";
 import DoubleTextSlider from "../components/doubletextslider";
@@ -116,14 +117,10 @@ export default function Test_model({
 			>
 				Test model
 			</Button>
-			<Stack direction={"column"}>
+			<Stack direction={"column"} gap={1}>
 				{state.testResponse
-					? state.testResponse.map((obj) => (
-							<Typography>
-								{obj.id} {obj.roi} {obj.gamesBeforeFilter}{" "}
-								{obj.gamesAfterFilter} {obj.zeroBeforeFilter}{" "}
-								{obj.zeroAfterFilter} {obj.oneBeforeFilter} {obj.oneAfterFilter}
-							</Typography>
+					? state.testResponse.map((response) => (
+							<DisplayTestData state={response} />
 					  ))
 					: "No test response"}
 			</Stack>

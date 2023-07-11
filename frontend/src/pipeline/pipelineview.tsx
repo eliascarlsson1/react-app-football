@@ -18,6 +18,7 @@ export type PipelineInformation = {
 
 export type PipelineViewState = {
 	pipelines: PipelineInformation[];
+	gameBetInformation: GameBetInformation[];
 };
 
 export type PipelineViewAction =
@@ -31,54 +32,6 @@ export type PipelineViewAction =
 	  }
 	| { type: "apply pipeline"; name: string };
 
-// FIXME: Mock state, remove
-const mockState: GameBetInformation = {
-	homeTeam: "Home Team",
-	awayTeam: "Away Team",
-	date: "2023-07-07",
-	pipelineName: "Pipeline Name",
-	prediction: "Prediction",
-	oddsPrediction: "Odds Prediction",
-	model: {
-		name: "Model Name",
-		xParameters: ["xParameter1", "xParameter2"],
-		yParameter: "yParameter",
-		trainingData: ["Training Data 1", "Training Data 2"],
-	},
-	test: "Test Information",
-	testDataForScrape: {
-		id: "testId",
-		roi: "testRoi",
-		gamesBeforeFilter: 10,
-		gamesAfterFilter: 8,
-		zeroBeforeFilter: 2,
-		zeroAfterFilter: 1,
-		oneBeforeFilter: 4,
-		oneAfterFilter: 3,
-	},
-	testDataForLeague: {
-		id: "leagueId",
-		roi: "leagueRoi",
-		gamesBeforeFilter: 20,
-		gamesAfterFilter: 15,
-		zeroBeforeFilter: 3,
-		zeroAfterFilter: 2,
-		oneBeforeFilter: 6,
-		oneAfterFilter: 4,
-	},
-	odds: {
-		type: "over/under",
-		goals: 2.5,
-		odds: new Map([
-			["Bookmaker1", { oddsOver: 1.8, oddsUnder: 2.0 }],
-			["Bookmaker2", { oddsOver: 1.9, oddsUnder: 2.1 }],
-		]),
-		best_bookmaker: "Bookmaker1",
-	},
-	oddsportalLink:
-		"https://www.oddsportal.com/football/england/premier-league/burnley-manchester-city-EkT4QbqS/",
-};
-
 export default function PipelineView({
 	state,
 	dispatcher,
@@ -90,6 +43,7 @@ export default function PipelineView({
 }) {
 	const [open, setOpen] = React.useState(false);
 
+	console.log(state.gameBetInformation);
 	return (
 		<div>
 			<Stack direction={"column"}>
@@ -119,7 +73,13 @@ export default function PipelineView({
 			<Dialog open={open}>
 				<Stack>
 					Use this modal to step page between different bet information views
-					<BetInformationView state={mockState}></BetInformationView>
+					{state.gameBetInformation.length > 0 ? (
+						<BetInformationView
+							state={state.gameBetInformation[0]}
+						></BetInformationView>
+					) : (
+						"No bet information available"
+					)}
 					<Button
 						onClick={() => {
 							setOpen(false);

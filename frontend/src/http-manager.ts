@@ -333,7 +333,7 @@ export async function addPipeline(
 
 export async function applyPipeline(
 	pipelineName: string,
-	getResponse: (reponse: string) => void,
+	getResponse: (reponse: any[]) => void,
 ) {
 	try {
 		const response = await fetch("http://localhost:5000/api/apply-pipeline", {
@@ -343,8 +343,8 @@ export async function applyPipeline(
 			},
 			body: JSON.stringify({ pipelineName }),
 		});
-		const responseText: string = await response.text();
-		getResponse(responseText);
+		const responseArray: any[] = await response.json();
+		getResponse(responseArray);
 	} catch (error) {
 		console.error("Error in applying pipeline:", error);
 	}
