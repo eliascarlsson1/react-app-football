@@ -213,6 +213,7 @@ class AppStateManager {
 	getAppActionDispatcher(): AppActionDispatcher {
 		const appDispatcher: AppActionDispatcher = (action) => {
 			const newAppState: AppState = _.cloneDeep(this.#appState);
+			console.log("action", action);
 
 			switch (action.type) {
 				case "top menu tab":
@@ -410,6 +411,7 @@ class AppStateManager {
 				case "close game bet information": {
 					const newAppState: AppState = _.cloneDeep(this.#appState);
 					newAppState.statuses.gameBetInformationOpen = false;
+					newAppState.gameBetInformation = [];
 					this.#setState(newAppState);
 				}
 			}

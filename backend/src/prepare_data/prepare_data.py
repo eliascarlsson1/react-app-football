@@ -192,7 +192,7 @@ def load_one_season(
             raise Exception("{} not in raw_data.columns".format(par))
 
     prepared_data = raw_data[all_parameters]
-    prepared_data = prepared_data.iloc[10:, :]  # removes first games of each season
+    # prepared_data = prepared_data.iloc[10:, :]  # removes first games of each season
     return prepared_data
 
 

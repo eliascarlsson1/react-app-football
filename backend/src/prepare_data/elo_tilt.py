@@ -61,7 +61,9 @@ class Elo_Tilt_Handler:
 
     def __calculate_for_league(self, league: str, elo_or_tilt: str):
         league_df = get_league_dataframe(self.__all_df_dict, league)
-        all_teams: list[str] = list(league_df["HomeTeam"].unique())  # type: ignore
+        all_home_teams: list[str] = list(league_df["HomeTeam"].unique())  # type: ignore
+        all_away_teams: list[str] = list(league_df["AwayTeam"].unique())  # type: ignore
+        all_teams: list[str] = list(pd.Series(all_home_teams + all_away_teams).unique())  # type: ignore
         all_dates: list[str] = list(league_df["Date"].unique())  # type: ignore
         all_dates.append("last_date")
 

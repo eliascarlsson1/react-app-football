@@ -1,6 +1,14 @@
-from src.model_handling.pipeline import apply_pipeline
-from src.data_handling.database_con import get_pipeline_names
+from src.prepare_data.prepare_data import prepare_relevant_data
+from src.data_handling.data_handling_utils import (
+    get_all_historical_data_dict,
+)
 
-print(get_pipeline_names())
+all_historical_data_dict = get_all_historical_data_dict()
 
-apply_pipeline("test pipeline1")
+
+def setPrepareDataStatus(newStatus: int, newTotal: int):
+    prepareDataStatus = newStatus
+    prepareDataTotal = newTotal
+
+
+prepare_relevant_data(all_historical_data_dict, True, setPrepareDataStatus)
