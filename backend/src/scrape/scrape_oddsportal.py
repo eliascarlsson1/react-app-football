@@ -256,14 +256,14 @@ def get_one_x_two_odds(
         try:
             betmaker = child.find_element("xpath", betmaker_relative_path)  # type: ignore
         except:
-            continue
+            return None
         try:
             odds_1 = child.find_element("xpath", odds_1_path + "p")  # type: ignore
             if odds_1.text == "":
                 odds_1 = child.find_element("xpath", odds_1_path + "a")  # type: ignore
         except:
             print("odds_1 not found")
-            continue
+            return None
 
         try:
             odds_x = child.find_element("xpath", odds_x_path + "p")  # type: ignore
@@ -271,7 +271,7 @@ def get_one_x_two_odds(
                 odds_x = child.find_element("xpath", odds_x_path + "a")  # type: ignore
         except:
             print("odds_x not found")
-            continue
+            return None
 
         try:
             odds_2 = child.find_element("xpath", odds_2_path + "p")  # type: ignore
@@ -279,7 +279,7 @@ def get_one_x_two_odds(
                 odds_2 = child.find_element("xpath", odds_2_path + "a")  # type: ignore
         except:
             print("odds_2 not found")
-            continue
+            return None
 
         bookmaker_to_odds[betmaker.text] = [odds_1.text, odds_x.text, odds_2.text]
 
