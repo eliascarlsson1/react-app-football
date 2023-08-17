@@ -47,8 +47,8 @@ export default function CreateTest({
 			sx={{
 				border: "1px solid gray",
 				borderColor: "gray.300",
-				width: "650px",
 			}}
+			alignItems={"flex-start"}
 			padding={3}
 			gap={2}
 		>

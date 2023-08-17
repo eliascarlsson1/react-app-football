@@ -92,7 +92,7 @@ function App() {
 						/>
 					</Stack>
 				) : appState.tab === "Test" ? (
-					<Stack>
+					<Stack alignItems={"flex-start"} direction={"row"} gap={2}>
 						<CreateTest
 							state={appStateManager.getComponentState().getCreateTestState()}
 							dispatcher={appDispatcher}

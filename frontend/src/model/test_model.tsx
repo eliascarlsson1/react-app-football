@@ -73,12 +73,17 @@ export default function Test_model({
 			sx={{
 				border: "1px solid gray",
 				borderColor: "gray.300",
-				width: "650px",
 			}}
 			padding={3}
 			gap={2}
-			alignItems={"center"}
+			alignItems={"flex-start"}
 		>
+			<Stack direction={"row"}>
+			<Typography variant="h5" gutterBottom>
+				Test model
+			</Typography>
+
+			</Stack>
 			<SingleSelect
 				dataArray={currentModelNames}
 				deliverSelected={(selected: string) => {
