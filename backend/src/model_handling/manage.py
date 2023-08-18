@@ -111,7 +111,9 @@ def save_test(filterData: Any):
     testName = filterData["testName"]
 
     if testName in get_test_names():
-        return "Error: test name already exists"
+        print(testName)
+        if  testName != "current":
+            return "Error: test name already exists"
 
     add_test(
         testName,

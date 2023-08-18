@@ -116,7 +116,7 @@ export default function CreateTest({
 									confidenceOverOdds: confidenceOverOdds,
 									probability: probability,
 									outcome: outcome,
-									testName: testName,
+									testName: testName === "" ? "current" : testName,
 								},
 							});
 						}}

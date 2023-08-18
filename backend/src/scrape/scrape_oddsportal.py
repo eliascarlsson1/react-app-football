@@ -43,7 +43,7 @@ def scrape_league(country: str, tournament: str):
     for link in game_links:
         # Get over/under odds
         driver.get(link + over_under_string)
-        time.sleep(0.5)
+        time.sleep(2)
         info = get_teams_and_date(driver)
         over_under_odds = get_over_under_odds(driver)
         if len(info) == 0:
@@ -56,10 +56,10 @@ def scrape_league(country: str, tournament: str):
 
         # 1x2 odds
         driver.get(link + one_x_two_string)
-        time.sleep(0.5)
+        time.sleep(2)
         driver.get(link + one_x_two_string)
-        time.sleep(0.5)
-        one_x_two_odds = get_one_x_two_odds(driver)
+        time.sleep(3)
+        one_x_two_odds = get_one_x_two_odds(driver, link + one_x_two_string)
         if one_x_two_odds == None:
             print("No one_x_two_odds found", info)
             continue
@@ -98,7 +98,7 @@ def write_to_csv(df: pd.DataFrame):
 def get_teams_and_date(driver: webdriver.Chrome) -> List[str]:
     # Return [home_team, away_team, date, time]
     home_team_path = (
-        "/html/body/div[1]/div/div[1]/div/main/div[2]/div[3]/div[1]/div[1]/div/div[1]/p"
+        "/html/body/div[1]/div/div[1]/div/main/div[2]/div[3]/div[1]/div[1]/div/div[1]/span"
     )
     try:
         home_team = driver.find_element("xpath", home_team_path)
@@ -108,7 +108,7 @@ def get_teams_and_date(driver: webdriver.Chrome) -> List[str]:
         return []
 
     away_team_path = (
-        "/html/body/div[1]/div/div[1]/div/main/div[2]/div[3]/div[1]/div[3]/div[1]/p"
+        "/html/body/div[1]/div/div[1]/div/main/div[2]/div[3]/div[1]/div[3]/div[1]/span"
     )
     try:
         away_team = driver.find_element("xpath", away_team_path)
@@ -197,7 +197,7 @@ def get_over_under_odds(
 
             # Scroll down
             driver.execute_script("arguments[0].scrollIntoView()", child)  # type: ignore
-            time.sleep(0.3)
+            time.sleep(0.5)
 
             try:
                 child.click()
@@ -230,21 +230,32 @@ def get_over_under_odds(
                 odds_dict[bookmaker.text] = [odds_low.text, odds_high.text]
             bookmaker_to_odds[key] = odds_dict
 
+    if len(bookmaker_to_odds) == 0:
+        return None
     return bookmaker_to_odds
 
 
 def get_one_x_two_odds(
     driver: webdriver.Chrome,
+    link: str
 ) -> Dict[str, List[str]] | None:
     # Return dict: Dict[bookmaker: List[odds]]
 
     one_x_two_path = "/html/body/div[1]/div/div[1]/div/main/div[2]/div[4]/div[1]/div"
+    
     try:
         one_x_two_div = driver.find_element("xpath", one_x_two_path)
     except:
-        print("one_x_two_path incorrect")
-        driver.close()
-        return
+        driver.get(link)
+        time.sleep(1)
+        driver.get(link)
+        time.sleep(5)
+        try: 
+            one_x_two_div = driver.find_element("xpath", one_x_two_path)
+        except:
+            print("one_x_two_path incorrect")
+            driver.close()
+            return
 
     bookmaker_to_odds: Dict[str, List[str]] = {}
     one_x_two_div_children = one_x_two_div.find_elements("xpath", ".//div")  # type: ignore
@@ -255,15 +266,17 @@ def get_one_x_two_odds(
     for child in one_x_two_div_children:
         try:
             betmaker = child.find_element("xpath", betmaker_relative_path)  # type: ignore
+            if betmaker.text == "":
+                continue
         except:
-            return None
+            continue
         try:
             odds_1 = child.find_element("xpath", odds_1_path + "p")  # type: ignore
             if odds_1.text == "":
                 odds_1 = child.find_element("xpath", odds_1_path + "a")  # type: ignore
         except:
             print("odds_1 not found")
-            return None
+            continue
 
         try:
             odds_x = child.find_element("xpath", odds_x_path + "p")  # type: ignore
@@ -271,7 +284,7 @@ def get_one_x_two_odds(
                 odds_x = child.find_element("xpath", odds_x_path + "a")  # type: ignore
         except:
             print("odds_x not found")
-            return None
+            continue
 
         try:
             odds_2 = child.find_element("xpath", odds_2_path + "p")  # type: ignore
@@ -279,10 +292,13 @@ def get_one_x_two_odds(
                 odds_2 = child.find_element("xpath", odds_2_path + "a")  # type: ignore
         except:
             print("odds_2 not found")
-            return None
+            continue
 
         bookmaker_to_odds[betmaker.text] = [odds_1.text, odds_x.text, odds_2.text]
 
+    if len(bookmaker_to_odds) == 0:
+        return None
+    
     return bookmaker_to_odds
 
 

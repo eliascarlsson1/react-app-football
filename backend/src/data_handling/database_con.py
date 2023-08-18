@@ -108,7 +108,10 @@ def add_test(
     outcome: str,
 ) -> None:
     if name in get_test_names():
-        raise ValueError("Test name already exists")
+        if name == "current":
+            delete_test("current")
+        else:
+            raise ValueError("Test name already exists")
 
     con = sqlite3.connect(database_abs_path)
     cursor = con.cursor()
