@@ -27,6 +27,7 @@ import {
 	deletePipeline,
 	addPipeline,
 	applyPipeline,
+	getShowModelStats,
 } from "./http-manager";
 import { DeleteModelAction, DeleteModelState } from "./model/deletemodel";
 import {
@@ -49,6 +50,10 @@ import {
 	PipelineViewAction,
 	PipelineViewState,
 } from "./pipeline/pipelineview";
+import {
+	ShowModelStatsAction,
+	ShowModelStatsViewState,
+} from "./model/showmodelstats";
 import { CreateNewPipelineState } from "./pipeline/createnewpipeline";
 import { TestData, TestModelAction, TestModelState } from "./model/test_model";
 import { DeleteTestAction, DeleteTestState } from "./test/deletetest";
@@ -78,7 +83,16 @@ export type AppState = {
 		saveTestStatus: SaveTestStatus;
 		prepareScrapeStatus: BasicStringStatus;
 		gameBetInformationOpen: boolean;
+		showModelStatsOpen: "open" | "loading" | "closed";
 	};
+	imageSrc: {
+		permutationImportanceTestSrc: string | null;
+		permutationImportanceTrainSrc: string | null;
+		permutationImportanceValSrc: string | null;
+		featureImportanceSrc: string | null;
+		confidenceBarplotSrc: string | null;
+	};
+	modelAccuracy: string[];
 	trainModelRoi: { id: string; roi: string }[];
 	currentModels: ModelInformation[] | null;
 	currentTests: string[] | null;
@@ -96,7 +110,8 @@ export type AppAction =
 	| TestModelAction
 	| SaveTestAction
 	| DeleteTestAction
-	| PipelineViewAction;
+	| PipelineViewAction
+	| ShowModelStatsAction;
 export type AppActionDispatcher = (action: AppAction) => void;
 
 class AppStateManager {
@@ -130,7 +145,16 @@ class AppStateManager {
 				saveTestStatus: "idle",
 				prepareScrapeStatus: "idle",
 				gameBetInformationOpen: false,
+				showModelStatsOpen: "closed",
 			},
+			imageSrc: {
+				permutationImportanceTrainSrc: null,
+				permutationImportanceTestSrc: null,
+				permutationImportanceValSrc: null,
+				featureImportanceSrc: null,
+				confidenceBarplotSrc: null,
+			},
+			modelAccuracy: [],
 			currentModels: null,
 			trainModelRoi: [],
 			currentTests: null,
@@ -413,6 +437,37 @@ class AppStateManager {
 					newAppState.statuses.gameBetInformationOpen = false;
 					newAppState.gameBetInformation = [];
 					this.#setState(newAppState);
+					break;
+				}
+				case "show model stats": {
+					const newAppState: AppState = _.cloneDeep(this.#appState);
+					newAppState.statuses.showModelStatsOpen = "loading";
+					getShowModelStats(action.modelName, action.testData, (response) => {
+						console.log(response);
+						const newAppState: AppState = _.cloneDeep(this.#appState);
+						newAppState.imageSrc.permutationImportanceTestSrc =
+							response.images.permutation_importance_test;
+						newAppState.imageSrc.permutationImportanceTrainSrc =
+							response.images.permutation_importance_train;
+						newAppState.imageSrc.permutationImportanceValSrc =
+							response.images.permutation_importance_val;
+						newAppState.imageSrc.featureImportanceSrc =
+							response.images.feature_importance;
+						newAppState.imageSrc.confidenceBarplotSrc =
+							response.images.conficence_barplot;
+						newAppState.modelAccuracy = response.dictionary.accuracy;
+						newAppState.testResponse = response.dictionary.roi;
+						newAppState.statuses.showModelStatsOpen = "open";
+						this.#setState(newAppState);
+					});
+					this.#setState(newAppState);
+					break;
+				}
+				case "close show model stats": {
+					const newAppState: AppState = _.cloneDeep(this.#appState);
+					newAppState.statuses.showModelStatsOpen = "closed";
+					this.#setState(newAppState);
+					break;
 				}
 			}
 		};
@@ -506,6 +561,24 @@ class ComponentStateManager {
 			currentModels: this.#appState.currentModels ?? [],
 			currentTests: this.#appState.currentTests ?? [],
 			leagueIdsToName: this.#appState.leagueIdsToName ?? new Map(),
+		};
+	}
+
+	getShowModelStatsViewState(): ShowModelStatsViewState {
+		return {
+			showModelStatsViewOpen: this.#appState.statuses.showModelStatsOpen,
+			permutationImportanceTestSrc:
+				this.#appState.imageSrc.permutationImportanceTestSrc,
+			permutationImportanceTrainSrc:
+				this.#appState.imageSrc.permutationImportanceTrainSrc,
+			permutationImportanceValSrc:
+				this.#appState.imageSrc.permutationImportanceValSrc,
+			featureImportanceSrc: this.#appState.imageSrc.featureImportanceSrc,
+			confidenceBarplotSrc: this.#appState.imageSrc.confidenceBarplotSrc,
+			accuracy: this.#appState.modelAccuracy,
+			currentModels: this.#appState.currentModels ?? [],
+			historicalData: this.#appState.historicalData ?? [],
+			ROI: this.#appState.trainModelRoi ?? [],
 		};
 	}
 }

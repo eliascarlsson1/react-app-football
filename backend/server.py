@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request, send_file, jsonify  # type: ignore
 from flask_cors import CORS
 import json
 from threading import Thread
@@ -34,12 +34,17 @@ from src.model_handling.test_model import (
     get_roi_for_model,
 )
 from src.model_handling.pipeline import apply_pipeline, get_game_bet_information
+from src.model_handling.evaluate_model import generate_model_statistics
 import traceback
+import os
 
 app = Flask(__name__)
 CORS(app)  # Add this line to enable CORS for all routes
 app.config["CORS_HEADERS"] = "Content-Type"
 
+relative_image_path = "./data/temporary_storage/images"
+file_path = os.path.dirname(os.path.abspath(__file__))
+image_path = os.path.join(file_path, relative_image_path)
 
 ### Variables ###
 all_historical_data_dict = get_all_historical_data_dict()
@@ -273,6 +278,59 @@ def apply_pipeline_call() -> List[Dict[str, Any]]:
         game_information_list = game_information_list + [game_information_dict]
 
     return game_information_list
+
+
+# Show model stats
+@app.route("/api/show-model-stats", methods=["POST"])
+def show_model_stats_call():
+    object = request.get_json()
+    model_name: str = object.get("modelName")
+    test_data: List[str] = object.get("testData")
+
+    accuracy: List[str] = generate_model_statistics(model_name, test_data)
+    roi: Dict[str, Any] = get_roi_for_model(test_data, model_name)
+    dictionary = {"accuracy": accuracy, "roi": roi}
+
+    feature_importance_path = image_path + "./feature_importance.jpg"
+    permutation_importance_train_path = (
+        image_path + "./permutation_importance_train.jpg"
+    )
+    permutation_importance_test_path = image_path + "./permutation_importance_test.jpg"
+    permutation_importance_val_path = image_path + "./permutation_importance_val.jpg"
+    probability_histogram_path = image_path + "./probability_histogram.jpg"
+
+    feature_importance_url = "/get_image?path=" + feature_importance_path
+    permutation_importance_train_url = (
+        "/get_image?path=" + permutation_importance_train_path
+    )
+    permutation_importance_test_url = (
+        "/get_image?path=" + permutation_importance_test_path
+    )
+    permutation_importance_val_url = (
+        "/get_image?path=" + permutation_importance_val_path
+    )
+    probability_histogram_url = "/get_image?path=" + probability_histogram_path
+
+    data = {
+        "images": {
+            "feature_importance": feature_importance_url,
+            "permutation_importance_train": permutation_importance_train_url,
+            "permutation_importance_test": permutation_importance_test_url,
+            "permutation_importance_val": permutation_importance_val_url,
+            "probability_histogram": probability_histogram_url,
+        },
+        "dictionary": dictionary,
+    }
+
+    return jsonify(data)
+
+
+@app.route("/get_image")
+def get_image():
+    image_path: str | None = request.args.get("path")
+    if image_path is None:
+        return "No image path provided"
+    return send_file(image_path, mimetype="image/jpeg")
 
 
 if __name__ == "__main__":

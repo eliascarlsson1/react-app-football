@@ -349,3 +349,23 @@ export async function applyPipeline(
 		console.error("Error in applying pipeline:", error);
 	}
 }
+
+export async function getShowModelStats(
+	modelName: string,
+	testData: string[],
+	getResponse: (response: any) => void,
+) {
+	try {
+		const response = await fetch("http://localhost:5000/api/show-model-stats", {
+			method: "POST",
+			headers: {
+				"Content-Type": "application/json",
+			},
+			body: JSON.stringify({ modelName, testData }),
+		});
+		const responseObject: any = await response.json();
+		getResponse(responseObject);
+	} catch (error) {
+		console.error("Error in showing model stats:", error);
+	}
+}

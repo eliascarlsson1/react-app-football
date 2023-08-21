@@ -52,7 +52,6 @@ export default function PipelineView({
 		setPage(value);
 	};
 
-	console.log(state.gameBetInformation);
 	return (
 		<div>
 			<Stack direction={"column"}>

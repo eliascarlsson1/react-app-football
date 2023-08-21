@@ -10,6 +10,7 @@ import SaveModel from "./savemodel";
 import { AppStateManager } from "../appstatemanager";
 import MultiSelect from "../components/multiselect";
 import DeleteModel from "../model/deletemodel";
+import ShowModelStats from "./showmodelstats";
 
 export type TrainModelStatus = "idle" | "training" | "success" | "error";
 
@@ -186,6 +187,10 @@ export default function TrainModelView({
 				state={appStateManager.getComponentState().getDeleteModelState()}
 				dispatcher={dispatcher}
 			/>
+			<ShowModelStats
+				state={appStateManager.getComponentState().getShowModelStatsViewState()}
+				dispatcher={dispatcher}
+			></ShowModelStats>
 		</Stack>
 	);
 }

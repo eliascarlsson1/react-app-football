@@ -1,5 +1,8 @@
 import pandas as pd
 import numpy as np
+import matplotlib
+
+matplotlib.use("Agg")  # Use the 'Agg' backend (non-GUI)
 import matplotlib.pyplot as plt
 from ..data_handling.database_con import get_model_names
 from ..data_handling.data_handling_utils import get_historical_data_list
@@ -12,15 +15,21 @@ from ..data_handling.data_handling_utils import (
     get_prepared_data_dict,
     concatenate_df_dict,
 )
-from eli5.sklearn import PermutationImportance
+from sklearn.inspection import permutation_importance  # type: ignore
 import xgboost as xgb
+import os
+
+relative_image_path = "../../data/temporary_storage/images"
+file_path = os.path.dirname(os.path.abspath(__file__))
+image_path = os.path.join(file_path, relative_image_path)
 
 
-def generate_model_statistics(model_name: str, test_data_list: list[str]):
+def generate_model_statistics(model_name: str, test_data_list: list[str]) -> list[str]:
+    # Generated plots and returns accuracy list
     model_names = get_model_names()
     if model_name not in model_names:
         print("Error: model name not found")
-        return
+        return []
 
     df_dict: dict[str, pd.DataFrame] = get_prepared_data_dict()
 
@@ -40,9 +49,9 @@ def generate_model_statistics(model_name: str, test_data_list: list[str]):
     [x_par, y_par] = load_x_and_y_parameters_from_model(model_name)
     model = load_model(model_name)
 
-    model_statistics(model, training_data, test_data, val_data, x_par, y_par)
-    # feature_selection(model, test_data, x_par, y_par)
-    # feature_importance_RF(model, x_par)
+    feature_importance(model, training_data, test_data, val_data, x_par, y_par)
+    probability_histogram_plot(model, training_data, test_data, val_data, x_par, y_par)
+    return model_statistics(model, training_data, test_data, val_data, x_par, y_par)
 
 
 def model_statistics(
@@ -52,73 +61,91 @@ def model_statistics(
     val: pd.DataFrame,
     x_par: list[str],
     y_par: str,
-):
+) -> list[str]:
     # Print accuracy
-    print(
+    accuracy_list: list[str] = []
+
+    accuracy_list.append(  # type: ignore
         "Training data accuracy: "
         + str(round(classifier.score(train[x_par], train[y_par]) * 100, 1))  # type: ignore
     )
-    print(
+    accuracy_list.append(  # type: ignore
         "Test data accuracy: "
         + str(round(classifier.score(test[x_par], test[y_par]) * 100, 1))  # type: ignore
     )
-    print(
+
+    accuracy_list.append(  # type: ignore
         "Validation data accuracy: "
         + str(round(classifier.score(val[x_par], val[y_par]) * 100, 1))  # type: ignore
     )
 
-
-# def feature_importance_RF(classifier: xgb.XGBClassifier, x_par: list[str]):
-#     # Plot importance
-#     importances = classifier.feature_importances_ # type: ignore
-#     std = np.std([tree.feature_importances_ for tree in classifier.estimators_], axis=0) # type: ignore
-
-#     forest_importances = pd.Series(importances, index=x_par) # type: ignore
-
-#     fig, ax = plt.subplots() # type: ignore
-#     forest_importances.plot.bar(yerr=std, ax=ax) # type: ignore
-#     ax.set_title("Feature importances using MDI") # type: ignore
-#     ax.set_ylabel("Mean decrease in impurity") # type: ignore
-#     fig.tight_layout()
+    return accuracy_list
 
 
-# def feature_selection(classifier: xgb.XGBClassifier, test: pd.DataFrame, x_par: list[str], y_par: str):
-#     permuter = PermutationImportance(
-#         classifier, scoring="accuracy", n_iter=5, random_state=42
-#     )
+def feature_importance(
+    classifier: xgb.XGBClassifier,
+    train: pd.DataFrame,
+    test: pd.DataFrame,
+    val: pd.DataFrame,
+    x_par: list[str],
+    y_par: str,
+):
+    ## FIXME: Make for validation and test!!
+    perm_importance = permutation_importance(classifier, train[x_par], train[y_par])
+    sorted_idx = perm_importance.importances_mean.argsort()  # type: ignore
+    xp_par_array = np.array(x_par)
+    plt.barh(xp_par_array[sorted_idx], perm_importance.importances_mean[sorted_idx])  # type: ignore
+    plt.xlabel("Permutation Importance " + "Training data")  # type: ignore
+    plt.savefig(image_path + "/permutation_importance_training.png")  # type: ignore
+    plt.close()  # type: ignore
 
-#     permuter.fit(test[x_par], test[y_par]) # type: ignore
+    perm_importance = permutation_importance(classifier, test[x_par], test[y_par])
+    sorted_idx = perm_importance.importances_mean.argsort()  # type: ignore
+    xp_par_array = np.array(x_par)
+    plt.barh(xp_par_array[sorted_idx], perm_importance.importances_mean[sorted_idx])  # type: ignore
+    plt.xlabel("Permutation Importance " + "Test data")  # type: ignore
+    plt.savefig(image_path + "/permutation_importance_test.png")  # type: ignore
+    plt.close()  # type: ignore
 
-#     return permuter
+    perm_importance = permutation_importance(classifier, val[x_par], val[y_par])
+    sorted_idx = perm_importance.importances_mean.argsort()  # type: ignore
+    xp_par_array = np.array(x_par)
+    plt.barh(xp_par_array[sorted_idx], perm_importance.importances_mean[sorted_idx])  # type: ignore
+    plt.xlabel("Permutation Importance " + "Validation data")  # type: ignore
+    plt.savefig(image_path + "/permutation_importance_validation.png")  # type: ignore
+    plt.close()  # type: ignore
 
-### OLD SCRIPT!
-# import pandas as pd
-# import numpy as np
-# import xgboost as xgb
-# from sklearn.inspection import permutation_importance
-# from matplotlib import pyplot as plt
-# from matplotlib import pyplot
+    plt.clf()
+    xgb.plot_importance(classifier)  # type: ignore
+    plt.savefig(image_path + "/test2.png")  # type: ignore
+    plt.close()  # type: ignore
 
-# # Reading files
-# parameters = pd.read_json("./interface_files/prediction_parameters.json", typ="series")
-
-# path = "./interface_files/"
-# model_parameters = pd.read_json(path + "current_model_parameters.json", typ = "series")
-# x_par = np.array(model_parameters["x_par"])
-# y_par = model_parameters["y_par"]
-# train = pd.read_csv(path+"current_val.csv")
-
-# clf = xgb.XGBClassifier()
-# xgb.XGBClassifier.load_model(clf, path+"current_model.json")
+    ## FIXME: Confidence plot histogram.
 
 
-# plt.clf()
-# perm_importance = permutation_importance(clf, train[x_par], train[y_par])
-# sorted_idx = perm_importance.importances_mean.argsort()
-# plt.barh(x_par[sorted_idx], perm_importance.importances_mean[sorted_idx])
-# plt.xlabel("Permutation Importance")
-# plt.savefig("./interface_files/current_perumtation_importance.png")
+def probability_histogram_plot(
+    classifier: xgb.XGBClassifier,
+    train: pd.DataFrame,
+    test: pd.DataFrame,
+    val: pd.DataFrame,
+    x_par: list[str],
+    y_par: str,
+):
+    train_data_prob = classifier.predict_proba(train[x_par])  # type: ignore
+    train_data_prob_max = np.amax(train_data_prob, axis=1)  # type: ignore
+    test_data_prob = classifier.predict_proba(test[x_par])  # type: ignore
+    test_data_prob_max = np.amax(test_data_prob, axis=1)  # type: ignore
+    val_data_prob = classifier.predict_proba(val[x_par])  # type: ignore
+    val_data_prob_max = np.amax(val_data_prob, axis=1)  # type: ignore
 
-# plt.clf()
-# xgb.plot_importance(clf)
-# pyplot.savefig("./interface_files/current_feature_importance.png")
+    # plot all three histograms in frame with three plots
+    fig, axs = plt.subplots(3, sharex=True, sharey=False, gridspec_kw={"hspace": 0.5})  # type: ignore
+    fig.suptitle("Probability histogram")  # type: ignore
+    axs[0].set_title("Training data")  # type: ignore
+    axs[0].hist(train_data_prob_max, bins=20)
+    axs[1].set_title("Test data")  # type: ignore
+    axs[1].hist(test_data_prob_max, bins=20)
+    axs[2].set_title("Validation data")  # type: ignore
+    axs[2].hist(val_data_prob_max, bins=20)
+    plt.savefig(image_path + "/probability_histogram.png")  # type: ignore
+    plt.close()  # type: ignore
