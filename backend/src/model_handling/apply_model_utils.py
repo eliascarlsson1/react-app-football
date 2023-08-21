@@ -23,7 +23,14 @@ abs_path_prepared_data = os.path.join(script_dir, rel_path_prepared_data)
 # Body
 
 
-def load_model(path: str) -> xgb.XGBClassifier:
+def load_model(name: str) -> xgb.XGBClassifier:
+    # ternary operator for path
+    path = (
+        abs_path_current_model
+        if (name == "current_model")
+        else abs_path_models + "/" + name + "/model.json"
+    )
+
     ## Check that path is a json file and exists
     if not os.path.exists(path):
         raise ValueError("Path does not exist, {}".format(path))
@@ -41,13 +48,7 @@ def load_model(path: str) -> xgb.XGBClassifier:
 
 
 def apply_model(model_name: str, data_list: List[str]) -> Dict[str, pd.DataFrame]:
-    # ternary operator for path
-    path = (
-        abs_path_current_model
-        if (model_name == "current_model")
-        else abs_path_models + "/" + model_name + "/model.json"
-    )
-    classifier = load_model(path)
+    classifier = load_model(model_name)
     [xPar, yPar] = load_x_and_y_parameters_from_model(model_name)  # type: ignore
 
     df_dict: Dict[str, pd.DataFrame] = {}
@@ -67,13 +68,7 @@ def apply_model(model_name: str, data_list: List[str]) -> Dict[str, pd.DataFrame
 
 
 def apply_model_to_df(model_name: str, df: pd.DataFrame) -> pd.DataFrame:
-    # ternary operator for path
-    path = (
-        abs_path_current_model
-        if (model_name == "current_model")
-        else abs_path_models + "/" + model_name + "/model.json"
-    )
-    classifier = load_model(path)
+    classifier = load_model(model_name)
     [xPar, yPar] = load_x_and_y_parameters_from_model(model_name)  # type: ignore
 
     df["prediction"] = classifier.predict(df[xPar])  # type: ignore

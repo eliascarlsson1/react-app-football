@@ -97,9 +97,7 @@ def write_to_csv(df: pd.DataFrame):
 
 def get_teams_and_date(driver: webdriver.Chrome) -> List[str]:
     # Return [home_team, away_team, date, time]
-    home_team_path = (
-        "/html/body/div[1]/div/div[1]/div/main/div[2]/div[3]/div[1]/div[1]/div/div[1]/span"
-    )
+    home_team_path = "/html/body/div[1]/div/div[1]/div/main/div[2]/div[3]/div[1]/div[1]/div/div[1]/span"
     try:
         home_team = driver.find_element("xpath", home_team_path)
     except:
@@ -236,13 +234,12 @@ def get_over_under_odds(
 
 
 def get_one_x_two_odds(
-    driver: webdriver.Chrome,
-    link: str
+    driver: webdriver.Chrome, link: str
 ) -> Dict[str, List[str]] | None:
     # Return dict: Dict[bookmaker: List[odds]]
 
     one_x_two_path = "/html/body/div[1]/div/div[1]/div/main/div[2]/div[4]/div[1]/div"
-    
+
     try:
         one_x_two_div = driver.find_element("xpath", one_x_two_path)
     except:
@@ -250,7 +247,7 @@ def get_one_x_two_odds(
         time.sleep(1)
         driver.get(link)
         time.sleep(5)
-        try: 
+        try:
             one_x_two_div = driver.find_element("xpath", one_x_two_path)
         except:
             print("one_x_two_path incorrect")
@@ -298,7 +295,7 @@ def get_one_x_two_odds(
 
     if len(bookmaker_to_odds) == 0:
         return None
-    
+
     return bookmaker_to_odds
 
 

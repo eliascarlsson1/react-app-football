@@ -79,10 +79,9 @@ export default function Test_model({
 			alignItems={"flex-start"}
 		>
 			<Stack direction={"row"}>
-			<Typography variant="h5" gutterBottom>
-				Test model
-			</Typography>
-
+				<Typography variant="h5" gutterBottom>
+					Test model
+				</Typography>
 			</Stack>
 			<SingleSelect
 				dataArray={currentModelNames}
