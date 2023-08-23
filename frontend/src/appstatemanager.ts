@@ -252,19 +252,6 @@ class AppStateManager {
 						const newAppState: AppState = _.cloneDeep(this.#appState);
 						if (response === "success") {
 							newAppState.statuses.trainModelStatus = "success";
-							if (action.testData.length > 0) {
-								getRoiFromModel(
-									{ testData: action.testData, modelName: "current_model" },
-									(response) => {
-										const newAppState: AppState = _.cloneDeep(this.#appState);
-										newAppState.trainModelRoi = getTrainModelRoi(response);
-										this.#setState(newAppState);
-									},
-								);
-							} else {
-								newAppState.trainModelRoi = [];
-								this.#setState(newAppState);
-							}
 						} else {
 							newAppState.statuses.trainModelStatus = "error";
 							console.log(response);
@@ -454,7 +441,7 @@ class AppStateManager {
 						newAppState.imageSrc.featureImportanceSrc =
 							response.images.feature_importance;
 						newAppState.imageSrc.confidenceBarplotSrc =
-							response.images.conficence_barplot;
+							response.images.probability_histogram;
 						newAppState.modelAccuracy = response.dictionary.accuracy;
 						newAppState.testResponse = response.dictionary.roi;
 						newAppState.statuses.showModelStatsOpen = "open";
@@ -544,7 +531,6 @@ class ComponentStateManager {
 			xParameters: this.#appState.xParameters ?? [],
 			yParameters: this.#appState.yParameters ?? [],
 			trainModelStatus: this.#appState.statuses.trainModelStatus,
-			trainModelRoi: this.#appState.trainModelRoi,
 		};
 	}
 

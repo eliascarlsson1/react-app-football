@@ -9,6 +9,8 @@ import DeleteTest from "./test/deletetest";
 import TestModel from "./model/test_model";
 import CreateTest from "./test/create_test";
 import PipelineView from "./pipeline/pipelineview";
+import DeleteModel from "./model/deletemodel";
+import ShowModelStats from "./model/showmodelstats";
 
 const appStateManager = new AppStateManager();
 
@@ -82,7 +84,7 @@ function App() {
 				{appState.tab === "Evaluate" ? (
 					<EvaluateView />
 				) : appState.tab === "Train model" ? (
-					<Stack direction={"row"} gap={1}>
+					<Stack direction={"row"} gap={2} alignItems={"flex-start"}>
 						<TrainModelView
 							state={appStateManager
 								.getComponentState()
@@ -90,6 +92,20 @@ function App() {
 							dispatcher={appDispatcher}
 							appStateManager={appStateManager}
 						/>
+						<Stack gap={3}>
+							<ShowModelStats
+								state={appStateManager
+									.getComponentState()
+									.getShowModelStatsViewState()}
+								dispatcher={appDispatcher}
+							/>
+							<DeleteModel
+								state={appStateManager
+									.getComponentState()
+									.getDeleteModelState()}
+								dispatcher={appDispatcher}
+							/>
+						</Stack>
 					</Stack>
 				) : appState.tab === "Test" ? (
 					<Stack alignItems={"flex-start"} direction={"row"} gap={2}>
@@ -101,10 +117,18 @@ function App() {
 							state={appStateManager.getComponentState().getTestModelState()}
 							dispatcher={appDispatcher}
 						/>
-						<DeleteTest
-							state={appStateManager.getComponentState().getDeleteTestState()}
-							dispatcher={appDispatcher}
-						/>
+						<Stack>
+							<ShowModelStats
+								state={appStateManager
+									.getComponentState()
+									.getShowModelStatsViewState()}
+								dispatcher={appDispatcher}
+							/>
+							<DeleteTest
+								state={appStateManager.getComponentState().getDeleteTestState()}
+								dispatcher={appDispatcher}
+							/>
+						</Stack>
 					</Stack>
 				) : appState.tab === "Pipeline" ? (
 					<PipelineView

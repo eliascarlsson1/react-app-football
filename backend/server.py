@@ -291,13 +291,17 @@ def show_model_stats_call():
     roi: Dict[str, Any] = get_roi_for_model(test_data, model_name)
     dictionary = {"accuracy": accuracy, "roi": roi}
 
-    feature_importance_path = image_path + "./feature_importance.jpg"
-    permutation_importance_train_path = (
-        image_path + "./permutation_importance_train.jpg"
+    feature_importance_path = os.path.join(image_path + "/feature_importance.png")
+    permutation_importance_train_path = os.path.join(
+        image_path + "/permutation_importance_training.png"
     )
-    permutation_importance_test_path = image_path + "./permutation_importance_test.jpg"
-    permutation_importance_val_path = image_path + "./permutation_importance_val.jpg"
-    probability_histogram_path = image_path + "./probability_histogram.jpg"
+    permutation_importance_test_path = os.path.join(
+        image_path + "/permutation_importance_test.png"
+    )
+    permutation_importance_val_path = os.path.join(
+        image_path + "/permutation_importance_validation.png"
+    )
+    probability_histogram_path = os.path.join(image_path + "/probability_histogram.png")
 
     feature_importance_url = "/get_image?path=" + feature_importance_path
     permutation_importance_train_url = (

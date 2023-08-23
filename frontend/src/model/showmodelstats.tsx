@@ -94,36 +94,103 @@ export default function ShowModelStats({
 				""
 			)}
 			{state.showModelStatsViewOpen === "open" ? (
-				<Dialog open={state.showModelStatsViewOpen === "open"}>
-					<Stack>
-						{state.ROI.map((roi) => {
-							return (
-								<Typography>
-									{roi.id} {roi.roi}
-								</Typography>
-							);
-						})}
-						{state.accuracy.map((acc) => {
-							return <Typography>{acc}</Typography>;
-						})}
-						<div className="App">
-							{state.permutationImportanceTestSrc && (
-								<img src={state.permutationImportanceTestSrc} alt="Image" />
-							)}
-							{state.featureImportanceSrc && (
-								<img src={state.featureImportanceSrc} alt="Image" />
-							)}
-							{state.confidenceBarplotSrc && (
-								<img src={state.confidenceBarplotSrc} alt="Image" />
-							)}
-						</div>
-						<Button
-							onClick={() => {
-								dispatcher({ type: "close show model stats" });
-							}}
+				<Dialog
+					open={state.showModelStatsViewOpen === "open"}
+					fullWidth={true}
+					maxWidth={"lg"}
+				>
+					<Stack overflow={"hidden"}>
+						<Stack
+							padding={2}
+							direction={"row"}
+							flex={"grow"}
+							borderBottom={1}
+							borderColor={"gray"}
+							justifyContent={"space-between"}
 						>
-							Close
-						</Button>
+							<Stack direction={"row"}>
+								<Typography variant={"h5"}>
+									Model statistics for model: "{selectedModel}"
+								</Typography>
+							</Stack>
+							<Stack direction={"row"}>
+								<Button
+									onClick={() => {
+										dispatcher({ type: "close show model stats" });
+									}}
+								>
+									Close modal
+								</Button>
+							</Stack>
+						</Stack>
+						<Stack style={{ overflowY: "auto", overflowX: "hidden" }}>
+							<Stack padding={1}>
+								<Typography fontWeight={"bold"}>
+									Model parameters (WIP):
+								</Typography>
+							</Stack>
+							<Stack padding={1}>
+								<Typography fontWeight={"bold"}>ROI:</Typography>
+								{state.ROI.map((roi) => {
+									return (
+										<Typography>
+											{roi.id} {roi.roi}
+										</Typography>
+									);
+								})}
+							</Stack>
+							<Stack padding={1}>
+								<Typography fontWeight={"bold"}>Accuracy:</Typography>
+								{state.accuracy.map((acc) => {
+									return <Typography>{acc}</Typography>;
+								})}
+							</Stack>
+							<Stack padding={1} maxWidth={"50%"}>
+								<Typography fontWeight={"bold"}>Confidence plot:</Typography>
+								{state.confidenceBarplotSrc && (
+									<img
+										src={`http://localhost:5000${state.confidenceBarplotSrc}`}
+										alt="Image"
+									/>
+								)}
+							</Stack>
+							<Stack padding={1} maxWidth={"50%"}>
+								<Typography fontWeight={"bold"}>
+									Feature importance plots:
+								</Typography>
+								{state.featureImportanceSrc && (
+									<img
+										src={`http://localhost:5000${state.featureImportanceSrc}`}
+										alt="Image"
+									/>
+								)}
+							</Stack>
+							<Stack padding={1}>
+								<Typography fontWeight={"bold"}>
+									Permutation importance plots:
+								</Typography>
+								<Stack maxWidth={"50%"}>
+									{state.permutationImportanceTrainSrc && (
+										<img
+											src={`http://localhost:5000${state.permutationImportanceTestSrc}`}
+											alt="Image"
+										/>
+									)}
+									{state.permutationImportanceTestSrc && (
+										<img
+											src={`http://localhost:5000${state.permutationImportanceTrainSrc}`}
+											alt="Image"
+										/>
+									)}
+									{state.permutationImportanceValSrc && (
+										<img
+											src={`http://localhost:5000${state.permutationImportanceValSrc}`}
+											alt="Image"
+										/>
+									)}
+								</Stack>
+							</Stack>
+						</Stack>
 					</Stack>
 				</Dialog>
 			) : (

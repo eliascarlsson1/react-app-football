@@ -134,7 +134,7 @@ def create_tables_for_every_date(data):
     dateTables = dict()
     all_home_teams = np.unique(np.array(data["HomeTeam"]))
     all_away_teams = np.unique(np.array(data["AwayTeam"]))
-    all_teams = np.unique([all_home_teams, all_away_teams])
+    all_teams = np.unique(np.concatenate([all_home_teams, all_away_teams]))
     table0 = create_empty_table(all_teams)
 
     for index, date in enumerate(dates):

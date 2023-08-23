@@ -44,6 +44,7 @@ def prepare_relevant_data(
 
     for filename in filenames:
         if len(filename) == 10:
+            print("Preparing", filename)
             league = filename[:2]
             year = filename[2:6]
             raw_data = pd.read_csv(relevant_data_path + "/" + filename)  # type: ignore
