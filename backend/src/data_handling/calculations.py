@@ -28,5 +28,6 @@ def calculate_basic_roi(dataframe: pd.DataFrame, y_par: str) -> float | str:
         money_bet += 1
         if row["prediction"] == row[y_par]:
             money_returned += odds
-
+    print(money_bet)
+    print(money_returned)
     return 100 * money_returned / money_bet - 100

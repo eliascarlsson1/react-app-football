@@ -61,8 +61,9 @@ def apply_model(model_name: str, data_list: List[str]) -> Dict[str, pd.DataFrame
         df["prediction"] = classifier.predict(df[xPar])  # type: ignore
         df["prob_0"] = classifier.predict_proba(df[xPar])[:, 0]  # type: ignore
         df["prob_1"] = classifier.predict_proba(df[xPar])[:, 1]  # type: ignore
-        df = add_odds_pred(df, "AvgO25", "AvgU25")
+        df = add_odds_pred(df, "AvgU25", "AvgO25")
         df_dict[df_name] = df
+        df.to_csv("test.csv")
 
     return df_dict
 
@@ -113,3 +114,19 @@ def load_training_data_from_model(model_name: str) -> List[str]:
         json_dict = json.load(f)
     training_data = json_dict["trainingData"]
     return training_data
+
+
+def load_parameters_from_model(model_name: str) -> Dict[str, str]:
+    # ternary operator for path
+    path = (
+        abs_path_current_model_parameters
+        if (model_name == "current_model")
+        else abs_path_models + "/" + model_name + "/model_parameters.json"
+    )
+    if not os.path.exists(path):
+        raise ValueError("Path does not exist")
+
+    # Load json from path
+    with open(path, "r") as f:
+        json_dict: Dict[str, str] = json.load(f)
+    return json_dict

@@ -7,8 +7,7 @@ from ..data_handling.database_con import (
     get_test_names,
 )
 from .apply_model_utils import (
-    load_x_and_y_parameters_from_model,
-    load_training_data_from_model,
+    load_parameters_from_model,
 )
 import os
 
@@ -80,12 +79,16 @@ def get_model_information():
     model_names = get_model_names()
 
     for name in model_names:
+        parameters = load_parameters_from_model(name)
         model_information.append(
             {
                 "name": name,
-                "xParameters": load_x_and_y_parameters_from_model(name)[0],
-                "yParameter": load_x_and_y_parameters_from_model(name)[1],
-                "trainingData": load_training_data_from_model(name),
+                "xParameters": parameters["xParameters"],
+                "yParameter": parameters["yParameter"],
+                "learningRate": parameters["learningRate"],
+                "maxDepth": parameters["maxDepth"],
+                "trainingData": parameters["trainingData"],
+                "numberEstimators": parameters["numberEstimators"],
             }
         )
 

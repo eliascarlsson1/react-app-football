@@ -43,10 +43,15 @@ export async function getCurrentModels(
 							trainingData: [],
 							xParameters: [],
 							yParameter: "",
+							learningRate: 0,
+							maxDepth: 0,
+							numberEstimators: 0,
 						},
 				  ]
 				: data;
 		updateCurrentModels(dataToReturn);
+		console.log(dataToReturn);
+		//FIXME: WORKING ON THIS RIGHT NOW
 	} catch (error) {
 		console.error("Error in fetching current models:", error);
 	}

@@ -4,7 +4,7 @@ import SingleTextSlider from "../components/singletextslider";
 import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
-import { AppActionDispatcher } from "../appstatemanager";
+import { AppActionDispatcher, ModelInformation } from "../appstatemanager";
 import SingleSelect from "../components/singleselect";
 import SaveModel from "./savemodel";
 import { AppStateManager } from "../appstatemanager";
@@ -20,12 +20,7 @@ export type TrainModelViewState = {
 
 export type TrainModelAction = {
 	type: "train model";
-	trainingData: string[];
-	xParameters: string[];
-	yParameter: string;
-	learningRate: number;
-	maxDepth: number;
-	numberEstimators: number;
+	modelInformation: ModelInformation;
 };
 
 export default function TrainModelView({
@@ -64,12 +59,15 @@ export default function TrainModelView({
 						onClick={() =>
 							dispatcher({
 								type: "train model",
-								trainingData,
-								xParameters,
-								yParameter,
-								learningRate,
-								maxDepth,
-								numberEstimators,
+								modelInformation: {
+									name: "irrelevant here",
+									trainingData,
+									xParameters,
+									yParameter,
+									learningRate,
+									maxDepth,
+									numberEstimators,
+								},
 							})
 						}
 						disabled={state.trainModelStatus === "training"}

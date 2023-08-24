@@ -46,8 +46,8 @@ def get_average_over_under_odds(type: str, encodedJsonObj: str) -> List[float] |
     if odds == None:
         return None
 
-    list1 = [float(odds[i][0]) for i in odds]
-    list2 = [float(odds[i][1]) for i in odds]
+    list1 = [float(odds[i][1]) for i in odds]
+    list2 = [float(odds[i][0]) for i in odds]
 
     average1 = sum(list1) / len(list1)
     average2 = sum(list2) / len(list2)

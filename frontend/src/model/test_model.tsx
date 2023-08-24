@@ -122,7 +122,7 @@ export default function Test_model({
 				Test model
 			</Button>
 			<Stack direction={"column"} gap={1}>
-				{state.testResponse
+				{state.testResponse !== null
 					? state.testResponse.map((response) => (
 							<DisplayTestData state={response} />
 					  ))

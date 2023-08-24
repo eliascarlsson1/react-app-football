@@ -65,9 +65,12 @@ export type BasicStringStatus = "idle" | "loading" | "success" | "error";
 
 export type ModelInformation = {
 	name: string;
+	trainingData: string[];
 	xParameters: string[];
 	yParameter: string;
-	trainingData: string[];
+	learningRate: number;
+	maxDepth: number;
+	numberEstimators: number;
 };
 
 export type AppState = {
@@ -93,7 +96,7 @@ export type AppState = {
 		confidenceBarplotSrc: string | null;
 	};
 	modelAccuracy: string[];
-	trainModelRoi: { id: string; roi: string }[];
+	trainModelRoi: Map<string, string>;
 	currentModels: ModelInformation[] | null;
 	currentTests: string[] | null;
 	testResponse: TestData[] | null;
@@ -156,7 +159,7 @@ class AppStateManager {
 			},
 			modelAccuracy: [],
 			currentModels: null,
-			trainModelRoi: [],
+			trainModelRoi: new Map(),
 			currentTests: null,
 			testResponse: null,
 			intervals: { prepareDataIntervalId: null },
@@ -259,7 +262,7 @@ class AppStateManager {
 						this.#setState(newAppState);
 					};
 
-					trainModel(action, getResponse);
+					trainModel(action.modelInformation, getResponse);
 					break;
 
 				case "prepare data":
@@ -443,7 +446,7 @@ class AppStateManager {
 						newAppState.imageSrc.confidenceBarplotSrc =
 							response.images.probability_histogram;
 						newAppState.modelAccuracy = response.dictionary.accuracy;
-						newAppState.testResponse = response.dictionary.roi;
+						newAppState.trainModelRoi = response.dictionary.roi;
 						newAppState.statuses.showModelStatsOpen = "open";
 						this.#setState(newAppState);
 					});
@@ -564,7 +567,8 @@ class ComponentStateManager {
 			accuracy: this.#appState.modelAccuracy,
 			currentModels: this.#appState.currentModels ?? [],
 			historicalData: this.#appState.historicalData ?? [],
-			ROI: this.#appState.trainModelRoi ?? [],
+			ROI: this.#appState.trainModelRoi ?? new Map(),
+			allModelInformation: this.#appState.currentModels,
 		};
 	}
 }

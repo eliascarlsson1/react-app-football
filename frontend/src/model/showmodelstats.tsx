@@ -12,7 +12,7 @@ import Typography from "@mui/material/Typography";
 export type ShowModelStatsViewState = {
 	currentModels: ModelInformation[];
 	historicalData: string[];
-	ROI: { id: string; roi: string }[];
+	ROI: Map<string, string>;
 	accuracy: string[];
 	permutationImportanceTestSrc: string | null;
 	permutationImportanceTrainSrc: string | null;
@@ -20,6 +20,7 @@ export type ShowModelStatsViewState = {
 	featureImportanceSrc: string | null;
 	confidenceBarplotSrc: string | null;
 	showModelStatsViewOpen: "closed" | "open" | "loading";
+	allModelInformation: ModelInformation[] | null;
 };
 
 export type ShowModelStatsAction =
@@ -55,6 +56,9 @@ export default function ShowModelStats({
 		(data) => !trainingData.includes(data),
 	);
 	const [selectedData, setSelectedData] = useState<string[]>([]);
+	const selectedModelInformation =
+		state.allModelInformation?.find((model) => model.name === selectedModel) ??
+		null;
 
 	return (
 		<Stack direction={"row"}>
@@ -126,18 +130,41 @@ export default function ShowModelStats({
 						<Stack style={{ overflowY: "auto", overflowX: "hidden" }}>
 							<Stack padding={1}>
 								<Typography fontWeight={"bold"}>
+									Selected training data:
+								</Typography>
+								<Typography>{selectedData.join(", ")}</Typography>
+							</Stack>
+							<Stack padding={1}>
+								<Typography fontWeight={"bold"}>
 									Model parameters (WIP):
 								</Typography>
+								{selectedModelInformation !== null ? (
+									<Stack>
+										<Typography>
+											{selectedModelInformation.learningRate}
+										</Typography>
+										<Typography>{selectedModelInformation.maxDepth}</Typography>
+										<Typography>{selectedModelInformation.name}</Typography>
+										<Typography>
+											{selectedModelInformation.numberEstimators}
+										</Typography>
+										<Typography>
+											{selectedModelInformation.trainingData.join(", ")}
+										</Typography>
+										<Typography>
+											{selectedModelInformation.xParameters.join(", ")}
+										</Typography>
+										<Typography>
+											{selectedModelInformation.yParameter}
+										</Typography>
+									</Stack>
+								) : (
+									""
+								)}
 							</Stack>
 							<Stack padding={1}>
 								<Typography fontWeight={"bold"}>ROI:</Typography>
-								{state.ROI.map((roi) => {
-									return (
-										<Typography>
-											{roi.id} {roi.roi}
-										</Typography>
-									);
-								})}
+								<Typography>{JSON.stringify(state.ROI)}</Typography>
 							</Stack>
 							<Stack padding={1}>
 								<Typography fontWeight={"bold"}>Accuracy:</Typography>

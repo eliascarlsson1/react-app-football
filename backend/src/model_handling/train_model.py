@@ -19,7 +19,6 @@ models_path = os.path.join(script_dir, models_relative_path)
 def train_model(parameters: Dict[str, Any]) -> str:
     """
     parameters (Dict[str, Any]): A dictionary containing the following keys:
-        - type (str): 'train model'
         - trainingData (List[any]):
         - xParameters (List[str]):
         - yParameter (List[str]):
