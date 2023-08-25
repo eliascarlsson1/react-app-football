@@ -6,15 +6,22 @@ from ..model_handling.apply_model_utils import (
 )
 from ..data_handling.database_con import get_test_parameters
 from ..data_handling.calculations import calculate_basic_roi
-from ..data_handling.data_handling_utils import concatenate_df_dict
+from ..data_handling.data_handling_utils import (
+    concatenate_df_dict,
+    get_historical_data_list,
+)
 
 
 def get_roi_for_model(test_data: List[str], model: str) -> Dict[str, str | float]:
-    df_dict = apply_model(model, test_data)
-    df_dict["all"] = concatenate_df_dict(df_dict, test_data)
+    all_data = get_historical_data_list()
+    df_dict = apply_model(model, all_data)
+    all_data_but_test = [x for x in all_data if x not in test_data]
+    df_dict["all other data"] = concatenate_df_dict(df_dict, all_data_but_test)
     y_par = load_x_and_y_parameters_from_model(model)[1]
     roi_dict: Dict[str, str | float] = {}
     for key in df_dict:
+        if key not in test_data and key != "all other data":
+            continue
         roi_dict[key] = calculate_basic_roi(df_dict[key], y_par)
     return roi_dict
 
@@ -22,14 +29,20 @@ def get_roi_for_model(test_data: List[str], model: str) -> Dict[str, str | float
 def get_stats_for_model_and_test(
     test_data: List[str], model: str, test: str
 ) -> Dict[str, Any]:
-    df_dict_before_filter = apply_model(model, test_data)
-    df_dict_before_filter["all"] = concatenate_df_dict(df_dict_before_filter, test_data)
+    all_data = get_historical_data_list()
+    all_data_but_test = [x for x in all_data if x not in test_data]
+    df_dict_before_filter = apply_model(model, all_data)
+    df_dict_before_filter["all other data"] = concatenate_df_dict(
+        df_dict_before_filter, all_data_but_test
+    )
     df_dict = apply_test_to_df_dict(df_dict_before_filter, test)
-    df_dict["all"] = concatenate_df_dict(df_dict, test_data)
+    df_dict["all other data"] = concatenate_df_dict(df_dict, all_data_but_test)
 
     return_dict: Dict[str, Any] = {}
     y_par = load_x_and_y_parameters_from_model(model)[1]
     for key in df_dict:
+        if key not in test_data and key != "all other data":
+            continue
         this_df_dict = get_stats_for_dataframe(
             key, df_dict, df_dict_before_filter, y_par
         )

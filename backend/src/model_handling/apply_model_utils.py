@@ -63,7 +63,6 @@ def apply_model(model_name: str, data_list: List[str]) -> Dict[str, pd.DataFrame
         df["prob_1"] = classifier.predict_proba(df[xPar])[:, 1]  # type: ignore
         df = add_odds_pred(df, "AvgU25", "AvgO25")
         df_dict[df_name] = df
-        df.to_csv("test.csv")
 
     return df_dict
 
