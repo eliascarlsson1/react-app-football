@@ -30,6 +30,8 @@ def scrape_league(country: str, tournament: str):
     time.sleep(1)
     reject_ads()
 
+    login(driver)
+
     game_links = get_game_links(driver, top_link)
     if len(game_links) == 0:
         print("No games found ", top_link)
@@ -50,7 +52,7 @@ def scrape_league(country: str, tournament: str):
             print("No info found")
             continue
         if over_under_odds == None:
-            print("No over/under odds found", info)
+            print("No over/under odds found")
             continue
         encoded_odds_over_under = json.dumps(over_under_odds)
 
@@ -87,6 +89,78 @@ def scrape_league(country: str, tournament: str):
             ],
         )
         write_to_csv(df)
+
+
+def login(driver: webdriver.Chrome):
+    # Log in
+    side_menu_button = "/html/body/div[1]/div/header/div[2]/div/div[2]/div[1]"
+    try:
+        driver.find_element("xpath", side_menu_button).click()
+    except:
+        print("side_menu_button incorrect")
+        driver.close()
+        return
+    time.sleep(3)
+
+    log_in_button = (
+        "/html/body/div[1]/div/header/div[2]/div/div[2]/div[2]/div/div/div[2]/div[2]"
+    )
+    try:
+        driver.find_element("xpath", log_in_button).click()
+    except:
+        print("login_button_path incorrect")
+        time.sleep(60)
+        driver.close()
+        return
+    time.sleep(3)
+
+    oddsportal_username_path = (
+        "/html/body/div[4]/div/div/div[2]/div/div/form/div[1]/div[2]/div/input"
+    )
+    oddsportal_username_path_alternative = (
+        "/html/body/div[3]/div/div/div[2]/div/div/form/div[1]/div[2]/div/input"
+    )
+    try:
+        driver.find_element("xpath", oddsportal_username_path).send_keys("anloan")  # type: ignore
+    except:
+        try:
+            driver.find_element("xpath", oddsportal_username_path_alternative).send_keys("anloan")  # type: ignore
+        except:
+            print("oddsportal_username_path incorrect")
+            driver.close()
+            return
+    time.sleep(3)
+
+    oddsportal_password_path = (
+        "/html/body/div[4]/div/div/div[2]/div/div/form/div[2]/div[2]/div/input"
+    )
+    oddsportal_password_path_alternative = (
+        "/html/body/div[3]/div/div/div[2]/div/div/form/div[2]/div[2]/div/input"
+    )
+    try:
+        driver.find_element("xpath", oddsportal_password_path).send_keys("pjy0pkd3rdp!YAF_vcj")  # type: ignore
+    except:
+        try:
+            driver.find_element("xpath", oddsportal_password_path_alternative).send_keys("pjy0pkd3rdp!YAF_vcj")  # type: ignore
+        except:
+            print("oddsportal_password_path incorrect")
+            driver.close()
+            return
+    time.sleep(3)
+
+    log_in_button = "/html/body/div[4]/div/div/div[2]/div/div/form/div[4]/span/input"
+    log_in_button_alternative = (
+        "/html/body/div[3]/div/div/div[2]/div/div/form/div[4]/span/input"
+    )
+    try:
+        driver.find_element("xpath", log_in_button).click()
+    except:
+        try:
+            driver.find_element("xpath", log_in_button_alternative).click()
+        except:
+            print("login_button_path incorrect")
+            driver.close()
+            return
 
 
 def write_to_csv(df: pd.DataFrame):
@@ -175,7 +249,6 @@ def get_over_under_odds(
         ou_odds_div = driver.find_element("xpath", ou_odds_div_path)
     except:
         print("all_over_under_odds_path incorrect")
-        driver.close()
         return
 
     # Fill the dict for each bet type
@@ -206,7 +279,6 @@ def get_over_under_odds(
                 bookmaker_divs = child.find_elements("xpath", bookmaker_divs_rel_path)  # type: ignore
             except:
                 print("bookmaker_divs_rel_path incorrect")
-                driver.close()
                 return
 
             ## Scraping every bookmaker
@@ -251,7 +323,6 @@ def get_one_x_two_odds(
             one_x_two_div = driver.find_element("xpath", one_x_two_path)
         except:
             print("one_x_two_path incorrect")
-            driver.close()
             return
 
     bookmaker_to_odds: Dict[str, List[str]] = {}

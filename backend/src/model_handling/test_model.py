@@ -3,6 +3,7 @@ import pandas as pd
 from ..model_handling.apply_model_utils import (
     apply_model,
     load_x_and_y_parameters_from_model,
+    load_training_data_from_model,
 )
 from ..data_handling.database_con import get_test_parameters
 from ..data_handling.calculations import calculate_basic_roi
@@ -15,8 +16,11 @@ from ..data_handling.data_handling_utils import (
 def get_roi_for_model(test_data: List[str], model: str) -> Dict[str, str | float]:
     all_data = get_historical_data_list()
     df_dict = apply_model(model, all_data)
-    all_data_but_test = [x for x in all_data if x not in test_data]
-    df_dict["all other data"] = concatenate_df_dict(df_dict, all_data_but_test)
+    train_data = load_training_data_from_model(model)
+    filtered_all_data = [
+        x for x in all_data if x not in test_data and x not in train_data
+    ]
+    df_dict["all other data"] = concatenate_df_dict(df_dict, filtered_all_data)
     y_par = load_x_and_y_parameters_from_model(model)[1]
     roi_dict: Dict[str, str | float] = {}
     for key in df_dict:
@@ -30,13 +34,16 @@ def get_stats_for_model_and_test(
     test_data: List[str], model: str, test: str
 ) -> Dict[str, Any]:
     all_data = get_historical_data_list()
-    all_data_but_test = [x for x in all_data if x not in test_data]
+    train_data = load_training_data_from_model(model)
+    filtered_all_data = [
+        x for x in all_data if x not in test_data and x not in train_data
+    ]
     df_dict_before_filter = apply_model(model, all_data)
     df_dict_before_filter["all other data"] = concatenate_df_dict(
-        df_dict_before_filter, all_data_but_test
+        df_dict_before_filter, filtered_all_data
     )
     df_dict = apply_test_to_df_dict(df_dict_before_filter, test)
-    df_dict["all other data"] = concatenate_df_dict(df_dict, all_data_but_test)
+    df_dict["all other data"] = concatenate_df_dict(df_dict, filtered_all_data)
 
     return_dict: Dict[str, Any] = {}
     y_par = load_x_and_y_parameters_from_model(model)[1]

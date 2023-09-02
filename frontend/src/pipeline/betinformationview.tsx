@@ -51,7 +51,8 @@ export default function BetInformationView({
 			? "Over under 2.5 goals"
 			: "FIXME: Another bet";
 
-	const prediction = state.prediction === "0" ? "Over" : "Under";
+	console.log(state.prediction);
+	const prediction = state.prediction.toString() === "0" ? "Under" : "Over";
 
 	return (
 		<Stack
