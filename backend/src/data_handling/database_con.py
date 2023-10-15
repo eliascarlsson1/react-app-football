@@ -77,6 +77,11 @@ def add_delete_model(add: bool, name: str) -> None:
     con.close()
 
 
+def get_my_bookmakers() -> List[str]:
+    # FIXME: Add to database
+    return ["William Hill", "Pinnacle", "bet365"]
+
+
 def get_test_names() -> List[str]:
     con = sqlite3.connect(database_abs_path)
     cursor = con.cursor()
