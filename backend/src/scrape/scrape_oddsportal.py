@@ -100,7 +100,7 @@ def login(driver: webdriver.Chrome):
         print("side_menu_button incorrect")
         driver.close()
         return
-    time.sleep(3)
+    time.sleep(1.5)
 
     log_in_button = (
         "/html/body/div[1]/div/header/div[2]/div/div[2]/div[2]/div/div/div[2]/div[2]"
@@ -109,10 +109,9 @@ def login(driver: webdriver.Chrome):
         driver.find_element("xpath", log_in_button).click()
     except:
         print("login_button_path incorrect")
-        time.sleep(60)
         driver.close()
         return
-    time.sleep(3)
+    time.sleep(1.5)
 
     oddsportal_username_path = (
         "/html/body/div[4]/div/div/div[2]/div/div/form/div[1]/div[2]/div/input"
@@ -171,46 +170,65 @@ def write_to_csv(df: pd.DataFrame):
 
 def get_teams_and_date(driver: webdriver.Chrome) -> List[str]:
     # Return [home_team, away_team, date, time]
-    home_team_path = "/html/body/div[1]/div/div[1]/div/main/div[2]/div[3]/div[1]/div[1]/div/div[1]/span"
+    home_team_path1 = "/html/body/div[1]/div/div[1]/div/main/div[2]/div[3]/div[1]/div[1]/div/div[1]/span"
+    home_team_path2 = "/html/body/div[1]/div/div[1]/div/main/div[2]/div[2]/div[1]/div[1]/div/div[1]/span"
     try:
-        home_team = driver.find_element("xpath", home_team_path)
+        home_team = driver.find_element("xpath", home_team_path1)
     except:
-        print("home_team_path incorrect")
-        driver.close()
-        return []
+        try: 
+            home_team = driver.find_element("xpath", home_team_path2)
+        except:
+            print("home_team_path incorrect")
+            driver.close()
+            return []
 
-    away_team_path = (
+    away_team_path1 = (
         "/html/body/div[1]/div/div[1]/div/main/div[2]/div[3]/div[1]/div[3]/div[1]/span"
     )
+    away_team_path2 = (
+        "/html/body/div[1]/div/div[1]/div/main/div[2]/div[2]/div[1]/div[3]/div[1]/span"
+    )
     try:
-        away_team = driver.find_element("xpath", away_team_path)
+        away_team = driver.find_element("xpath", away_team_path1)
     except:
-        print("away_team_path incorrect")
-        driver.close()
-        return []
+        try:
+            away_team = driver.find_element("xpath", away_team_path2)
+        except:
+            print("away_team_path incorrect")
+            driver.close()
+            return []
 
-    date_path = "/html/body/div[1]/div/div[1]/div/main/div[2]/div[3]/div[2]/div[1]/p[2]"
+    date_path1 = "/html/body/div[1]/div/div[1]/div/main/div[2]/div[3]/div[2]/div[1]/p[2]"
+    date_path2 = "/html/body/div[1]/div/div[1]/div/main/div[2]/div[2]/div[2]/div[1]/p[2]"
     try:
-        date = driver.find_element("xpath", date_path)
+        date = driver.find_element("xpath", date_path1)
     except:
-        print("date_path incorrect")
-        driver.close()
-        return []
+        try:
+            date = driver.find_element("xpath", date_path2)
+        except:
+            print("date_path incorrect")
+            driver.close()
+            return []
 
-    time_path = "/html/body/div[1]/div/div[1]/div/main/div[2]/div[3]/div[2]/div[1]/p[3]"
+    time_path1 = "/html/body/div[1]/div/div[1]/div/main/div[2]/div[3]/div[2]/div[1]/p[3]"
+    time_path2 = "/html/body/div[1]/div/div[1]/div/main/div[2]/div[2]/div[2]/div[1]/p[3]"
     try:
-        time = driver.find_element("xpath", time_path)
+        time = driver.find_element("xpath", time_path1)
     except:
-        print("time_path incorrect")
-        driver.close()
-        return []
+        try:
+            time = driver.find_element("xpath", time_path2)
+        except:
+            print("time_path incorrect")
+            driver.close()
+            return []
 
     return [home_team.text, away_team.text, date.text, time.text]
 
 
 def get_game_links(driver: webdriver.Chrome, top_link: str) -> List[str]:
-    all_games_div_path = "/html/body/div[1]/div/div[1]/div/main/div[2]/div[5]"
-    # print the text "test" and driver.find_element("xpath", test)
+    # all_games_div_path = "/html/body/div[1]/div/div[1]/div/main/div[2]/div[5]"
+    
+    all_games_div_path = "/html/body/div[1]/div/div[1]/div/main/div[2]/div[4]/div[1]"
     try:
         all_games_div = driver.find_element("xpath", all_games_div_path)
     except:
@@ -244,7 +262,7 @@ def get_over_under_odds(
     # List odds in order, 0 first, 1 second...
 
     # Navigate to the over/under page
-    ou_odds_div_path = "/html/body/div[1]/div/div[1]/div/main/div[2]/div[4]"
+    ou_odds_div_path = "/html/body/div[1]/div/div[1]/div/main/div[2]/div[3]"
     try:
         ou_odds_div = driver.find_element("xpath", ou_odds_div_path)
     except:
@@ -254,13 +272,20 @@ def get_over_under_odds(
     # Fill the dict for each bet type
     bookmaker_to_odds: Dict[str, Dict[str, List[str]]] = {}
     ou_odds_div_children = ou_odds_div.find_elements("xpath", ".//div")  # type: ignore
+    if (len(ou_odds_div_children) == 0):
+        ou_odds_div_children = ou_odds_div.find_elements("xpath", ".//div[2]") # type: ignore
+    print("ou_odds_div_children", ou_odds_div_children)
     for child in ou_odds_div_children:
-        text_rel_path = ".//div/div[2]/p[1]"
+        text_rel_path1 = ".//div/div[2]/p[1]"
         try:
-            ou = child.find_element("xpath", text_rel_path)  # type: ignore
+            ou = child.find_element("xpath", text_rel_path1)  # type: ignore
         except:
-            continue
+            try: 
+                ou = child.find_element("xpath", text_rel_path2)  # type: ignore
+            except:
+                continue
 
+        print("found text", ou.text)
         ## Scraping over under
         if ou.text.startswith("Over/Under"):
             odds_dict = {}

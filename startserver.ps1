@@ -1,0 +1,1 @@
+c:/Users/ischa/Sync/Projects/react_app_football/backend/venv/Scripts/python.exe c:/Users/ischa/Sync/Projects/react_app_football/backend/server.py

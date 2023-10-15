@@ -9,7 +9,7 @@ def filter_scrape_for_upcoming_games(scrape: pd.DataFrame) -> pd.DataFrame:
 
     # Filter for games that are upcoming
     scrape = scrape[scrape["datetime"] > time_now]
-    scrape = scrape.drop(columns=["datetime"])
+    scrape = scrape.drop(columns=["datetime"]) # type: ignore
     return scrape
 
 
@@ -58,13 +58,21 @@ def get_average_over_under_odds(type: str, encodedJsonObj: str) -> List[float] |
 def get_bookmaker_to_over_under_odds(
     type: str, encodedJsonObj: str
 ) -> Dict[str, List[float]] | None:
-    return None
+    bookmaker_to_odds: Dict[str, List[float]] = {}
+    try:
+        jsonObj = json.loads(encodedJsonObj)
+    except:
+        print("Could not decode json object")
+        return None
+    for bookmaker in jsonObj[type]:
+        bookmaker_to_odds[bookmaker] = jsonObj[type][bookmaker]
+    return bookmaker_to_odds
 
 
 def get_over_under_odds_for_bookmaker(
     type: str, encodedJsonObj: str, bookmaker: str
 ) -> List[float] | None:
-    # Returns odds [0, 1]
+    # Returns odds [1, 0]
     try:
         jsonObj = json.loads(encodedJsonObj)
     except:

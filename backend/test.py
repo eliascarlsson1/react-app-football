@@ -1,3 +1,3 @@
-from src.scrape.scrape_oddsportal import scrape_league
+from src.scrape.odds_analysis import analyse_historical_odds
 
-scrape_league("england", "premier-league")
+analyse_historical_odds()
