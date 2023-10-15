@@ -61,7 +61,7 @@ def analyse_historical_odds(
             perc_over_mean,
             stds_over_mean,
         ) = best_odds_result
-
+        print (best_bookmaker, odds, num_available_odds, perc_over_mean, stds_over_mean)
         best_bookmakers.append(best_bookmaker)  # type: ignore
         if num_available_odds < nof_odds_cutoff:
             continue
@@ -86,6 +86,8 @@ def analyse_historical_odds(
     print(len(pd.Series(best_bookmakers)))
     print(pd.Series(best_bookmakers).value_counts())
 
+    print("---")
+    print("Percentage of games bet on", len(roi_dataframe) / len(tg_and_odds))
     print("ROI: ", calculate_basic_roi(roi_dataframe, y_par))  # type: ignore
 
 
@@ -112,11 +114,12 @@ def find_best_odds_with_statistics(
                 best_odds = float(odds[0])
                 best_bookmaker = bookmaker
         elif over_under == "Over":
-            if only_ony_my_bookmakers and bookmaker not in bookmakers_to_include:
-                continue
+
 
             all_odds.append(float(odds[1]))  # type: ignore
             if float(odds[1]) > best_odds:
+                if only_ony_my_bookmakers and bookmaker not in bookmakers_to_include:
+                    continue
                 best_odds = float(odds[1])
                 best_bookmaker = bookmaker
 
@@ -128,7 +131,7 @@ def find_best_odds_with_statistics(
 
     ## Calculating mean
     mean = sum(all_odds) / len(all_odds)
-    perc_over_mean = (best_odds - mean) / mean
+    perc_over_mean = (best_odds - mean) / mean * 100
 
     ## Calculating stds
     std: float = np.std(all_odds)

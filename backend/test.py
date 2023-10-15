@@ -17,8 +17,9 @@ all_games_in_one_df = concatenate_df_dict(
 analyse_historical_odds(
     all_games_df=all_games_in_one_df,
     odds_type="Over/Under +2.5",
-    prediction=0,
-    bookmakers=["bet365", "Pinnacle", "William Hill"],
+    prediction=1,
+    # bookmakers=["bet365", "Pinnacle", "William Hill"],
+    bookmakers=["Pinnacle"],
     nof_odds_cutoff=0,
     perc_over_mean_cutoff=0,
     stds_over_mean_cutoff=0,
