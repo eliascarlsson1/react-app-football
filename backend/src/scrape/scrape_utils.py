@@ -9,7 +9,7 @@ def filter_scrape_for_upcoming_games(scrape: pd.DataFrame) -> pd.DataFrame:
 
     # Filter for games that are upcoming
     scrape = scrape[scrape["datetime"] > time_now]
-    scrape = scrape.drop(columns=["datetime"]) # type: ignore
+    scrape = scrape.drop(columns=["datetime"])  # type: ignore
     return scrape
 
 

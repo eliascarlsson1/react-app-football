@@ -70,7 +70,7 @@ def prepared_scraped_games(all_df_dict: Dict[str, pd.DataFrame]):
 
     elo_tilt_handler = et.Elo_Tilt_Handler(all_df_dict)
 
-    df = pd.read_csv("./data/scrape.csv")  # type: ignore
+    df = pd.read_csv(data_path + "/scrape.csv")  # type: ignore
     df = filter_scrape_for_last_scraped(df)
     df = filter_scrape_for_upcoming_games(df)
 
@@ -108,7 +108,7 @@ def prepared_scraped_games(all_df_dict: Dict[str, pd.DataFrame]):
 
     ## FIXME: Maybe load old data and append for every row...
     df = pd.concat(prepare_scrape_df_rows)  # type: ignore
-    df.to_csv("./data/prepared_scrape.csv", index=False)  # type: ignore
+    df.to_csv(data_path + "/prepared_scrape.csv", index=False)  # type: ignore
 
 
 def prepare_scraped_game(
