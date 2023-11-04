@@ -36,8 +36,10 @@ export type GameBetInformation = {
 	testDataForScrape: TestData;
 	testDataForLeague: TestData;
 	odds: Odds;
+	bestOdds: string;
+	bestBookmaker: string;
 	oddsportalLink: string;
-	timeOfScrape: string;
+	scrapeTime: string;
 	//FIXME: Time of scrape broken?
 };
 
@@ -53,6 +55,7 @@ export default function BetInformationView({
 
 	console.log(state.prediction);
 	const prediction = state.prediction.toString() === "0" ? "Under" : "Over";
+	const dateString = formatDate(new Date(state.scrapeTime));
 
 	return (
 		<Stack
@@ -68,14 +71,20 @@ export default function BetInformationView({
 				</Typography>
 				<Link href={state.oddsportalLink}>(Oddsportal)</Link>
 			</Stack>
+			<Typography fontWeight={"bold"}>
+				{betType}. Prediction: {prediction}
+			</Typography>
 			<Typography>
-				{betType}. Prediction: {prediction} (odds:{" "}
-				{Number(state.oddsPrediction).toPrecision(3)}). Scraped at{" "}
-				{state.timeOfScrape}
+				Odds: {Number(state.bestOdds).toPrecision(3)}. From{" "}
+				{state.bestBookmaker} ({dateString}) OBS: std: 3 and % from mean 2,
+				HARDCODED
 			</Typography>
 			<Typography>
 				Pipeline: {state.pipelineName} (model: {state.model.name},test:{" "}
-				{state.test}). Model trained on {state.model.trainingData.join(", ")}
+				{state.test}). Model trained on{" "}
+				{state.model.trainingData.length > 10
+					? `${state.model.trainingData.length} league-seasons`
+					: state.model.trainingData.join(", ")}
 			</Typography>
 			<Stack direction={"column"}>
 				<Typography>Stats for model and test on historical data:</Typography>
@@ -83,4 +92,13 @@ export default function BetInformationView({
 			</Stack>
 		</Stack>
 	);
+}
+
+function formatDate(date: Date) {
+	const year = date.getFullYear();
+	const month = ("0" + (date.getMonth() + 1)).slice(-2);
+	const day = ("0" + date.getDate()).slice(-2);
+	const hours = ("0" + date.getHours()).slice(-2);
+	const minutes = ("0" + date.getMinutes()).slice(-2);
+	return `${year}-${month}-${day} ${hours}:${minutes}`;
 }

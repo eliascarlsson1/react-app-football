@@ -79,7 +79,7 @@ def add_delete_model(add: bool, name: str) -> None:
 
 def get_my_bookmakers() -> List[str]:
     # FIXME: Add to database
-    return ["William Hill", "Pinnacle", "bet365"]
+    return ["bet365", "Pinnacle", "William Hill", "Unibet"]
 
 
 def get_test_names() -> List[str]:

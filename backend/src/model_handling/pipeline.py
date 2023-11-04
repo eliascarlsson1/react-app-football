@@ -9,6 +9,13 @@ import pandas as pd
 from ..data_handling.database_con import get_pipeline_parameters, get_current_year
 from ..data_handling.data_handling_utils import load_prepared_scrape
 from ..data_handling.dataframes_handling import filter_df_for_leagues
+from ..scrape.odds_analysis import filter_predicted_scrapes_by_odds
+import os
+
+
+script_dir = os.path.dirname(__file__)
+relative_path_scrape = "../../data/scrape.csv"
+scrape_path = os.path.join(script_dir, relative_path_scrape)
 
 
 def apply_pipeline(pipeline_name: str) -> pd.DataFrame | None:
@@ -35,8 +42,13 @@ def apply_pipeline(pipeline_name: str) -> pd.DataFrame | None:
 
     ## Apply model
     predicted_games_df = apply_model_to_df(model, df)
+    print("predicted_games_df: ", len(predicted_games_df))
     filtered_predicted_game_df = apply_test_to_df(predicted_games_df, test)
-    print("filtered_predicted_game_df: ", filtered_predicted_game_df)
+    print("filtered_predicted_game_df: ", len(filtered_predicted_game_df))
+    filtered_predicted_game_df = filter_predicted_scrapes_by_odds(
+        filtered_predicted_game_df, 8, 3, 1.7
+    )
+    print("filtered_predicted_game_df: ", len(filtered_predicted_game_df))
     return filtered_predicted_game_df
 
 
@@ -49,6 +61,9 @@ def get_game_bet_information(row: Any, pipeline_name: str) -> Dict[str, Any]:
     information_dict["prediction"] = row["prediction"]
     information_dict["oddsPrediction"] = row["odds_pred"]
     information_dict["oddsportalLink"] = row["oddsportal_link"]
+    information_dict["scrapeTime"] = row["ScrapeTime"]
+    information_dict["bestOdds"] = row["odds"]
+    information_dict["bestBookmaker"] = row["best_bookmaker"]
 
     ## Pipeline, model and test parameters
     pipeline_parameters = get_pipeline_parameters(pipeline_name)
@@ -73,6 +88,8 @@ def get_game_bet_information(row: Any, pipeline_name: str) -> Dict[str, Any]:
     information_dict["model"] = model_information
     information_dict["test"] = test
     information_dict["pipelineName"] = pipeline_name
+
+    ## FIXME: Best odds
 
     ## FIXME: Messing stats for scraped games
 

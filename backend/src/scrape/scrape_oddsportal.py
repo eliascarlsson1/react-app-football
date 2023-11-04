@@ -34,7 +34,6 @@ def scrape_league(country: str, tournament: str):
     driver.get(top_link)
     time.sleep(1)
     reject_ads()
-
     login(driver)
 
     game_links = get_game_links(driver, top_link)
@@ -62,10 +61,10 @@ def scrape_league(country: str, tournament: str):
         encoded_odds_over_under = json.dumps(over_under_odds)
 
         # 1x2 odds
-        driver.get(link + one_x_two_string)
+        driver.get("https://www.google.com")
         time.sleep(2)
         driver.get(link + one_x_two_string)
-        time.sleep(3)
+
         one_x_two_odds = get_one_x_two_odds(driver, link + one_x_two_string)
         if one_x_two_odds == None:
             print("No one_x_two_odds found", info)
@@ -99,7 +98,7 @@ def scrape_league(country: str, tournament: str):
 
 def login(driver: webdriver.Chrome):
     # Log in
-    side_menu_button = "/html/body/div[1]/div/header/div[2]/div/div[2]/div[1]"
+    side_menu_button = "/html/body/div[1]/div/header/div[2]/div/div/div[2]/div[1]"
     try:
         driver.find_element("xpath", side_menu_button).click()
     except:
@@ -108,9 +107,7 @@ def login(driver: webdriver.Chrome):
         return
     time.sleep(1.5)
 
-    log_in_button = (
-        "/html/body/div[1]/div/header/div[2]/div/div[2]/div[2]/div/div/div[2]/div[2]"
-    )
+    log_in_button = "/html/body/div[1]/div/header/div[2]/div/div/div[2]/div[2]/div/div/div[2]/div[2]"
     try:
         driver.find_element("xpath", log_in_button).click()
     except:

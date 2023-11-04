@@ -23,7 +23,7 @@ export default function PipelineRow({
 			<Stack direction={"row"} padding={1} alignItems={"center"} gap={1}>
 				<Typography fontSize={14} gutterBottom>
 					{pipeline.name} (model: {pipeline.model}, test: {pipeline.test},
-					leagues:{pipeline.leagues})
+					leagues:{pipeline.leagues.join(", ")})
 				</Typography>
 				{confirmDelete ? (
 					<Stack direction={"row"}>

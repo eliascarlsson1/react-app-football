@@ -91,6 +91,9 @@ export default function TrainModelView({
 					<Stack gap={2}>
 						<Multiselect
 							dataArray={state.historicalData}
+							selected={state.historicalData.filter(
+								(data) => !data.includes("2324"),
+							)}
 							label="Training data"
 							deliverSelected={(selectedData) => {
 								setTrainingData(selectedData);
@@ -143,7 +146,9 @@ export default function TrainModelView({
 							setXParameters(selectedData);
 						}}
 						label="x-parameters"
-						selected={xParameters}
+						selected={xParameters.filter((par) => {
+							return !["AvgO25", "AvgU25"].includes(par);
+						})}
 					/>
 				</Stack>
 			</Stack>

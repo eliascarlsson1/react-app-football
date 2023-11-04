@@ -144,7 +144,7 @@ function getPrepareScrapeMessage(status: BasicStringStatus): string {
 		case "error":
 			return "Scrape error";
 		case "loading":
-			return "Scrape in progress";
+			return "Preparing scraped games";
 		case "idle":
 			return "";
 	}
