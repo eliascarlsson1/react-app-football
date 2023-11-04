@@ -65,7 +65,6 @@ def get_bookmaker_to_over_under_odds(
         print("Could not decode json object")
         return None
     if jsonObj.get(type) == None:
-        print("Type not found in json object")
         return None
     for bookmaker in jsonObj[type]:
         bookmaker_to_odds[bookmaker] = jsonObj[type][bookmaker]

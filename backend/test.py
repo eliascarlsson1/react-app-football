@@ -14,13 +14,31 @@ all_games_in_one_df = concatenate_df_dict(
 # get first row and date
 
 
+all_games_df = all_games_in_one_df
+odds_type = "Over/Under +2.5"
+bookmakers = ["bet365", "Pinnacle", "William Hill", "Unibet"]
+nof_odds_cutoff = 8
+perc_over_mean_cutoff = 2
+stds_over_mean_cutoff = 1
+
+print("--------------------")
+print("Prediction: Under")
 analyse_historical_odds(
-    all_games_df=all_games_in_one_df,
-    odds_type="Over/Under +2.5",
-    prediction=1,
-    # bookmakers=["bet365", "Pinnacle", "William Hill"],
-    bookmakers=["Pinnacle"],
-    nof_odds_cutoff=0,
-    perc_over_mean_cutoff=0,
-    stds_over_mean_cutoff=0,
+    all_games_df = all_games_df,
+    prediction = 0,
+    bookmakers = bookmakers,
+    nof_odds_cutoff = nof_odds_cutoff,
+    perc_over_mean_cutoff = perc_over_mean_cutoff,
+    stds_over_mean_cutoff = stds_over_mean_cutoff,
+)
+
+print("--------------------")
+print("Prediction: Over")
+analyse_historical_odds(
+    all_games_df = all_games_df,
+    prediction = 1,
+    bookmakers = bookmakers,
+    nof_odds_cutoff = nof_odds_cutoff,
+    perc_over_mean_cutoff = perc_over_mean_cutoff,
+    stds_over_mean_cutoff = stds_over_mean_cutoff,
 )

@@ -17,8 +17,6 @@ scrape_path = os.path.join(script_dir, relative_path_scrape)
 
 
 ## FIXME: Assumes Over Under +2.5
-
-
 def analyse_historical_odds(
     all_games_df: pd.DataFrame,
     prediction: int,
@@ -40,7 +38,7 @@ def analyse_historical_odds(
             continue
         tg_and_odds.append((total_goals, dict))  # type: ignore
 
-    if len(tg_and_odds) / len(scrape_df) < 0.8:
+    if len(tg_and_odds) / len(scrape_df) < 0.3:
         print("Not enough data to analyse odds")
         return
 
@@ -51,7 +49,7 @@ def analyse_historical_odds(
     for total_goals, dict in tg_and_odds:
         # Find best odds
         predictionString = "Over" if prediction == 1 else "Under"
-        best_odds_result = find_best_odds_with_statistics(dict, predictionString)
+        best_odds_result = find_best_odds_with_statistics(dict, predictionString, True)
         if best_odds_result == None:
             continue
         (
@@ -61,7 +59,7 @@ def analyse_historical_odds(
             perc_over_mean,
             stds_over_mean,
         ) = best_odds_result
-        print (best_bookmaker, odds, num_available_odds, perc_over_mean, stds_over_mean)
+        # print (best_bookmaker, odds, num_available_odds, perc_over_mean, stds_over_mean)
         best_bookmakers.append(best_bookmaker)  # type: ignore
         if num_available_odds < nof_odds_cutoff:
             continue
@@ -82,12 +80,13 @@ def analyse_historical_odds(
         roi_dataframe = pd.concat([roi_dataframe, datframe_row])  # type: ignore
 
     # Print histogram of best bookmakers
-    print("Histogram of best bookmakers")
-    print(len(pd.Series(best_bookmakers)))
-    print(pd.Series(best_bookmakers).value_counts())
+    # print("Histogram of best bookmakers")
+    # print(len(pd.Series(best_bookmakers)))
+    # print(pd.Series(best_bookmakers).value_counts())
 
-    print("---")
-    print("Percentage of games bet on", len(roi_dataframe) / len(tg_and_odds))
+    # Round to 2 decimals
+    percentage_game_bet_on = len(roi_dataframe) / len(tg_and_odds) * 100
+    print("Percentage of games bet on", round(percentage_game_bet_on, 2), "% (", len(roi_dataframe), "/", len(tg_and_odds), ")")
     print("ROI: ", calculate_basic_roi(roi_dataframe, y_par))  # type: ignore
 
 
@@ -99,7 +98,6 @@ def find_best_odds_with_statistics(
     # Returns bookmaker, odds, number of available odds, percentage over mean, stds over mean
 
     bookmakers_to_include = get_my_bookmakers()
-
     best_odds = 0
     best_bookmaker = ""
     all_odds = []
