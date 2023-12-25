@@ -38,7 +38,7 @@ After training a model it is saved as a file. This file can then be loaded to ap
 
 See example image
 
-![model-statistics](https://github.com/eeliascarlsson/react_app_football/assets/106238885/1702f013-6bef-4490-a067-e4bdef2f65da)
+![model-statistics](https://github.com/eliascarlsson1/react-app-football/assets/154832503/88b56aad-eacb-453d-8232-41ee4151732e)
 
 (As you can see, my calculated parameters tilt and elo almost always turns out to be the most important feature)
 
@@ -49,4 +49,5 @@ The odds data is scraped using selenium and a chrome webdriver in python.
 
 I then apply the model, and the filter for each scraped game and the if it is considered a "good bet" the end result looks like this:
 
-![End result](https://github.com/eeliascarlsson/react_app_football/assets/106238885/a9e6de25-54e1-4b37-9c54-5380d4d4079a)
+![End result](https://github.com/eliascarlsson1/react-app-football/assets/154832503/7a362121-c175-42c7-b7d6-8236b122f198)
+
