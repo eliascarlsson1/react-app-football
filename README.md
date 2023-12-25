@@ -1,7 +1,7 @@
 # App predicting if a football game will have over/under 2.5 scored goals.
 
 # Note
-This has been a side project of mine for some time and i spent some time on it (~40-60 hrs would be an estimation). The aim of the project has always been casual: to learn data handling, fullstack development and machine learning models. The project was never meant for anyone else eyes than mine and that is very much reflected in the basic UI. This also means that I have not streamlined the process of installing this app on another machine. However there are requirement files (requirments.txt in the backend and package.json in the frontend) and the versions i use are python 3.11.1 and Node 20.5.0.
+This has been a side project of mine for some time. The aim of the project has always been casual: to learn data handling, fullstack development and machine learning models. The project was never meant for anyone else eyes than mine and that is very much reflected in the basic UI. This also means that I have not streamlined the process of installing this app on another machine. However there are requirement files (requirments.txt in the backend and package.json in the frontend) and the versions i use are python 3.11.1 and Node 20.5.0.
 
 To see if the models actually say anything about the real world I have tracked ~200 bets that this project considers to be a "good bet" and the average rate of interest is ~2%. Considering that bookkeepers usually have a profit margin of ~5%, this means that my models are doing an ok job at predicting "good bets".
 
