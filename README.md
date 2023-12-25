@@ -1,5 +1,5 @@
 # App predicting if a football game will have over/under 2.5 scored goals.
-### A react front-end, flask python backend application.
+### A react front-end, flask (python) backend application.
 
 # Note
 This has been a side project of mine for some time. The aim of the project has always been casual: to learn data handling, fullstack development and machine learning models. The project was never meant for anyone else eyes than mine and that is very much reflected in the basic UI. This also means that I have not streamlined the process of installing this app on another machine. However there are requirement files (requirments.txt in the backend and package.json in the frontend) and the versions i use are python 3.11.1 and Node 20.5.0.
