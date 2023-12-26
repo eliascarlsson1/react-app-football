@@ -1,13 +1,21 @@
 # App predicting if a football game will have over/under 2.5 scored goals.
-### A react front-end, flask (python) backend application.
+
+# Summary
+Historical football data from 12 european leagues are gathered (from https://www.football-data.co.uk). This data is processed to fit a machine learning algorithm. Then odds for future games are scraped from (www.oddsportal.com) and the machine learning algorithm is used to predict whether there will be over/under 2.5 goals scored in that game. All predicted games are then filtered to determine which games would be considered a profitable bet.
+
+Some techniques used:
+- XGBoost classification as the machine learning algorithm (sklearn, python)
+- Web scraping (selenium, python)
+- Feature and permutation importance (sklearn, python)
+- Dataframe handling and calculation of new parameters (pandas, python)
+- Flask backend
+- React frontend
+- SQLite
 
 # Note
 This has been a side project of mine for some time. The aim of the project has always been casual: to learn data handling, fullstack development and machine learning models. The project was never meant for anyone else eyes than mine and that is very much reflected in the basic UI. This also means that I have not streamlined the process of installing this app on another machine. However there are requirement files (requirments.txt in the backend and package.json in the frontend) and the versions i use are python 3.11.1 and Node 20.5.0.
 
 To see if the models actually say anything about the real world I have tracked ~200 bets that this project considers to be a "good bet" and the average rate of interest is ~2%. Considering that bookkeepers usually have a profit margin of ~5%, this means that my models are doing an ok job at predicting "good bets".
-
-# General description
-Historical football data from 12 european leagues are gathered (from https://www.football-data.co.uk). This data is processed to fit a machine learning algorithm. Then odds for future games are scraped from (www.oddsportal.com) and the machine learning algorithm is used to predict wether there will be over/under 2.5 goals scored in that game. All predicted games are then filtered to determine which games would be considered a profitable bet.
 
 # Techniques
 
